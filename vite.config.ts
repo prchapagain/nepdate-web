@@ -1,27 +1,15 @@
-import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react-swc";
-import path from "path";
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
 
-export default defineConfig(({ mode }) => ({
-  // fixme here: does not work on ghpages
-  base: mode === "ghpages" ? "./" : "/",
+// https://vitejs.dev/config/
+export default defineConfig({
+  // Use relative base so the site can be served from subpaths (e.g. GitHub Pages)
+  base: './',
+  plugins: [react()],
+  optimizeDeps: {
+    exclude: ['lucide-react'],
+  },
   build: {
-    outDir: mode === "ghpages" ? "docs" : "dist",
-    emptyOutDir: true,
+    outDir: 'docs',
   },
-  server: {
-    host: "::",
-    port: 8080,
-  },
-  preview: {
-    port: 8080,
-  },
-  plugins: [
-    react(),
-  ],
-  resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./src"),
-    },
-  },
-}));
+});

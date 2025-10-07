@@ -1,137 +1,55 @@
-/* Add Font Import */
-@import url('https://fonts.googleapis.com/css2?family=Laila:wght@300;400;500;600;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Mukta:wght@300;400;500;600;700&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+.calendar-day {
+  @apply relative bg-white dark:bg-gray-700 border border-blue-200 dark:border-gray-600 rounded-lg p-2 cursor-pointer transition-all duration-200 hover:shadow-md hover:border-blue-400 dark:hover:border-blue-500 flex flex-col;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+.calendar-day.today {
+  @apply ring-2 ring-blue-500 dark:ring-blue-400 bg-yellow-50/50 dark:bg-blue-900/20;
 }
 
-.nepali-text,
-.font-laila {
-  font-family: 'Laila', sans-serif;
+.calendar-day.saturday {
+  @apply bg-red-50/30 dark:bg-red-900/10 border-red-200 dark:border-red-800;
 }
 
-.font-mukta {
-  font-family: 'Mukta', sans-serif;
+.calendar-day.saturday .main-number {
+  @apply text-red-600 dark:text-red-400;
 }
 
-.beautiful-calendar-grid {
-  border-radius: 0 0 1rem 1rem;
-  overflow: hidden;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+.calendar-day.holiday {
+  @apply border-orange-400 dark:border-orange-500;
 }
 
-.beautiful-calendar-day {
-  transition: background-color 0.2s ease-in-out;
+.main-number {
+  @apply text-xl font-bold text-blue-900 dark:text-white text-center mb-auto;
 }
 
-.beautiful-calendar-day:hover {
-  background-color: #f5f5f5;
+.sub-number {
+  @apply absolute top-1 right-1 text-xs text-gray-400 dark:text-gray-300 font-medium;
 }
 
-.beautiful-header {
-  border-radius: 1rem 1rem 0 0;
-  overflow: hidden;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+.tithi-display {
+  @apply text-[10px] text-blue-600 dark:text-gray-200 mt-auto text-left font-medium leading-tight;
 }
 
-.beautiful-card {
-  border-radius: 0.75rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+.tithi-display.special {
+  @apply font-semibold;
 }
 
-.bg-nepali-offwhite {
-  background-color: #f9f8f7;
+.tithi-display.purnima {
+  @apply text-yellow-700 dark:text-yellow-400;
 }
 
-.text-nepali-dark {
-  color: #333;
+.tithi-display.amavasya {
+  @apply text-purple-700 dark:text-purple-400;
 }
 
-.bg-nepali-yellow {
-  background-color: #f0d799;
+.event-dot {
+  @apply absolute bottom-2 right-2 w-2 h-2 bg-orange-500 dark:bg-blue-400 rounded-full;
 }
 
-.text-nepali-red {
-  color: #e44d26;
-}
-
-.border-nepali-red {
-  border-color: #e44d26;
-}
-
-.animated-hover {
-  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-}
-
-.animated-hover:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.upcoming-event-next {
-  border-left: 4px solid #4CAF50; /* Green color for next event */
-}
-
-.upcoming-event-future {
-  border-left: 4px solid #2196F3; /* Blue color for future events */
-}
-
-/* Add a subtle shadow on hover for cards */
-.card-hover:hover {
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-  transform: translateY(-2px);
-}
-
-/* Add ease-spring animation for spring effect */
-.ease-spring {
-  transition-timing-function: cubic-bezier(0.5, 1.5, 0.6, 1.0);
-}
-
-/* No print class for elements that shouldn't be printed */
-@media print {
-  .no-print {
-    display: none !important;
-  }
-}
-
-/* Modal styling for rounded corners */
-.rounded-xl {
-  border-radius: 1rem !important;
-}
-
-.rounded-t-xl {
-  border-top-left-radius: 1rem !important;
-  border-top-right-radius: 1rem !important;
-}
-
-.rounded-b-xl {
-  border-bottom-left-radius: 1rem !important;
-  border-bottom-right-radius: 1rem !important;
-}
-
-/* Blue text for upcoming events */
-.upcoming-event-text {
-  color: #3b82f6;
-}
-
-/* Override for dialog content to ensure rounded corners */
-[data-radix-dialog-content] {
-  border-radius: 1rem !important;
-  overflow: hidden;
+.weekday {
+  @apply text-center font-semibold text-sm uppercase py-2 text-white dark:text-gray-300 rounded-sm;
 }
