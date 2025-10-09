@@ -160,12 +160,12 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
                         {toDevanagari(bsDate.day)}
                     </span>
                     {isPurnima && (
-                        <svg className="absolute top-2 left-2 w-5 h-5" viewBox="0 0 24 24" fill="none">
+                        <svg className="icon absolute top-2 left-2 w-5 h-5" viewBox="0 0 24 24" fill="none">
                             <circle cx="12" cy="12" r="10" className="fill-yellow-400 dark:fill-yellow-300 stroke-yellow-600 dark:stroke-yellow-500" strokeWidth="1" />
                         </svg>
                     )}
                     {isAmavasya && (
-                        <svg className="absolute top-2 left-2 w-5 h-5" viewBox="0 0 24 24" fill="none">
+                        <svg className="icon absolute top-2 left-2 w-5 h-5" viewBox="0 0 24 24" fill="none">
                             <circle cx="12" cy="12" r="10" className="fill-gray-800 dark:fill-gray-600 stroke-gray-900 dark:stroke-gray-500" strokeWidth="1" />
                         </svg>
                     )}
