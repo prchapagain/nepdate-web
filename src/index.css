@@ -6,7 +6,7 @@
   /* compact by default (mobile) and slightly larger on small+ screens */
   @apply relative bg-white dark:bg-gray-700 border border-blue-200 dark:border-gray-600 rounded-lg p-1 sm:p-2 cursor-pointer transition-all duration-200 hover:shadow-md hover:border-blue-400 dark:hover:border-blue-500 flex flex-col;
   max-width: 110px;
-    min-height: 78px;
+    min-height: 65px;
 }
 
 .calendar-day.today {
@@ -74,10 +74,17 @@
   .tithi-display {
     font-size: 6px;
   }
+  .calendar-day {
+      max-width: 80px;
+      min-height: 60px;
+    }
     .sub-number {
       font-size: 6px;
     }
     .icon {
       display: none;
+    }
+    .text.xs {
+      font-size: 0.75rem;
     }
 }

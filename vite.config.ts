@@ -12,8 +12,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'robots.txt', 'icons/android-chrome-192x192.png'],
       manifest: {
-        name: 'Calendar Project',
-        short_name: 'Calendar',
+        name: 'Nepdate Bikram calendar',
+        short_name: 'Nepdate',
         description: 'Bikram/Gregorian calendar with panchanga',
         theme_color: '#2563eb',
         background_color: '#ffffff',
