@@ -38,7 +38,7 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
         }
 
         const cells = [];
-        
+
         // Empty cells at the beginning
         for (let i = 0; i < monthInfo.startDayOfWeek; i++) {
             cells.push(
@@ -46,7 +46,7 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
             );
         }
 
-            // Days of the month
+        // Days of the month
         for (let day = 1; day <= monthInfo.totalDays; day++) {
             const date = fromBikramSambat(currentYear, currentMonth, day);
             const panchanga = _getPanchangaBasics(date);
@@ -56,7 +56,7 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
             let classes = 'calendar-day';
             if (date.getDay() === 6) classes += ' saturday';
             if (date.toDateString() === today.toDateString()) classes += ' today';
-            
+
             const isHoliday = events.some(event => event.holiday);
             if (isHoliday) classes += ' holiday';
 
@@ -71,7 +71,7 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
             const isPurnima = panchanga.tithiName === "पूर्णिमा";
             const isAmavasya = panchanga.tithiName === "अमावस्या";
 
-                cells.push(
+            cells.push(
                 <div
                     key={day}
                     className={classes + ' relative group'}
@@ -84,15 +84,16 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
                         {date.getDate()}
                     </span>
                     {isPurnima && (
-                        <svg className="absolute top-2 left-2 w-5 h-5" viewBox="0 0 24 24" fill="none">
+                        <svg className="icon absolute top-1 left-1 w-5 h-5 sm:w-4 sm:h-4 xs:w-2 xs:h-2" viewBox="0 0 24 24" fill="none">
                             <circle cx="12" cy="12" r="10" className="fill-yellow-400 dark:fill-yellow-300 stroke-yellow-600 dark:stroke-yellow-500" strokeWidth="1" />
                         </svg>
                     )}
                     {isAmavasya && (
-                        <svg className="absolute top-2 left-2 w-5 h-5" viewBox="0 0 24 24" fill="none">
+                        <svg className="icon absolute top-2 left-2 w-5 h-5 sm:w-4 sm:h-4 xs:w-3 xs:h-3" viewBox="0 0 24 24" fill="none">
                             <circle cx="12" cy="12" r="10" className="fill-gray-800 dark:fill-gray-600 stroke-gray-900 dark:stroke-gray-500" strokeWidth="1" />
                         </svg>
                     )}
+
                     <span className={tithiClass} style={{ fontFamily: "'Noto Sans Devanagari', sans-serif" }}>
                         {panchanga.tithiName}
                     </span>
@@ -131,7 +132,7 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
             let classes = 'calendar-day';
             if (date.getUTCDay() === 6) classes += ' saturday';
             if (date.toDateString() === today.toDateString()) classes += ' today';
-            
+
             const isHoliday = events.some(event => event.holiday);
             if (isHoliday) classes += ' holiday';
 
@@ -180,15 +181,14 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
     };
 
     return (
-        <div className="h-full flex flex-col">
+        <div className="flex flex-col min-h-0">
             {/* Weekdays Header */}
             <div className="grid grid-cols-7 gap-1 mb-1 flex-shrink-0">
                 {weekdays.map((day, index) => (
                     <div
                         key={day}
-                        className={`weekday ${
-                            index === 6 ? 'bg-red-600 dark:bg-red-800' : 'bg-blue-600 dark:bg-gray-700'
-                        }`}
+                        className={`weekday ${index === 6 ? 'bg-red-600 dark:bg-red-800' : 'bg-blue-600 dark:bg-gray-700'
+                            }`}
                         style={activeSystem === 'bs' ? { fontFamily: "'Noto Sans Devanagari', sans-serif" } : {}}
                     >
                         {day}
@@ -197,7 +197,7 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
             </div>
 
             {/* Calendar Grid */}
-            <div className="grid grid-cols-7 gap-1 flex-1" style={{ gridAutoRows: '1fr' }}>
+            <div className="grid grid-cols-7 gap-1 calendar-grid">
                 {activeSystem === 'bs' ? renderBikramSambatCalendar() : renderGregorianCalendar()}
             </div>
         </div>

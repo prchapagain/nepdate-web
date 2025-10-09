@@ -3,7 +3,10 @@
 @tailwind utilities;
 
 .calendar-day {
-  @apply relative bg-white dark:bg-gray-700 border border-blue-200 dark:border-gray-600 rounded-lg p-2 cursor-pointer transition-all duration-200 hover:shadow-md hover:border-blue-400 dark:hover:border-blue-500 flex flex-col;
+  /* compact by default (mobile) and slightly larger on small+ screens */
+  @apply relative bg-white dark:bg-gray-700 border border-blue-200 dark:border-gray-600 rounded-lg p-1 sm:p-2 cursor-pointer transition-all duration-200 hover:shadow-md hover:border-blue-400 dark:hover:border-blue-500 flex flex-col;
+  max-width: 110px;
+    min-height: 78px;
 }
 
 .calendar-day.today {
@@ -23,7 +26,8 @@
 }
 
 .main-number {
-  @apply text-xl font-bold text-blue-900 dark:text-white text-center mb-auto;
+  /* slightly smaller on mobile to save vertical space */
+  @apply text-lg sm:text-xl font-bold text-blue-900 dark:text-white text-center mb-auto;
 }
 
 .sub-number {
@@ -31,7 +35,7 @@
 }
 
 .tithi-display {
-  @apply text-[10px] text-blue-600 dark:text-gray-200 mt-auto text-left font-medium leading-tight;
+  @apply text-[9px] sm:text-[10px] text-blue-600 dark:text-gray-200 mt-auto text-left font-medium leading-tight;
 }
 
 .tithi-display.special {
@@ -51,5 +55,29 @@
 }
 
 .weekday {
-  @apply text-center font-semibold text-sm uppercase py-2 text-white dark:text-gray-300 rounded-sm;
+  /* smaller weekday header on mobile */
+  @apply text-center font-semibold text-sm uppercase py-1 sm:py-2 text-white dark:text-gray-300 rounded-sm;
+}
+
+/* Grid auto rows: let rows size to content on small screens, use equal rows on md+ */
+/* On wider screens use equal row heights so grid cells display uniformly */
+.calendar-grid {
+  grid-auto-rows: 1fr;
+}
+
+@media (min-width: 680px) {
+  .calendar-grid {
+    grid-auto-rows: 1fr;
+  }
+}
+@media (max-width: 415px) {
+  .tithi-display {
+    font-size: 6px;
+  }
+    .sub-number {
+      font-size: 6px;
+    }
+    .icon {
+      display: none;
+    }
 }
