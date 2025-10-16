@@ -1,5 +1,9 @@
 import React from 'react';
+<<<<<<< HEAD
 import { fromBikramSambat, getBikramMonthInfo, toDevanagari, calculate } from '../lib/lib';
+=======
+import { toBikramSambat, fromBikramSambat, getBikramMonthInfo, _getPanchangaBasics as _getPanchangaBasics, getEventsForDate, toDevanagari } from '../lib/lib';
+>>>>>>> a11244adeb89f1c1cc5f527f40587dd6e1fafce2
 
 interface CalendarGridProps {
     activeSystem: 'bs' | 'ad';
@@ -11,14 +15,28 @@ interface CalendarGridProps {
 const WEEKDAYS_NEPALI = ["आइत", "सोम", "मङ्गल", "बुध", "बिही", "शुक्र", "शनि"];
 const WEEKDAYS_ENGLISH = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
+// Timezone Helper to get current date in Nepal
+function getNepalDate(): Date {
+    const now = new Date();
+    // This creates an ISO-like string for the current time in Nepal, e.g., "2025-10-15T14:21:00"
+    const nepalISOString = new Intl.DateTimeFormat('en-CA', {
+        timeZone: 'Asia/Kathmandu',
+        year: 'numeric', month: '2-digit', day: '2-digit',
+        hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false
+    }).format(now).replace(', ', 'T');
+    // We append 'Z' to treat this local Nepal time as a UTC time, which simplifies date comparisons.
+    return new Date(nepalISOString + 'Z');
+}
+
 const CalendarGrid: React.FC<CalendarGridProps> = ({
     activeSystem,
     currentYear,
     currentMonth,
     onDayClick
 }) => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    // Use the timezone-aware helper function to get today's date in Nepal
+    const today = getNepalDate();
+    const todayBs = toBikramSambat(today);
 
     const weekdays = activeSystem === 'bs' ? WEEKDAYS_NEPALI : WEEKDAYS_ENGLISH;
 
@@ -76,9 +94,14 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
                 continue;
             }
 
+            // Correctly determine if the current cell is 'today' using Nepal's date
+            const isToday = currentYear === todayBs.year &&
+                            currentMonth === todayBs.monthIndex &&
+                            day === todayBs.day;
+
             let classes = 'calendar-day';
-            if (date.getDay() === 6) classes += ' saturday';
-            if (date.toDateString() === today.toDateString()) classes += ' today';
+            if (date.getUTCDay() === 6) classes += ' saturday'; // Use UTC day for consistency
+            if (isToday) classes += ' today';
 
             // Handle possibly undefined events
             const isHoliday = panchanga.events?.some(event => event.holiday) ?? false;
@@ -105,7 +128,7 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
                         {toDevanagari(day)}
                     </span>
                     <span className="sub-number">
-                        {date.getDate()}
+                        {date.getUTCDate()}
                     </span>
                     {isPurnima && (
                         <svg className="icon absolute top-1 left-1 w-5 h-5 sm:w-4 sm:h-4 xs:w-2 xs:h-2" viewBox="0 0 24 24" fill="none">
@@ -176,9 +199,14 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
                 continue;
             }
 
+            // Correctly determine if the current cell is 'today' using Nepal's date
+            const isToday = currentYear === today.getUTCFullYear() &&
+                            currentMonth === today.getUTCMonth() &&
+                            day === today.getUTCDate();
+
             let classes = 'calendar-day';
             if (date.getUTCDay() === 6) classes += ' saturday';
-            if (date.toDateString() === today.toDateString()) classes += ' today';
+            if (isToday) classes += ' today';
 
             // Handle possibly undefined events
             const isHoliday = panchanga.events?.some(event => event.holiday) ?? false;

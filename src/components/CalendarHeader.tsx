@@ -27,6 +27,7 @@ const CalendarHeader: React.FC<CalendarHeaderProps> = ({
 }) => {
     const GREGORIAN_MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 
+<<<<<<< HEAD
     const bsDisplay = bsYear !== null
         ? `${toDevanagari(bsYear)} ${solarMonths[bsMonth]}`
         : '—';
@@ -35,34 +36,65 @@ const CalendarHeader: React.FC<CalendarHeaderProps> = ({
         ? `${adYear} ${GREGORIAN_MONTHS[adMonth]}`
         : '—';
     
+=======
+    // Ddisplay strings for both calendar systems.
+    const getDisplayDates = () => {
+        let bsString = '—';
+        let adString = '—';
+
+        if (activeSystem === 'bs' && bsYear !== null) {
+            bsString = `${bsYear} ${BIKRAM_SAMBAT_MONTHS[bsMonth]}`;
+            try {
+                // Using the 15th day provides a stable reference for accurate month-to-month conversion.
+                const equivalentAdDate = fromBikramSambat(bsYear, bsMonth, 15);
+                adString = `${equivalentAdDate.getUTCFullYear()} ${GREGORIAN_MONTHS[equivalentAdDate.getUTCMonth()]}`;
+            } catch (e) {
+                adString = '—';
+            }
+        } else if (activeSystem === 'ad' && adYear !== null) {
+            adString = `${adYear} ${GREGORIAN_MONTHS[adMonth]}`;
+            try {
+                // Date.UTC ensures the conversion is based on a consistent point in time, not the client's local time.
+                const equivalentBsDate = toBikramSambat(new Date(Date.UTC(adYear, adMonth, 15)));
+                bsString = `${equivalentBsDate.year} ${BIKRAM_SAMBAT_MONTHS[equivalentBsDate.monthIndex]}`;
+            } catch (e) {
+                bsString = '—';
+            }
+        }
+        return { bsDisplay: bsString, adDisplay: adString };
+    };
+
+    const { bsDisplay, adDisplay } = getDisplayDates();
+
+>>>>>>> a11244adeb89f1c1cc5f527f40587dd6e1fafce2
     return (
         <header className="w-full bg-blue-600 dark:bg-gray-800 backdrop-blur-sm border-b border-blue-700 dark:border-gray-700">
             <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                     <div className="flex bg-white dark:bg-gray-700 rounded-lg p-1">
-                    <button
-                        className={`px-4 py-2 rounded-md transition-all duration-200 ${
-                            activeSystem === 'bs'
-                                ? 'bg-blue-600 text-white shadow-sm'
-                                : 'text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400'
-                        } text-sm sm:text-base font-medium`}
-                        onClick={() => onSystemChange('bs')}
-                    >
-                        <span className="hidden md:inline">Bikram Sambat</span>
-                        <span className="md:hidden">BS</span>
-                    </button>
-                    <button
-                        className={`px-4 py-2 rounded-md transition-all duration-200 ${
-                            activeSystem === 'ad'
-                                ? 'bg-orange-500 text-white shadow-sm'
-                                : 'text-gray-600 dark:text-gray-400 hover:text-orange-500'
-                        } text-sm sm:text-base font-medium`}
-                        onClick={() => onSystemChange('ad')}
-                    >
-                        <span className="hidden md:inline">Gregorian</span>
-                        <span className="md:hidden">AD</span>
-                    </button>
-                </div>
+                        <button
+                            className={`px-4 py-2 rounded-md transition-all duration-200 ${
+                                activeSystem === 'bs'
+                                    ? 'bg-blue-600 text-white shadow-sm'
+                                    : 'text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400'
+                            } text-sm sm:text-base font-medium`}
+                            onClick={() => onSystemChange('bs')}
+                        >
+                            <span className="hidden md:inline">Bikram Sambat</span>
+                            <span className="md:hidden">BS</span>
+                        </button>
+                        <button
+                            className={`px-4 py-2 rounded-md transition-all duration-200 ${
+                                activeSystem === 'ad'
+                                    ? 'bg-orange-500 text-white shadow-sm'
+                                    : 'text-gray-600 dark:text-gray-400 hover:text-orange-500'
+                            } text-sm sm:text-base font-medium`}
+                            onClick={() => onSystemChange('ad')}
+                        >
+                            <span className="hidden md:inline">Gregorian</span>
+                            <span className="md:hidden">AD</span>
+                        </button>
+                    </div>
                     
                     <button
                         onClick={onTodayClick}
@@ -91,4 +123,7 @@ const CalendarHeader: React.FC<CalendarHeaderProps> = ({
 };
 
 export default CalendarHeader;
+<<<<<<< HEAD
 
+=======
+>>>>>>> a11244adeb89f1c1cc5f527f40587dd6e1fafce2
