@@ -189,7 +189,6 @@ function todaySauraMasaFirstP(ahar: number): boolean {
     return (25 < t1 && t2 < 5);
 }
 
-// FIXED: Changed from recursive to iterative to prevent stack overflow errors.
 function getSauraMasaDay(ahar: number): { m: number; d: number } {
     let nearestAhar = ahar;
     let daysBefore = 0;
@@ -210,8 +209,6 @@ function getSauraMasaDay(ahar: number): { m: number; d: number } {
 
 function fromGregorianAstronomical(gYear: number, gMonth: number, gDay: number) {
     const julian = toJulianDay(gYear, gMonth - 1, gDay);
-    // CORRECTED: The timezone/sunrise adjustment is ONLY for panchanga elements (tithi, etc.),
-    // not for the civil date conversion. Using the unadjusted ahar aligns with the Kotlin source.
     const ahar = julian - KaliEpoch;
     const sauraMasaResult = getSauraMasaDay(ahar);
     const saura_masa_num = sauraMasaResult.m;
@@ -231,7 +228,6 @@ function fromGregorianAstronomical(gYear: number, gMonth: number, gDay: number) 
 
 // Public: from Bikram Sambat -> Gregorian
 export function fromBikramSambat(bsYear: number, monthIndex: number, day: number): Date {
-    // FIXED: More robust check against actual data size, not a hardcoded end year.
     const yearIndex = bsYear - Bsdata.BS_START_YEAR;
     if (bsYear >= Bsdata.BS_START_YEAR && yearIndex < Bsdata.NP_MONTHS_DATA.length) {
         let daysOffset = 0;
@@ -266,7 +262,7 @@ export function fromBikramSambat(bsYear: number, monthIndex: number, day: number
 }
 
 export function getBikramMonthInfo(bsYear: number, monthIndex: number) {
-    // FIXED: More robust check against actual data size.
+    // Check against actual data size.
     const yearIndex = bsYear - Bsdata.BS_START_YEAR;
     if (bsYear >= Bsdata.BS_START_YEAR && yearIndex < Bsdata.NP_MONTHS_DATA.length) {
         const firstDayAd = fromBikramSambat(bsYear, monthIndex, 1);
@@ -302,8 +298,6 @@ export interface BikramDate {
     isComputed?: boolean;
 }
 
-// FIXED: Restructured the function to reliably use pre-computed data first,
-// preventing an incorrect fallback to astronomical calculations for current dates.
 export function toBikramSambat(gregorianDate: Date): BikramDate {
     const targetUtcDate = new Date(Date.UTC(gregorianDate.getFullYear(), gregorianDate.getMonth(), gregorianDate.getDate()));
     const startDate = new Date(Date.UTC(Bsdata.BS_START_DATE_AD.getFullYear(), Bsdata.BS_START_DATE_AD.getMonth(), Bsdata.BS_START_DATE_AD.getDate()));

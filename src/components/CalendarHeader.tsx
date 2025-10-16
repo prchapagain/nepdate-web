@@ -1,6 +1,5 @@
 import React from 'react';
 import { Sun, Moon } from 'lucide-react';
-// CORRECTED: Only import what's needed for display, no more conversion logic here.
 import { solarMonths, toDevanagari } from '../lib/lib';
 
 interface CalendarHeaderProps {
@@ -27,10 +26,6 @@ const CalendarHeader: React.FC<CalendarHeaderProps> = ({
     onThemeToggle
 }) => {
     const GREGORIAN_MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-
-    // FIXED: Removed all internal date conversion logic.
-    // The header now directly displays the props it receives from the main App state,
-    // ensuring perfect consistency and preventing the "flicker" bug.
     const bsDisplay = bsYear !== null
         ? `${toDevanagari(bsYear)} ${solarMonths[bsMonth]}`
         : '—';

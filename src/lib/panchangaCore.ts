@@ -12,8 +12,7 @@ import {
     zero360,
     calculateAdhikaMasa,
     KaliEpoch,
-    toBikramSambat,
-    BikramDate
+    toBikramSambat
 } from './bikram';
 
 // Panchanga Names

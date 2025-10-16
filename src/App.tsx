@@ -55,8 +55,6 @@ const App: React.FC = () => {
   };
 
   // --- Calendar Core State ---
-  // FIXED: Calculate initial dates only ONCE using the useState initializer function.
-  // This prevents the date from being recalculated on every re-render, solving the "flicker" bug.
   const [initialToday] = useState(new Date());
   const [initialTodayBs] = useState(() => toBikramSambat(initialToday));
 
@@ -123,7 +121,7 @@ const App: React.FC = () => {
         setCurrentAdYear((p) => (p ?? initialToday.getFullYear()) - 1);
       } else if (nm > 11) {
         setCurrentAdMonth(0);
-        // CORRECTED: When going from December to January, the year should increment, not decrement.
+        // When going from December to January, the year should increment.
         setCurrentAdYear((p) => (p ?? initialToday.getFullYear()) + 1);
       } else setCurrentAdMonth(nm);
     }
@@ -260,7 +258,7 @@ const App: React.FC = () => {
       {/* ABOUT MODAL */}
       {isAboutOpen && <AboutPopup setIsAboutOpen={setIsAboutOpen} />}
 
-      {/* MAIN CONTENT (unchanged) */}
+      {/* MAIN CONTENT */}
       <main className="flex-1 flex flex-col overflow-hidden px-2 sm:px-4 md:px-6 lg:px-40 max-w-7xl mx-auto w-full">
         <section className="py-2 sm:py-3">
           <CalendarControls
