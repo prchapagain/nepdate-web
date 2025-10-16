@@ -1,9 +1,6 @@
 import React from 'react';
-<<<<<<< HEAD
-import { fromBikramSambat, getBikramMonthInfo, toDevanagari, calculate } from '../lib/lib';
-=======
-import { toBikramSambat, fromBikramSambat, getBikramMonthInfo, _getPanchangaBasics as _getPanchangaBasics, getEventsForDate, toDevanagari } from '../lib/lib';
->>>>>>> a11244adeb89f1c1cc5f527f40587dd6e1fafce2
+
+import { fromBikramSambat, toBikramSambat, getBikramMonthInfo, toDevanagari, calculate } from '../lib/lib';
 
 interface CalendarGridProps {
     activeSystem: 'bs' | 'ad';

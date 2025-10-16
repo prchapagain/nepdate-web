@@ -1,33 +1,20 @@
-// lib/bikram.ts
+/* Consolidated Bikram helpers: conversions, numerals, sunrise/sunset, month data */
 import { Bsdata } from '../data/monthData';
 
 export { Bsdata };
 
-<<<<<<< HEAD
 // Surya Siddhanta Constants
 export const YugaRotation = {
-=======
-// CONSTANTS
-const YugaRotation = {
->>>>>>> a11244adeb89f1c1cc5f527f40587dd6e1fafce2
     'star': 1582237828, 'sun': 4320000, 'moon': 57753336,
     'mercury': 17937060, 'venus': 7022376, 'mars': 2296832,
     'jupiter': 364220, 'saturn': 146568, 'Candrocca': 488203,
     'Rahu': -232238
 };
-<<<<<<< HEAD
 export const YugaCivilDays = 1577917828;
 export const KaliEpoch = 588465.5;
 export const PlanetApogee = { 'sun': 77 + 17 / 60 };
 export const PlanetCircumm = { 'sun': 13 + 50 / 60, 'moon': 31 + 50 / 60 };
 export const rad = 180 / Math.PI;
-=======
-const YugaCivilDays = 1577917828;
-export const KaliEpoch = 588465.5;
-const PlanetApogee = { 'sun': 77 + 17 / 60 };
-const PlanetCircumm = { 'sun': 13 + 50 / 60, 'moon': 31 + 50 / 60 };
-const rad = 180 / Math.PI;
->>>>>>> a11244adeb89f1c1cc5f527f40587dd6e1fafce2
 
 export const solarMonths = [
     "वैशाख", "ज्येष्ठ", "आषाढ", "श्रावण", "भाद्रपद", "आश्विन",
@@ -36,23 +23,17 @@ export const solarMonths = [
 
 export const weekdays = ["आइतबार", "सोमबार", "मङ्गलबार", "बुधबार", "बिहीबार", "शुक्रबार", "शनिबार"];
 
-// NUMERALS
+// Numerals
 export function toDevanagari(n: number | string): string {
     try {
         return n.toString().replace(/[0-9]/g, d => '०१२३४५६७८९'[parseInt(d)]);
-<<<<<<< HEAD
     } catch {
         return n.toString();
-=======
-    } catch (e) {
-        return String(n);
->>>>>>> a11244adeb89f1c1cc5f527f40587dd6e1fafce2
     }
 }
 
 export function fromDevanagari(input: string): string {
     try {
-<<<<<<< HEAD
         return input.replace(/[०१२३४५६७८९]/g, d => {
             const devanagariDigits = '०१२३४५६७८९';
             return devanagariDigits.indexOf(d).toString();
@@ -74,23 +55,6 @@ export function formatMonthDay(month: number, day: number): string {
 }
 
 export function toJulianDay(year: number, month: number, day: number): number {
-=======
-        return s.toString().replace(/[०-९]/g, d => '०१२३४५६७८९'.indexOf(d).toString());
-    } catch (e) {
-        return String(s);
-    }
-}
-
-// CORE HELPERS
-export function zero360(x: number) { return x - Math.floor(x / 360) * 360; }
-function sinDeg(deg: number) { return Math.sin(deg / rad); }
-function cosDeg(deg: number) { return Math.cos(deg / rad); }
-function arcsinDeg(x: number) { return Math.asin(x) * rad; }
-export function formatMonthDay(month: number, day: number) { return (month < 10 ? '0' : '') + month + '/' + (day < 10 ? '0' : '') + day; }
-
-// JULIAN DAY CONVERSIONS
-export function toJulianDay(year: number, month: number, day: number) {
->>>>>>> a11244adeb89f1c1cc5f527f40587dd6e1fafce2
     let m = month + 1;
     let y = year;
     if (m <= 2) { y--; m += 12; }
@@ -120,7 +84,6 @@ export function fromJulianDay(jd: number): Date {
     return new Date(Date.UTC(year, month - 1, day));
 }
 
-<<<<<<< HEAD
 // Core astronomical functions
 export function meanLongitude(ahar: number, rotation: number): number {
     return zero360(rotation * ahar * 360 / YugaCivilDays);
@@ -131,23 +94,12 @@ export function mandaEquation(meanLong: number, apogee: number, circ: number): n
 }
 
 export function trueLongitudeSun(ahar: number): number {
-=======
-// CORE ASTRONOMICAL CALCULATIONS
-export function meanLongitude(ahar: number, rotation: number) { return zero360(rotation * ahar * 360 / YugaCivilDays); }
-export function mandaEquation(meanLong: number, apogee: number, circ: number) { return arcsinDeg(circ / 360 * sinDeg(meanLong - apogee)); }
-
-export function trueLongitudeSun(ahar: number) {
->>>>>>> a11244adeb89f1c1cc5f527f40587dd6e1fafce2
     const meanLong = meanLongitude(ahar, YugaRotation.sun);
     const manda = mandaEquation(meanLong, PlanetApogee.sun, PlanetCircumm.sun);
     return zero360(meanLong - manda);
 }
 
-<<<<<<< HEAD
 export function trueLongitudeMoon(ahar: number): number {
-=======
-export function trueLongitudeMoon(ahar: number) {
->>>>>>> a11244adeb89f1c1cc5f527f40587dd6e1fafce2
     const meanLong = meanLongitude(ahar, YugaRotation.moon);
     const apogee = meanLongitude(ahar, YugaRotation.Candrocca) + 90;
     const manda = mandaEquation(meanLong, apogee, PlanetCircumm.moon);
@@ -192,7 +144,6 @@ export function findPurnima(ahar: number): number {
         if (em < 180) { lo = mid; } else { hi = mid; }
     }
     return (lo + hi) / 2;
-<<<<<<< HEAD
 }
 
 export function calculateAdhikaMasa(ahar: number): string {
@@ -230,44 +181,6 @@ function getTslong(ahar: number): number {
     return mslong - x2;
 }
 
-=======
-}
-
-export function calculateAdhikaMasa(ahar: number): string {
-    let lunarMonthStart = findNewMoon(ahar);
-    if (lunarMonthStart > ahar) {
-        lunarMonthStart = findNewMoon(lunarMonthStart - 29.530588853);
-    }
-    const lunarMonthEnd = findNewMoon(lunarMonthStart + 29.530588853);
-    const sunLongStart = trueLongitudeSun(lunarMonthStart);
-    const sunLongEnd = trueLongitudeSun(lunarMonthEnd);
-    const startSign = Math.floor(sunLongStart / 30);
-    let endSign = Math.floor(sunLongEnd / 30);
-
-    if (endSign < startSign) endSign += 12;
-
-    if (endSign === startSign) {
-        return "अधिक " + solarMonths[startSign % 12];
-    }
-    if (endSign > startSign + 1) {
-        const skippedSign = (startSign + 1) % 12;
-        return "क्षय " + solarMonths[skippedSign];
-    }
-    return "छैन";
-}
-
-
-// BIKRAM SAMBAT ASTRONOMICAL CONVERSION HELPERS
-
-function getTslong(ahar: number): number {
-    const revolutions = (YugaRotation.sun * ahar / YugaCivilDays);
-    const meanLong = (revolutions - Math.floor(revolutions)) * 360;
-    const meanAnomaly = meanLong - PlanetApogee.sun;
-    const equationOfCenter = arcsinDeg((PlanetCircumm.sun / 360) * sinDeg(meanAnomaly));
-    return meanLong - equationOfCenter;
-}
-
->>>>>>> a11244adeb89f1c1cc5f527f40587dd6e1fafce2
 function todaySauraMasaFirstP(ahar: number): boolean {
     const tslong_today = getTslong(ahar);
     const tslong_tomorrow = getTslong(ahar + 1);
@@ -276,6 +189,7 @@ function todaySauraMasaFirstP(ahar: number): boolean {
     return (25 < t1 && t2 < 5);
 }
 
+// FIXED: Changed from recursive to iterative to prevent stack overflow errors.
 function getSauraMasaDay(ahar: number): { m: number; d: number } {
     let nearestAhar = ahar;
     let daysBefore = 0;
@@ -287,22 +201,17 @@ function getSauraMasaDay(ahar: number): { m: number; d: number } {
             month = (month + 12) % 12;
             return { m: month, d: day };
         }
-<<<<<<< HEAD
         daysBefore++;
         nearestAhar--;
-=======
-    } catch (e) {
-        // Fallback for potential recursion depth limit
-        return { m: 0, d: 1 };
->>>>>>> a11244adeb89f1c1cc5f527f40587dd6e1fafce2
     }
     // Fallback in case the start of the month isn't found within 40 days
     return { m: 0, d: 1 };
 }
 
-<<<<<<< HEAD
 function fromGregorianAstronomical(gYear: number, gMonth: number, gDay: number) {
     const julian = toJulianDay(gYear, gMonth - 1, gDay);
+    // CORRECTED: The timezone/sunrise adjustment is ONLY for panchanga elements (tithi, etc.),
+    // not for the civil date conversion. Using the unadjusted ahar aligns with the Kotlin source.
     const ahar = julian - KaliEpoch;
     const sauraMasaResult = getSauraMasaDay(ahar);
     const saura_masa_num = sauraMasaResult.m;
@@ -321,35 +230,26 @@ function fromGregorianAstronomical(gYear: number, gMonth: number, gDay: number) 
 }
 
 // Public: from Bikram Sambat -> Gregorian
-=======
-// PUBLIC CONVERSION FUNCTIONS
->>>>>>> a11244adeb89f1c1cc5f527f40587dd6e1fafce2
 export function fromBikramSambat(bsYear: number, monthIndex: number, day: number): Date {
+    // FIXED: More robust check against actual data size, not a hardcoded end year.
     const yearIndex = bsYear - Bsdata.BS_START_YEAR;
     if (bsYear >= Bsdata.BS_START_YEAR && yearIndex < Bsdata.NP_MONTHS_DATA.length) {
         let daysOffset = 0;
         for (let y = Bsdata.BS_START_YEAR; y < bsYear; y++) {
             const yearData = Bsdata.NP_MONTHS_DATA[y - Bsdata.BS_START_YEAR];
             daysOffset += yearData.reduce((sum, current) => sum + current, 0);
-<<<<<<< HEAD
         }
         const targetYearData = Bsdata.NP_MONTHS_DATA[yearIndex];
         for (let m = 0; m < monthIndex; m++) {
             daysOffset += targetYearData[m];
-=======
->>>>>>> a11244adeb89f1c1cc5f527f40587dd6e1fafce2
         }
         daysOffset += (day - 1);
         const resultDate = new Date(Bsdata.BS_START_DATE_AD.getTime());
         resultDate.setUTCDate(resultDate.getUTCDate() + daysOffset);
         return resultDate;
     }
-<<<<<<< HEAD
 
     // Fallback for dates outside the pre-computed range
-=======
-    // Fallback astronomical search for dates outside pre-calculated range
->>>>>>> a11244adeb89f1c1cc5f527f40587dd6e1fafce2
     const YearSaka = bsYear - 135;
     const YearKali = YearSaka + 3179;
     let ahar = Math.floor((YearKali * YugaCivilDays) / YugaRotation.sun);
@@ -393,7 +293,6 @@ export function getBikramMonthInfo(bsYear: number, monthIndex: number) {
     };
 }
 
-<<<<<<< HEAD
 // Public: Gregorian -> Bikram Sambat
 export interface BikramDate {
     year: number;
@@ -403,6 +302,8 @@ export interface BikramDate {
     isComputed?: boolean;
 }
 
+// FIXED: Restructured the function to reliably use pre-computed data first,
+// preventing an incorrect fallback to astronomical calculations for current dates.
 export function toBikramSambat(gregorianDate: Date): BikramDate {
     const targetUtcDate = new Date(Date.UTC(gregorianDate.getFullYear(), gregorianDate.getMonth(), gregorianDate.getDate()));
     const startDate = new Date(Date.UTC(Bsdata.BS_START_DATE_AD.getFullYear(), Bsdata.BS_START_DATE_AD.getMonth(), Bsdata.BS_START_DATE_AD.getDate()));
@@ -412,19 +313,10 @@ export function toBikramSambat(gregorianDate: Date): BikramDate {
         const daysOffset = Math.floor((targetUtcDate.getTime() - startDate.getTime()) / 86400000);
         let remainingDays = daysOffset;
 
-=======
-export interface BikramDate { year: number; monthIndex: number; day: number; monthName: string; isComputed?: boolean }
-export function toBikramSambat(gregorianDate: Date): BikramDate {
-    const targetUtcDate = new Date(Date.UTC(gregorianDate.getFullYear(), gregorianDate.getMonth(), gregorianDate.getDate()));
-    const startDate = new Date(Date.UTC(Bsdata.BS_START_DATE_AD.getFullYear(), Bsdata.BS_START_DATE_AD.getMonth(), Bsdata.BS_START_DATE_AD.getDate()));
-    if (targetUtcDate >= startDate && gregorianDate.getFullYear() <= (Bsdata.BS_END_YEAR - 56)) {
-        let daysOffset = Math.floor((targetUtcDate.getTime() - startDate.getTime()) / 86400000);
->>>>>>> a11244adeb89f1c1cc5f527f40587dd6e1fafce2
         for (let y = 0; y < Bsdata.NP_MONTHS_DATA.length; y++) {
             const currentBsYear = Bsdata.BS_START_YEAR + y;
             const yearData = Bsdata.NP_MONTHS_DATA[y];
             const daysInYear = yearData.reduce((sum, current) => sum + current, 0);
-<<<<<<< HEAD
 
             if (remainingDays < daysInYear) {
                 // The correct year has been found. Now find the month and day.
@@ -438,21 +330,13 @@ export function toBikramSambat(gregorianDate: Date): BikramDate {
                             monthName: solarMonths[m],
                             isComputed: false
                         };
-=======
-            if (daysOffset < daysInYear) {
-                for (let m = 0; m < 12; m++) {
-                    const daysInMonth = yearData[m];
-                    if (daysOffset < daysInMonth) {
-                        return { year: currentBsYear, monthIndex: m, day: daysOffset + 1, monthName: solarMonths[m], isComputed: false };
->>>>>>> a11244adeb89f1c1cc5f527f40587dd6e1fafce2
                     }
-                    daysOffset -= daysInMonth;
+                    remainingDays -= daysInMonth;
                 }
             }
-            daysOffset -= daysInYear;
+            remainingDays -= daysInYear;
         }
     }
-<<<<<<< HEAD
 
     // If the date is before the pre-computed data range or after it has been exhausted,
     // fall back to the astronomical calculation.
@@ -462,20 +346,6 @@ export function toBikramSambat(gregorianDate: Date): BikramDate {
         gregorianDate.getUTCDate()
     );
     return { ...result, isComputed: true };
-=======
-    // Fallback astronomical conversion
-    const julian = toJulianDay(gregorianDate.getUTCFullYear(), gregorianDate.getUTCMonth(), gregorianDate.getUTCDate());
-    const ahar = julian - KaliEpoch;
-    const sauraMasaResult = getSauraMasaDay(ahar);
-    const saura_masa_num = sauraMasaResult.m;
-    const saura_masa_day = sauraMasaResult.d;
-    const YearKali = Math.floor(ahar * YugaRotation.sun / YugaCivilDays);
-    const YearSaka = YearKali - 3179;
-    const nepalimonth = saura_masa_num % 12;
-    const year = YearSaka + 135 + Math.floor((saura_masa_num - nepalimonth) / 12);
-    const month = (saura_masa_num + 12) % 12 + 1;
-    return { year: year, monthIndex: month - 1, day: saura_masa_day, monthName: solarMonths[month - 1], isComputed: true };
->>>>>>> a11244adeb89f1c1cc5f527f40587dd6e1fafce2
 }
 
 export function isBsYearPrecomputed(bsYear: number | null): boolean {

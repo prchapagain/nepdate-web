@@ -1,6 +1,7 @@
 /**
  * Nepali Calendar Events Data
  * Contains lunar events, Gregorian events, Bikram Sambat recurring events, and fixed events.
+ * This data is synchronized with the Kotlin source to ensure consistency.
  */
 export const EventsData = {
     lunarEvents: [

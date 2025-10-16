@@ -1,6 +1,5 @@
 import { EventsData } from '../data/eventsData';
 import {
-<<<<<<< HEAD
     solarMonths,
     weekdays,
     getSunriseSunset,
@@ -14,7 +13,7 @@ import {
     calculateAdhikaMasa,
     KaliEpoch,
     toBikramSambat,
-    fromDevanagari
+    BikramDate
 } from './bikram';
 
 // Panchanga Names
@@ -42,46 +41,23 @@ const rashis = [
 ];
 
 function resolveTithiName(tithiDay: number, paksha: string): string {
-=======
-    getSunriseSunset,
-    toDevanagari,
-    toBikramSambat,
-    KaliEpoch,
-    zero360,
-    trueLongitudeSun,
-    trueLongitudeMoon,
-    getTithi,
-    toJulianDay,
-    solarMonths,
-    findPurnima,
-    calculateAdhikaMasa,
-    formatMonthDay
-} from './bikram';
-
-// --- PANCHANGA-SPECIFIC NAME ARRAYS ---
-const tithiNamesList = ["प्रतिपदा", "द्वितीया", "तृतीया", "चतुर्थी", "पञ्चमी", "षष्ठी", "सप्तमी", "अष्टमी", "नवमी", "दशमी", "एकादशी", "द्वादशी", "त्रयोदशी", "चतुर्दशी", "पूर्णिमा", "अमावस्या"];
-const nakshatras = ["अश्विनी", "भरणी", "कृत्तिका", "रोहिणी", "मृगशिरा", "आर्द्रा", "पुनर्वसु", "पुष्य", "अश्लेषा", "मघा", "पूर्व फाल्गुनी", "उत्तर फाल्गुनी", "हस्त", "चित्रा", "स्वाती", "विशाखा", "अनुराधा", "ज्येष्ठा", "मूल", "पूर्वाषाढा", "उत्तराषाढा", "श्रवण", "धनिष्ठा", "शतभिषा", "पूर्व भाद्रपद", "उत्तर भाद्रपद", "रेवती"];
-const yogas = ["विष्कम्भ", "प्रीति", "आयुष्मान्", "सौभाग्य", "शोभन", "अतिगण्ड", "सुकर्म", "धृति", "शूल", "गण्ड", "वृद्धि", "ध्रुव", "व्याघात", "हर्षण", "वज्र", "सिद्धि", "व्यतिपात", "वरीयान्", "परिघ", "शिव", "सिद्ध", "साध्य", "शुभ", "शुक्ल", "ब्रह्म", "इन्द्र", "वैधृति"];
-const karanas = ["किंस्तुघ्न", "बव", "बालव", "कौलव", "तैतिल", "गर", "वणिज", "विष्टि", "शकुनि", "चतुष्पाद", "नाग"];
-const rashis = ["मेष", "वृषभ", "मिथुन", "कर्क", "सिंह", "कन्या", "तुला", "वृश्चिक", "धनु", "मकर", "कुम्भ", "मीन"];
-const weekdays = ["आइतबार", "सोमबार", "मङ्गलबार", "बुधबार", "बिहीबार", "शुक्रबार", "शनिबार"];
-
-
-// --- PRIVATE HELPERS for PANCHANGA ---
-
-function resolveTithiName(tithiDay: number, paksha: string) {
->>>>>>> a11244adeb89f1c1cc5f527f40587dd6e1fafce2
     if (paksha === "कृष्ण पक्ष" && tithiDay === 15) return tithiNamesList[15];
     if (paksha === "शुक्ल पक्ष" && tithiDay === 15) return tithiNamesList[14];
     return tithiNamesList[tithiDay - 1];
 }
 
-<<<<<<< HEAD
-// Uses the purnimanta (full moon) system.
+/**
+ * Calculates the core Panchanga elements for a given Gregorian date.
+ * This function uses the Purnimanta system (full-moon to full-moon) for determining the lunar month name,
+ * which is consistent with the reference Kotlin implementation in `Panchanga.kt` used for event lookups.
+ * @param date The Gregorian date.
+ * @param lon Longitude for local sunrise calculation.
+ * @param tz Timezone for local sunrise calculation.
+ * @returns An object containing core lunar information.
+ */
+// FIXED: Consolidated and corrected the lunar calculation to match the Kotlin source.
+// This function now correctly uses the purnimanta (full moon) system.
 export function getPanchangaBasics(date: Date, lon: number = 85.3240, tz: number = 5.75): { [key: string]: any } {
-=======
-export function _getPanchangaBasics(date: Date) {
->>>>>>> a11244adeb89f1c1cc5f527f40587dd6e1fafce2
     const jd = toJulianDay(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate());
     const ahar = jd - KaliEpoch + 0.25 + ((lon / 15 - tz) / 24);
 
@@ -93,8 +69,7 @@ export function _getPanchangaBasics(date: Date) {
     const tithiDay = tithiNum > 15 ? tithiNum - 15 : tithiNum;
     const tithiName = resolveTithiName(tithiDay, paksha);
 
-<<<<<<< HEAD
-    /* ---- purnimānta month ---- */
+    /* ---- purnimānta month (consistent with Kotlin) ---- */
     let purnimaEnd = findPurnima(ahar);
     if (purnimaEnd < ahar) {
         purnimaEnd = findPurnima(ahar + 29.53);
@@ -114,22 +89,6 @@ export function _getPanchangaBasics(date: Date) {
         lunarMonthName: purnimantaMonthName,
         isAdhika,
         adhikaStatus,
-=======
-    // Purnimanta month calculation (to align with main `calculate` function)
-    let purnima_end_of_month = findPurnima(ahar);
-    if (purnima_end_of_month < ahar) {
-        purnima_end_of_month = findPurnima(ahar + 29.53);
-    }
-    const sunLongAtPurnima = trueLongitudeSun(purnima_end_of_month);
-    const nameSign = Math.floor(sunLongAtPurnima / 30);
-    const purnimantaMonthName = solarMonths[nameSign];
-    const isAdhika = calculateAdhikaMasa(ahar).startsWith("अधिक");
-
-    return {
-        ahar,
-        lunarMonthName: purnimantaMonthName,
-        isAdhika: isAdhika,
->>>>>>> a11244adeb89f1c1cc5f527f40587dd6e1fafce2
         paksha,
         tithiName,
         tithiDay
@@ -137,6 +96,8 @@ export function _getPanchangaBasics(date: Date) {
 }
 
 
+// FIXED: Event lookup logic simplified to match Kotlin implementation.
+// Removed complex kshaya logic and inconsistent lunar calculations.
 export function getEventsForDate(
     date: Date,
     bsYear: number,
@@ -151,67 +112,36 @@ export function getEventsForDate(
     const formattedBikramRecurringDate = (bsMonthIndex + 1 < 10 ? '0' : '') + (bsMonthIndex + 1) + '/' + (bsDay < 10 ? '0' : '') + bsDay;
     const formattedBikramFixedDate = `${bsYear}/${formattedBikramRecurringDate}`;
 
-<<<<<<< HEAD
     // --- Gregorian Events ---
     (EventsData.gregorianEvents as any[])?.forEach(event => {
         if ((event.startYear && gregorianYear < event.startYear) || (event.endYear && gregorianYear > event.endYear)) return;
         if (event.date === formattedGregorianDate) {
             events.push({ name: event.event, detail: event.detail, holiday: event.holiday || false });
-=======
-    if (EventsData.gregorianEvents) {
-        for (const event of EventsData.gregorianEvents as any[]) {
-            if ((event.startYear && gregorianYear < event.startYear) || (event.endYear && gregorianYear > event.endYear)) continue;
-            if (event.date === formattedGregorianDate) {
-                events.push({ name: event.event, detail: event.detail, category: event.category, holiday: !!event.holiday });
-            }
->>>>>>> a11244adeb89f1c1cc5f527f40587dd6e1fafce2
         }
     });
 
-<<<<<<< HEAD
     // --- Bikram Recurring Events (MM/dd) ---
     (EventsData.bikramRecurringEvents as any[])?.forEach(event => {
         if ((event.startYear && bsYear < event.startYear) || (event.endYear && bsYear > event.endYear)) return;
         if (event.date === formattedBikramRecurringDate) {
             events.push({ name: event.event, detail: event.detail, holiday: event.holiday || false });
-=======
-    if (EventsData.bikramRecurringEvents) {
-        for (const event of EventsData.bikramRecurringEvents as any[]) {
-            if ((event.startYear && bsYear < event.startYear) || (event.endYear && bsYear > event.endYear)) continue;
-            if (event.date === formattedBikramRecurringDate) {
-                events.push({ name: event.event, detail: event.detail, category: event.category, holiday: !!event.holiday });
-            }
->>>>>>> a11244adeb89f1c1cc5f527f40587dd6e1fafce2
         }
     });
 
-<<<<<<< HEAD
     // --- Bikram Fixed Events (YYYY/MM/dd) ---
     (EventsData.bikramFixedEvents as any[])?.forEach(event => {
         if (event.date === formattedBikramFixedDate) {
             events.push({ name: event.event, detail: event.detail, holiday: event.holiday || false });
-=======
-    if (EventsData.bikramFixedEvents) {
-        const formattedFixedDate = bsYear + "/" + formatMonthDay(bsMonthIndex + 1, bsDay);
-        for (const event of EventsData.bikramFixedEvents) {
-            if (event.date === formattedFixedDate) {
-                events.push({ name: event.event, detail: event.detail, category: event.category, holiday: !!event.holiday });
-            }
->>>>>>> a11244adeb89f1c1cc5f527f40587dd6e1fafce2
         }
     });
 
-<<<<<<< HEAD
     // --- Lunar Events ---
-=======
->>>>>>> a11244adeb89f1c1cc5f527f40587dd6e1fafce2
     if (EventsData.lunarEvents) {
         const lunarInfo = getPanchangaBasics(date);
         if (lunarInfo.isAdhika) {
             return events; // No lunar events in Adhika masa
         }
 
-<<<<<<< HEAD
         (EventsData.lunarEvents as any[])?.forEach(lunarEvent => {
             if ((lunarEvent.startYear && bsYear < lunarEvent.startYear) || (lunarEvent.endYear && bsYear > lunarEvent.endYear)) return;
 
@@ -221,13 +151,6 @@ export function getEventsForDate(
 
             if (sameMonth && samePaksha && sameTithi) {
                 events.push({ name: lunarEvent.event, detail: lunarEvent.detail, holiday: lunarEvent.holiday || false });
-=======
-        for (const lunarEvent of EventsData.lunarEvents as any[]) {
-            if ((lunarEvent.startYear && bsYear < lunarEvent.startYear) || (lunarEvent.endYear && bsYear > lunarEvent.endYear)) continue;
-            
-            if (lunarEvent.lunarMonth === todayInfo.lunarMonthName && lunarEvent.paksha === todayInfo.paksha && lunarEvent.tithi === todayInfo.tithiName) {
-                 events.push({ name: lunarEvent.event, detail: lunarEvent.detail, category: lunarEvent.category, holiday: !!lunarEvent.holiday });
->>>>>>> a11244adeb89f1c1cc5f527f40587dd6e1fafce2
             }
         });
     }
@@ -235,31 +158,11 @@ export function getEventsForDate(
     return events;
 }
 
-<<<<<<< HEAD
 // FIXED: Main calculate function updated to use the new consistent helper functions.
 export function calculate(date: Date, lat?: number, lon?: number, tz?: number) {
     const bsInfo = toBikramSambat(date);
     if (!bsInfo) {
         return { error: "Date out of range or invalid." };
-=======
-
-// --- MAIN CALCULATION FUNCTION ---
-export function calculate(date: Date, lat?: number, lon?: number, tz?: number) {
-    const jd = toJulianDay(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate());
-    const ahar = jd - KaliEpoch + 0.25 + (((lon || 85.3240) / 15 - (tz || 5.75)) / 24);
-    const sunLong = trueLongitudeSun(ahar);
-    const moonLong = trueLongitudeMoon(ahar);
-
-    const tithiVal = getTithi(sunLong, moonLong);
-    const tithiNum = Math.floor(tithiVal) + 1;
-    const paksha = tithiNum <= 15 ? "शुक्ल पक्ष" : "कृष्ण पक्ष";
-    const tithiDay = tithiNum > 15 ? tithiNum - 15 : tithiNum;
-    const tithiName = resolveTithiName(tithiDay, paksha);
-
-    let purnima_end_of_month = findPurnima(ahar);
-    if (purnima_end_of_month < ahar) {
-        purnima_end_of_month = findPurnima(ahar + 29.53);
->>>>>>> a11244adeb89f1c1cc5f527f40587dd6e1fafce2
     }
 
     const lunarInfo = getPanchangaBasics(date, lon, tz);
@@ -267,7 +170,6 @@ export function calculate(date: Date, lat?: number, lon?: number, tz?: number) {
     const events = getEventsForDate(date, bsInfo.year, bsInfo.monthIndex, bsInfo.day);
     const sunriseSunset = getSunriseSunset(date, lat, lon, tz);
 
-<<<<<<< HEAD
     const karanaIdx = Math.floor(2 * lunarInfo.tithiVal);
     const karanaName = karanaIdx > 0
         ? (karanaIdx < 57 ? karanas[(karanaIdx - 1) % 7 + 1] : karanas[karanaIdx - 57 + 8])
@@ -280,9 +182,6 @@ export function calculate(date: Date, lat?: number, lon?: number, tz?: number) {
     const gregorianOptions: Intl.DateTimeFormatOptions = {
         weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC'
     };
-=======
-    const gregorianOptions: Intl.DateTimeFormatOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' };
->>>>>>> a11244adeb89f1c1cc5f527f40587dd6e1fafce2
     const gregorianDateFormatted = date.toLocaleDateString('en-US', gregorianOptions);
 
     return {
