@@ -4,10 +4,11 @@ import CalendarControls from './components/CalendarControls';
 import CalendarGrid from './components/CalendarGrid';
 import DayDetailsModal from './components/DayDetailsModal';
 import MonthlyEvents from './components/MonthlyEvents';
+import Footer from './components/Footer';
 import AboutPopup from './AboutPopup';
 import { toBikramSambat, fromBikramSambat } from './lib/lib';
-import { isBsYearPrecomputed, isAdMonthPrecomputed } from './lib/bikram';
-import { Menu, X, Download, Info } from 'lucide-react';
+import Converter from './components/Converter';
+import { Menu, X, Download, Info, Home, SwitchCamera } from 'lucide-react';
 import { registerSW } from 'virtual:pwa-register';
 
 const App: React.FC = () => {
@@ -15,6 +16,9 @@ const App: React.FC = () => {
   useEffect(() => {
     registerSW({ immediate: true });
   }, []);
+
+  // --- View State ---
+  const [activeView, setActiveView] = useState<'calendar' | 'converter'>('calendar');
 
   // --- Theme and UI State ---
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
@@ -38,23 +42,18 @@ const App: React.FC = () => {
       (window.navigator as any).standalone;
     setIsStandalone(!!standalone);
 
-    // If the app is running in standalone mode, we don't need any install/open logic.
     if (standalone) {
-        setIsInstalled(true); // If it's standalone, it must be installed.
-        return; // Exit early
+        setIsInstalled(true);
+        return;
     }
 
-    
-    // Event listener for when the PWA is successfully installed
     const handleAppInstalled = () => {
-      console.log('PWA installed successfully.');
       localStorage.setItem('pwa_installed', 'true');
       setIsInstalled(true);
-      setCanInstall(false); // App is installed, hide the install button
+      setCanInstall(false);
     };
     window.addEventListener('appinstalled', handleAppInstalled);
 
-    // API-based check for subsequent visits
     if ('getInstalledRelatedApps' in navigator) {
       (navigator as any).getInstalledRelatedApps().then((apps: any[]) => {
         if (apps.length > 0) {
@@ -66,10 +65,8 @@ const App: React.FC = () => {
       });
     }
 
-    // Event listener for the browser's install prompt
     const handleBeforeInstallPrompt = (e: any) => {
       e.preventDefault();
-      // This prompt only appears if the app is not installed.
       localStorage.removeItem('pwa_installed');
       setIsInstalled(false);
       setDeferredPrompt(e);
@@ -77,7 +74,6 @@ const App: React.FC = () => {
     };
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
     
-    // Cleanup function to remove listeners
     return () => {
       window.removeEventListener('appinstalled', handleAppInstalled);
       window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
@@ -119,15 +115,29 @@ const App: React.FC = () => {
 
   const switchSystem = (sys: 'bs' | 'ad') => {
     if (sys === activeSystem) return;
-    if (sys === 'bs') {
-      const adDate = new Date(Date.UTC(currentAdYear ?? initialToday.getFullYear(), currentAdMonth, 15));
-      const bs = toBikramSambat(adDate);
-      setCurrentBsYear(bs.year);
-      setCurrentBsMonth(bs.monthIndex);
-    } else {
-      const adDate = fromBikramSambat(currentBsYear ?? initialTodayBs.year, currentBsMonth, 15);
-      setCurrentAdYear(adDate.getUTCFullYear());
-      setCurrentAdMonth(adDate.getUTCMonth());
+
+    const isCurrentAdMonth = currentAdYear === initialToday.getFullYear() && currentAdMonth === initialToday.getMonth();
+    const isCurrentBsMonth = currentBsYear === initialTodayBs.year && currentBsMonth === initialTodayBs.monthIndex;
+
+    if ((sys === 'bs' && isCurrentAdMonth) || (sys === 'ad' && isCurrentBsMonth)) {
+        goToToday();
+    } else if (sys === 'bs') {
+        const adDate = new Date(Date.UTC(currentAdYear ?? initialToday.getFullYear(), currentAdMonth, 15));
+        const bs = toBikramSambat(adDate);
+        if (bs.year === 0) { // Check for placeholder/out-of-range
+            goToToday();
+        } else {
+            setCurrentBsYear(bs.year);
+            setCurrentBsMonth(bs.monthIndex);
+        }
+    } else { // Switching to AD
+        if (currentBsYear === null ) { // Handles crash from invalid/out-of-range state
+            goToToday();
+        } else {
+            const adDate = fromBikramSambat(currentBsYear, currentBsMonth, 15);
+            setCurrentAdYear(adDate.getUTCFullYear());
+            setCurrentAdMonth(adDate.getUTCMonth());
+        }
     }
     setActiveSystem(sys);
   };
@@ -161,7 +171,6 @@ const App: React.FC = () => {
         setCurrentAdYear((p) => (p ?? initialToday.getFullYear()) - 1);
       } else if (nm > 11) {
         setCurrentAdMonth(0);
-        // When going from December to January, the year should increment.
         setCurrentAdYear((p) => (p ?? initialToday.getFullYear()) + 1);
       } else setCurrentAdMonth(nm);
     }
@@ -174,10 +183,7 @@ const App: React.FC = () => {
 
   const currentYear = activeSystem === 'bs' ? currentBsYear : currentAdYear;
   const currentMonth = activeSystem === 'bs' ? currentBsMonth : currentAdMonth;
-  const showFallbackNotice =
-    activeSystem === 'bs'
-      ? currentBsYear !== null && !isBsYearPrecomputed(currentBsYear)
-      : !isAdMonthPrecomputed(currentAdYear ?? 0, currentAdMonth);
+  const isOutOfRange = activeSystem === 'ad' && toBikramSambat(new Date(Date.UTC(currentYear!, currentMonth, 1))).year === 0;
 
   // --- Swipe Handlers ---
   const handleTouchStart = (e: React.TouchEvent) => {
@@ -217,19 +223,21 @@ const App: React.FC = () => {
           </div>
         </div>
 
-        <div className="flex justify-center sm:justify-end">
-          <CalendarHeader
-            activeSystem={activeSystem}
-            bsYear={currentBsYear}
-            bsMonth={currentBsMonth}
-            adYear={currentAdYear}
-            adMonth={currentAdMonth}
-            onSystemChange={switchSystem}
-            onTodayClick={goToToday}
-            theme={theme}
-            onThemeToggle={toggleTheme}
-          />
-        </div>
+        {activeView === 'calendar' && (
+            <div className="flex justify-center sm:justify-end">
+            <CalendarHeader
+                activeSystem={activeSystem}
+                bsYear={currentBsYear}
+                bsMonth={currentBsMonth}
+                adYear={currentAdYear}
+                adMonth={currentAdMonth}
+                onSystemChange={switchSystem}
+                onTodayClick={goToToday}
+                theme={theme}
+                onThemeToggle={toggleTheme}
+            />
+            </div>
+        )}
       </header>
 
       {/* BACKDROP */}
@@ -252,7 +260,18 @@ const App: React.FC = () => {
           </div>
 
           <nav className="flex flex-col space-y-3 text-gray-800 dark:text-gray-200">
-            {/* SOURCE CODE */}
+            <button
+              onClick={() => { setActiveView('calendar'); setIsMenuOpen(false); }}
+              className="px-3 py-2 text-left rounded hover:bg-gray-200 dark:hover:bg-gray-800 flex items-center gap-2"
+            >
+              <Home className="w-4 h-4" /> Home
+            </button>
+            <button
+              onClick={() => { setActiveView('converter'); setIsMenuOpen(false); }}
+              className="px-3 py-2 text-left rounded hover:bg-gray-200 dark:hover:bg-gray-800 flex items-center gap-2"
+            >
+              <SwitchCamera className="w-4 h-4" /> Converter
+            </button>
             <a
               href="https://github.com/khumnath/nepdate/tree/page"
               target="_blank"
@@ -262,8 +281,6 @@ const App: React.FC = () => {
             >
               <Menu className="w-4 h-4" /> Source Code
             </a>
-
-            {/* ABOUT */}
             <button
               onClick={() => {
                 setIsAboutOpen(true);
@@ -274,7 +291,6 @@ const App: React.FC = () => {
               <Info className="w-4 h-4" /> About
             </button>
 
-            {/* INSTALL / OPEN APP */}
             {!isStandalone && canInstall && (
               <button
                 onClick={() => {
@@ -304,69 +320,53 @@ const App: React.FC = () => {
         </div>
       </aside>
 
-      {/* ABOUT MODAL */}
       {isAboutOpen && <AboutPopup setIsAboutOpen={setIsAboutOpen} />}
 
-      {/* MAIN CONTENT */}
-      <main className="flex-1 flex flex-col overflow-hidden px-2 sm:px-4 md:px-6 lg:px-40 max-w-7xl mx-auto w-full">
-        <section className="py-2 sm:py-3">
-          <CalendarControls
-            activeSystem={activeSystem}
-            currentYear={currentYear}
-            currentMonth={currentMonth}
-            onYearChange={(y) => (activeSystem === 'bs' ? setCurrentBsYear(y) : setCurrentAdYear(y))}
-            onMonthChange={(m) => (activeSystem === 'bs' ? setCurrentBsMonth(m) : setCurrentAdMonth(m))}
-            onPrevMonth={() => changeMonth('prev')}
-            onNextMonth={() => changeMonth('next')}
-            onPrevYear={() => changeYear('prev')}
-            onNextYear={() => changeYear('next')}
-          />
-        </section>
+      {activeView === 'calendar' ? (
+        <main className="flex-1 flex flex-col overflow-hidden px-2 sm:px-4 md:px-6 lg:px-40 max-w-7xl mx-auto w-full">
+            <section className="py-2 sm:py-3">
+            <CalendarControls
+                activeSystem={activeSystem}
+                currentYear={currentYear}
+                currentMonth={currentMonth}
+                onYearChange={(y) => (activeSystem === 'bs' ? setCurrentBsYear(y) : setCurrentAdYear(y))}
+                onMonthChange={(m) => (activeSystem === 'bs' ? setCurrentBsMonth(m) : setCurrentAdMonth(m))}
+                onPrevMonth={() => changeMonth('prev')}
+                onNextMonth={() => changeMonth('next')}
+                onPrevYear={() => changeYear('prev')}
+                onNextYear={() => changeYear('next')}
+            />
+            </section>
 
-        {showFallbackNotice && (
-          <div className="text-center text-xs sm:text-sm text-yellow-700 dark:text-yellow-300 mt-2 px-3 py-1 rounded-md bg-yellow-50 dark:bg-yellow-900/10">
-            {activeSystem === 'bs'
-              ? 'सूचना: यो महिना पूर्वनिर्धारित डेटा नभएकोले खगोलीय गणना प्रयोग गरी देखाइएको छ।'
-              : 'Note: This month is calculated using astronomical fallback (not precomputed data).'}
-          </div>
-        )}
+            {isOutOfRange && (
+            <div className="text-center text-xs sm:text-sm text-yellow-700 dark:text-yellow-300 mt-2 px-3 py-1 rounded-md bg-yellow-50 dark:bg-yellow-900/10">
+                Bikram Sambat date is not available for this Gregorian date.
+            </div>
+            )}
 
-        <section className="flex-1 overflow-auto p-2 sm:p-3 md:p-4">
-          <CalendarGrid
-            activeSystem={activeSystem}
-            currentYear={currentYear}
-            currentMonth={currentMonth}
-            onDayClick={handleDayClick}
-          />
-        </section>
+            <section className="flex-1 overflow-auto p-2 sm:p-3 md:p-4">
+            <CalendarGrid
+                activeSystem={activeSystem}
+                currentYear={currentYear}
+                currentMonth={currentMonth}
+                onDayClick={handleDayClick}
+            />
+            
 
-        <section className="mt-3 sm:mt-4">
-          <MonthlyEvents activeSystem={activeSystem} currentYear={currentYear} currentMonth={currentMonth} />
-        </section>
+            <section className=" events mt-3 sm:mt-4">
+            <MonthlyEvents activeSystem={activeSystem} currentYear={currentYear} currentMonth={currentMonth} />
+            </section>
+            </section>
 
-        <footer className="mt-auto text-center py-3 sm:py-4 text-xs sm:text-sm text-gray-600 dark:text-gray-400">
-          © {new Date().getFullYear()}{' '}
-          <a
-            href="https://github.com/khumnath/nepdate"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="underline hover:text-gray-800 dark:hover:text-gray-200"
-          >
-            Nepdate Calendar Project
-          </a>
-          . All rights reserved. Licensed under{' '}
-          <a
-            href="https://www.gnu.org/licenses/gpl-3.0.en.html"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="underline hover:text-gray-800 dark:hover:text-gray-200"
-          >
-            GPLv3
-          </a>
-          .
-        </footer>
 
-      </main>
+           <div className="fixed bottom-0 left-0 right-0 w-full bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
+        <Footer />
+      </div>
+        </main>
+      ) : (
+        <Converter onBack={() => setActiveView('calendar')} />
+      )}
+
 
       <DayDetailsModal date={selectedDate} isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </div>
@@ -374,3 +374,4 @@ const App: React.FC = () => {
 };
 
 export default App;
+
