@@ -88,9 +88,18 @@
     font-size: 8px;
   }
 
+    .sub-text {
+    font-size: 8px;
+    margin-top: 8px;
+    margin-bottom: 8px;
+  }
+  
+
   .tithi-display {
     font-size: 6px;
   }
+
+
   .special.purnima,
   .special.amavasya {
     font-size: 8px;
@@ -103,6 +112,11 @@
 
   .calendar-grid {
     grid-auto-rows: auto;
+  }
+
+  .event-dot {
+    height: .4rem;
+    width: .4rem;
   }
 }
 
@@ -125,6 +139,12 @@
     font-size: 5px;
   }
 
+  .sub-text {
+    font-size: 8px;
+    margin-top: 6px;
+    margin-bottom: 6px;
+  }
+
   .special.purnima,
   .special.amavasya {
     font-size: 7px;
@@ -132,6 +152,11 @@
 
   .icon {
     display: none;
+  }
+
+  .event-dot {
+    height: .38rem;
+    width: .38rem;
   }
 }
 
@@ -153,6 +178,12 @@
     font-size: 6px;
   }
 
+  .sub-text {
+    font-size: 9px;
+    margin-top: 6px;
+    margin-bottom: 6px;
+  }
+
   .tithi-display {
     font-size: 5px;
   }
@@ -163,6 +194,11 @@
   }
   .icon {
     display: none;
+  }
+
+  .event-dot {
+    height: .38rem;
+    width: .38rem;
   }
 }
 
@@ -177,10 +213,22 @@
     font-size: 9px;
     line-height: 0.8rem;
   }
+
+  .sub-text {
+    font-size: 8px;
+    margin-top: 6px;
+    margin-bottom: 6px;
+  }
+
   .footer {
     font-size: 8px;
   }
+
   .icon {
     display: none;
+  }
+  .event-dot {
+    height: .35rem;
+    width: .35rem;
   }
 }

@@ -286,6 +286,9 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
             <div className="grid grid-cols-7 gap-1 calendar-grid">
                 {activeSystem === 'bs' ? renderBikramSambatCalendar() : renderGregorianCalendar()}
             </div>
+            <div className="flex-grow" />
+            {activeSystem === 'bs' ? <div><span className="text-tithi-warning sub-text text-yellow-600 dark:text-yellow-700"> ⚠️तिथिहरु सुर्योदयको समयमा गणना गरिएको छ। तिथी  सधैं सुर्योदयको समयमा पर्ने दिनमा देखाइएको छ।</span></div> : <div>
+                <span className="text-tithi-warning sub-text text-yellow-600 dark:text-yellow-600"> ⚠️tithis are calculated at sunrise. if tithi spans multiple days, it is alwaysshown on the day it falls in which falls in sunrise.</span></div>}
         </div>
     );
 };
