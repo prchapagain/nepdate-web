@@ -29,10 +29,11 @@ const MonthlyEvents: React.FC<MonthlyEventsProps> = ({
             }
         } else {
             if (currentYear === null) return eventsMap;
-            const lastDay = new Date(currentYear, currentMonth + 1, 0);
+            const lastDay = new Date(Date.UTC(currentYear, currentMonth + 1, 0));
 
-            for (let day = 1; day <= lastDay.getDate(); day++) {
-                const date = new Date(currentYear, currentMonth, day);
+            for (let day = 1; day <= lastDay.getUTCDate(); day++) {
+                // Create date in UTC to avoid timezone issues
+                const date = new Date(Date.UTC(currentYear, currentMonth, day));
                 const bsDate = toBikramSambat(date);
                 const dayEvents = getEventsForDate(date, bsDate.year, bsDate.monthIndex, bsDate.day);
                 if (dayEvents.length > 0) {

@@ -11,7 +11,7 @@ import {
 import { ArrowLeft } from 'lucide-react';
 import Footer from './Footer';
 
-// --- Define the boundaries from the data ---
+// Define the boundaries from the data
 const START_BS_YEAR = Bsdata.BS_START_YEAR;
 const END_BS_YEAR = Bsdata.BS_START_YEAR + Bsdata.NP_MONTHS_DATA.length - 1;
 const START_AD_DATE = new Date(Date.UTC(Bsdata.BS_START_DATE_AD.getFullYear(), Bsdata.BS_START_DATE_AD.getMonth(), Bsdata.BS_START_DATE_AD.getDate()));
@@ -26,12 +26,22 @@ interface ConverterProps {
 const Converter: React.FC<ConverterProps> = ({ onBack }) => {
   const [isAdToBs, setIsAdToBs] = useState(true);
 
-  const [todayAd] = useState(new Date());
+  // Timezone Handling for "Today"
+  const [todayAd] = useState(() => {
+    const now = new Date();
+    const nepalFormatter = new Intl.DateTimeFormat('en-CA', {
+        timeZone: 'Asia/Kathmandu',
+        year: 'numeric', month: '2-digit', day: '2-digit'
+    });
+    const [year, month, day] = nepalFormatter.format(now).split('-').map(Number);
+    return new Date(Date.UTC(year, month - 1, day));
+  });
   const [todayBs] = useState(() => toBikramSambat(todayAd));
+  // END Timezone Handling
 
-  const [yearText, setYearText] = useState(todayAd.getFullYear().toString());
-  const [monthIndex, setMonthIndex] = useState(todayAd.getMonth());
-  const [dayText, setDayText] = useState(todayAd.getDate().toString());
+  const [yearText, setYearText] = useState(todayAd.getUTCFullYear().toString());
+  const [monthIndex, setMonthIndex] = useState(todayAd.getUTCMonth());
+  const [dayText, setDayText] = useState(todayAd.getUTCDate().toString());
 
   const [resultText, setResultText] = useState('');
   const [infoText, setInfoText] = useState('');
@@ -39,9 +49,9 @@ const Converter: React.FC<ConverterProps> = ({ onBack }) => {
   const handleSwitchMode = (adToBs: boolean) => {
     setIsAdToBs(adToBs);
     if (adToBs) {
-      setYearText(todayAd.getFullYear().toString());
-      setMonthIndex(todayAd.getMonth());
-      setDayText(todayAd.getDate().toString());
+      setYearText(todayAd.getUTCFullYear().toString());
+      setMonthIndex(todayAd.getUTCMonth());
+      setDayText(todayAd.getUTCDate().toString());
     } else {
       setYearText(toDevanagari(todayBs.year));
       setMonthIndex(todayBs.monthIndex);
@@ -61,7 +71,7 @@ const Converter: React.FC<ConverterProps> = ({ onBack }) => {
     const maxYear = isAdToBs ? END_AD_YEAR : END_BS_YEAR;
     let year = parseInt(fromDevanagari(yearText), 10);
     if (isNaN(year)) {
-        year = isAdToBs ? todayAd.getFullYear() : todayBs.year;
+        year = isAdToBs ? todayAd.getUTCFullYear() : todayBs.year;
     }
     const clampedYear = Math.max(minYear, Math.min(year, maxYear));
     setYearText(isAdToBs ? clampedYear.toString() : toDevanagari(clampedYear));
@@ -81,7 +91,8 @@ const Converter: React.FC<ConverterProps> = ({ onBack }) => {
     let maxDay = 31;
     if (isAdToBs) {
       try {
-        maxDay = new Date(year, monthIndex + 1, 0).getDate();
+        // Use UTC to get the correct number of days in the month
+        maxDay = new Date(Date.UTC(year, monthIndex + 1, 0)).getUTCDate();
       } catch {}
     } else {
       const monthInfo = getBikramMonthInfo(year, monthIndex);
@@ -126,7 +137,7 @@ const Converter: React.FC<ConverterProps> = ({ onBack }) => {
     }
   };
 
-  const adMonths = Array.from({ length: 12 }, (_, i) => new Date(0, i).toLocaleString('default', { month: 'long' }));
+  const adMonths = Array.from({ length: 12 }, (_, i) => new Date(Date.UTC(2000, i, 1)).toLocaleString('default', { month: 'long', timeZone: 'UTC' }));
   const bsMonths = solarMonths;
   const currentMonths = isAdToBs ? adMonths : bsMonths;
 
@@ -214,4 +225,3 @@ const Converter: React.FC<ConverterProps> = ({ onBack }) => {
 };
 
 export default Converter;
-

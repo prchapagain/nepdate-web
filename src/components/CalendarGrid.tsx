@@ -102,7 +102,7 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
                 continue;
             }
 
-            // Correctly determine if the current cell is 'today' using Nepal's date
+            // Determine if the current cell is 'today' using Nepal's date
             const isToday = currentYear === todayBs.year &&
                             currentMonth === todayBs.monthIndex &&
                             day === todayBs.day;
@@ -207,7 +207,7 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
                 continue;
             }
 
-            // Correctly determine if the current cell is 'today' using Nepal's date
+            // Determine if the current cell is 'today' using Nepal's date
             const isToday = currentYear === today.getUTCFullYear() &&
                             currentMonth === today.getUTCMonth() &&
                             day === today.getUTCDate();
