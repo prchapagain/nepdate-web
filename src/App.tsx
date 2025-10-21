@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import CalendarHeader from './components/CalendarHeader';
 import CalendarControls from './components/CalendarControls';
 import CalendarGrid from './components/CalendarGrid';
@@ -11,17 +11,23 @@ import Converter from './components/Converter';
 import { Menu, X, Download, Info, Home, SwitchCamera } from 'lucide-react';
 import { registerSW } from 'virtual:pwa-register';
 
+// Reusable Toast Component with fade animation
+const ExitToast: React.FC<{ message: string; visible: boolean }> = ({ message, visible }) => (
+  <div
+    className={`fixed bottom-16 left-1/2 -translate-x-1/2 px-4 py-2 rounded shadow z-50 text-sm text-white bg-black transition-opacity duration-500 ${
+      visible ? 'opacity-100' : 'opacity-0 pointer-events-none'
+    }`}
+  >
+    {message}
+  </div>
+);
 
 const App: React.FC = () => {
-  // PWA Service Worker Registration
   useEffect(() => {
     registerSW({ immediate: true });
   }, []);
 
-  // View State
   const [activeView, setActiveView] = useState<'calendar' | 'converter'>('calendar');
-
-  // Theme and UI State
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
   const [activeSystem, setActiveSystem] = useState<'bs' | 'ad'>('bs');
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
@@ -31,12 +37,16 @@ const App: React.FC = () => {
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
   const [touchEndX, setTouchEndX] = useState<number | null>(null);
 
-  // PWA Install / App State
   const [canInstall, setCanInstall] = useState(false);
   const [isStandalone, setIsStandalone] = useState(false);
   const [isInstalled, setIsInstalled] = useState(() => localStorage.getItem('pwa_installed') === 'true');
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
 
+  const [backPressedOnce, setBackPressedOnce] = useState(false);
+  const [showExitToast, setShowExitToast] = useState(false);
+  const timeoutRef = useRef<number | null>(null);
+
+  // Detect standalone, install events
   useEffect(() => {
     const standalone =
       window.matchMedia('(display-mode: standalone)').matches ||
@@ -203,6 +213,65 @@ const App: React.FC = () => {
     setTouchEndX(null);
   };
 
+  // Backspace closes menu when open
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (!isMenuOpen) return;
+      if (e.key === 'Backspace') {
+        e.preventDefault();
+        setIsMenuOpen(false);
+      }
+    };
+    if (isMenuOpen) {
+      window.addEventListener('keydown', handleKeyDown);
+    }
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isMenuOpen]);
+
+  // Back button handling (standalone): close menu first, otherwise double-back to exit
+  useEffect(() => {
+    if (!isStandalone) return;
+
+    const handlePopState = () => {
+      if (isMenuOpen) {
+        setIsMenuOpen(false);
+        window.history.pushState(null, '', window.location.href);
+        return;
+      }
+
+      if (backPressedOnce) {
+        window.history.go(-2);
+      } else {
+        setBackPressedOnce(true);
+        setShowExitToast(true);
+
+        // vibration feedback
+        if (navigator.vibrate) {
+          navigator.vibrate(50);
+        }
+
+        if (timeoutRef.current) clearTimeout(timeoutRef.current);
+        timeoutRef.current = window.setTimeout(() => {
+          setBackPressedOnce(false);
+          setShowExitToast(false);
+          timeoutRef.current = null;
+        }, 2000);
+
+        window.history.pushState(null, '', window.location.href);
+      }
+    };
+
+    window.history.pushState(null, '', window.location.href);
+    window.addEventListener('popstate', handlePopState);
+
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+      if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    };
+  }, [isStandalone, backPressedOnce, isMenuOpen]);
+
   return (
     <div
       className="min-h-screen flex flex-col bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors overflow-hidden relative"
@@ -364,8 +433,16 @@ const App: React.FC = () => {
         <Converter onBack={() => setActiveView('calendar')} />
       )}
 
-
       <DayDetailsModal date={selectedDate} isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+    {/* Toast for double back to exit */}
+      <ExitToast
+        message={
+          activeSystem === 'bs'
+            ? 'बन्द गर्नको लागि फेरि थिच्नुहोस्'
+            : 'Press back again to exit'
+        }
+        visible={showExitToast}
+      />
     </div>
   );
 };
