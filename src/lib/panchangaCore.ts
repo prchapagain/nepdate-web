@@ -125,19 +125,26 @@ export function calculate(date: Date, lat?: number, lon?: number, tz?: number) {
     }
 
     const lunarInfo = getPanchangaBasics(date, lon, tz);
-    
+
     const events = getEventsForDate(date, bsInfo.year, bsInfo.monthIndex, bsInfo.day);
     const sunriseSunset = getSunriseSunset(date, lat, lon, tz);
 
     const karanaIdx = Math.floor(2 * lunarInfo.tithiVal);
-    const karanaName = karanaIdx > 0
-        ? (karanaIdx < 57 ? KARANA_NAMES[(karanaIdx - 1) % 7 + 1] : KARANA_NAMES[karanaIdx - 57 + 8])
-        : KARANA_NAMES[0];
+    let karanaName;
+
+    if (karanaIdx === 0) {
+        karanaName = KARANA_NAMES[0]; // Kimstughna
+    } else if (karanaIdx < 57) {
+        karanaName = KARANA_NAMES[(karanaIdx - 1) % 7 + 1]; // Chara Karanas
+    } else {
+        karanaName = KARANA_NAMES[karanaIdx - 57 + 8]; // Sthira Karanas
+    }
+
 
     const lunarMonthDisplayName = lunarInfo.isAdhika
         ? "अधिक " + lunarInfo.lunarMonthName
         : lunarInfo.lunarMonthName;
-    
+
     const gregorianOptions: Intl.DateTimeFormatOptions = {
         weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC'
     };

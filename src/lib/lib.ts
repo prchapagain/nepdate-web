@@ -1,5 +1,5 @@
 // lib/lib.ts
-export { 
+export {
     fromBikramSambat,
     getMonthWarning,
     Bsdata,
@@ -24,5 +24,12 @@ export {
     RASHI_NAMES,
     KARANA_NAMES,
     resolveTithiName,
-    toBikramSambat } from './bikram';
+    sinDeg,
+    cosDeg,
+    arcsinDeg,
+    rad,
+    toBikramSambat,
+    getDaysInADMonth,
+    formatDegrees
+} from './bikram';
 export { calculate, getEventsForDate, getPanchangaBasics } from './panchangaCore';

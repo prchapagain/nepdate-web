@@ -1,234 +1,451 @@
+/* Import Leaflet CSS */
+@import 'leaflet/dist/leaflet.css';
+
+
+/* Leaflet map styles */
+.leaflet-container {
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+}
+
 /* Tailwind base layers */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Base mobile-first styles */
-.calendar-day {
-  @apply relative bg-white dark:bg-gray-700 border border-blue-200 dark:border-gray-600 rounded-lg p-1 cursor-pointer transition-all duration-200 hover:shadow-md hover:border-blue-400 dark:hover:border-blue-500 flex flex-col;
-  max-width: 90px;
-  min-height: 50px;
-  font-size: 0.75rem;
+@layer base {
+  body {
+    @apply bg-slate-200 text-gray-900 dark:bg-gray-900 dark:text-gray-100;
+    font-family: 'Noto Sans Devanagari', sans-serif;
+  }
 }
 
-/* Today highlight */
-.calendar-day.today {
-  @apply ring-2 ring-blue-500 dark:ring-blue-400 bg-yellow-50/50 dark:bg-blue-900/20;
-}
+@layer components {
 
-/* Saturday styling */
-.calendar-day.saturday {
-  @apply bg-red-50/30 dark:bg-red-900/10 border-red-200 dark:border-red-800;
-}
-
-.calendar-day.saturday .main-number {
-  @apply text-red-600 dark:text-red-400;
-}
-
-/* Holiday border */
-.calendar-day.holiday {
-  @apply border-orange-400 dark:border-orange-500;
-}
-
-/* Main number */
-.main-number {
-  @apply text-base font-bold text-blue-900 dark:text-white text-center mb-auto;
-}
-
-/* Sub-number */
-.sub-number {
-  @apply absolute top-1 right-1 text-[10px] text-gray-400 dark:text-gray-300 font-medium;
-}
-
-/* Tithi display */
-.tithi-display {
-  @apply text-[8px] text-blue-600 dark:text-gray-200 mt-auto text-left font-medium leading-tight;
-}
-
-.tithi-display.special {
-  @apply font-semibold;
-}
-
-.tithi-display.purnima {
-  @apply text-yellow-700 dark:text-yellow-400;
-}
-
-.tithi-display.amavasya {
-  @apply text-purple-700 dark:text-purple-400;
-}
-
-/* Event dot */
-.event-dot {
-  @apply absolute bottom-1 right-1 w-2 h-2 bg-orange-500 dark:bg-blue-400 rounded-full;
-}
-
-/* Weekday header */
-.weekday {
-  @apply text-center font-semibold text-xs uppercase py-1 text-white dark:text-gray-300 rounded-sm;
-}
-
-/* Grid layout for mobile */
-.calendar-grid {
-  grid-auto-rows: auto;
-}
-
-/* Responsive overrides */
-@media (max-width: 415px) {
-  .calendar-day {
-    max-width: 80px;
-    min-height: 40px;
-    font-size: 0.7rem;
+  /* Kundali Chart Styles */
+  .birth-chart-wrapper {
+    width: 100%;
+    max-width: 420px;
+    aspect-ratio: 1 / 1;
+    margin: 0 auto;
+    position: relative;
+    font-family: var(--font-devanagari, 'Noto Sans Devanagari', 'Preeti', sans-serif);
   }
 
-  .main-number {
+  .birth-chart {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 250, 240, 0.6);
+    border-radius: 50%;
+    overflow: hidden;
+    border: 1px solid #d2b48c;
+    box-sizing: border-box;
+  }
+  .dark .birth-chart {
+    background-color: rgba(31, 41, 55, 0.6); /* gray-800/60 */
+    border-color: #4b5563; /* gray-600 */
+  }
+
+  /* Overlay SVG sits above petals but below center dot */
+  .birth-chart svg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 3;
+    /* higher than .petal (2), lower than .chart-center-dot (4) */
+  }
+
+  /* Each wedge is transparent but clickable */
+  .overlay-wedge {
+    fill: transparent;
+    pointer-events: auto;
+    /* ensure clicks are captured */
+    cursor: pointer;
+    transition: fill 0.2s ease;
+  }
+
+  /* Optional: subtle hover highlight */
+  .overlay-wedge:hover {
+    fill: rgba(0, 0, 0, 0.134);
+  }
+  .dark .overlay-wedge:hover {
+    fill: rgba(255, 255, 255, 0.1);
+  }
+
+
+  .chart-center-dot {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 16%;
+    height: 16%;
+    background: rgba(255, 250, 240, 0.8);
+    border: 1px solid #d2b48c;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5em;
+    font-family: 'Noto Sans Devanagari', 'Mangal', 'Arial', sans-serif;
+    color: #f20d0d;
+  }
+  .dark .chart-center-dot {
+    background: rgba(31, 41, 55, 0.8); /* gray-800/80 */
+    border-color: #4b5563; /* gray-600 */
+    color: #f87171; /* red-400 */
+  }
+
+  .petal {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 32%;
+    height: 50%;
+    transform-origin: bottom center;
+    z-index: 2;
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    background-position: center;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 200'%3E%3Cpath d='M 50 200 C 0 150, 0 50, 50 0 C 100 50, 100 150, 50 200 Z' stroke='rgba(210, 180, 140, 0.7)' fill='transparent' stroke-width='1.5'/%3E%3C/svg%3E");
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding-top: 4px;
+    gap: 1px;
+    box-sizing: border-box;
+  }
+  /* Dark mode petal (even) */
+  .dark .petal {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 200'%3E%3Cpath d='M 50 200 C 0 150, 0 50, 50 0 C 100 50, 100 150, 50 200 Z' stroke='rgba(113, 113, 122, 0.7)' fill='transparent' stroke-width='1.5'/%3E%3C/svg%3E");
+  }
+
+  .overlay-wedge:hover {
+    fill: rgba(0, 0, 0, 0.05);
+    /* subtle hover highlight */
+  }
+  .dark .overlay-wedge:hover {
+    fill: rgba(255, 255, 255, 0.05);
+  }
+
+
+  .petal:nth-child(even) {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 200'%3E%3Cpath d='M 50 200 C 0 150, 0 50, 50 0 C 100 50, 100 150, 50 200 Z' stroke='rgba(210, 180, 140, 0.7)' fill='rgba(210, 180, 140, 0.15)' stroke-width='1.5'/%3E%3C/svg%3E");
+  }
+  /* Dark mode petal (odd) */
+  .dark .petal:nth-child(even) {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 200'%3E%3Cpath d='M 50 200 C 0 150, 0 50, 50 0 C 100 50, 100 150, 50 200 Z' stroke='rgba(113, 113, 122, 0.7)' fill='rgba(113, 113, 122, 0.15)' stroke-width='1.5'/%3E%3C/svg%3E");
+  }
+
+  .rashi-number {
+    z-index: 3;
+    font-size: 0.7rem;
+    color: #f43f28;
+    font-weight: 600;
+    padding: 1px 3px;
+    border-radius: 3px;
+  }
+  .dark .rashi-number {
+    color: #f87171; /* red-400 */
+  }
+
+  .planets-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1px;
+    padding: 2px 0;
+  }
+
+  .planet-item {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    font-size: 0.65rem;
+    color: #423729;
+    padding: 2px 4px;
+    border-radius: 3px;
+    white-space: nowrap;
+    line-height: 1.2;
+  }
+  .dark .planet-item {
+    color: #d1d5db; /* gray-300 */
+  }
+
+  .planet-item.ascendant {
+    color: #b91c1c;
+    font-weight: 600;
+  }
+  .dark .planet-item.ascendant {
+    color: #f87171; /* red-400 */
+  }
+
+  .planet-item .retrograde {
+    color: #2563eb;
+    font-weight: bold;
+  }
+  .dark .planet-item .retrograde {
+    color: #60a5fa; /* blue-400 */
+  }
+
+  .planet-deg {
+    font-size: 0.55rem;
+    color: #78716c;
+    opacity: 0.85;
+  }
+  .dark .planet-deg {
+    color: #9ca3af; /* gray-400 */
+  }
+
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Base mobile-first styles */
+  .calendar-day {
+    @apply relative bg-slate-200 dark:bg-gray-700 border border-blue-200 dark:border-gray-600 rounded-lg p-1 cursor-pointer transition-all duration-200 hover:shadow-md hover:border-blue-400 dark:hover:border-blue-500 flex flex-col;
+    max-width: 90px;
+    min-height: 50px;
     font-size: 0.75rem;
   }
 
+  /* Today highlight */
+  .calendar-day.today {
+    @apply ring-1 ring-blue-500 dark:ring-blue-400
+  }
+
+  /* Saturday styling */
+  .calendar-day.saturday {
+    @apply bg-red-500/25 dark:bg-brown-red border-red-300 dark:border-light-gray;
+  }
+
+  .calendar-day.saturday .main-number {
+    @apply text-red-600 dark:text-rose-400;
+  }
+
+  /* Holiday border */
+  .calendar-day.holiday {
+    @apply border-orange-300  dark:border-yellow-800;
+  }
+
+  /* Main number */
+  .main-number {
+    @apply text-base font-bold text-blue-900 dark:text-gray-300 text-center mb-auto;
+  }
+
+  /* Sub-number */
   .sub-number {
-    font-size: 8px;
+    @apply absolute top-1 right-1 text-[10px] text-gray-400 dark:text-gray-400 font-medium;
   }
 
-    .sub-text {
-    font-size: 8px;
-    margin-top: 8px;
-    margin-bottom: 8px;
-  }
-  
-
+  /* Tithi display */
   .tithi-display {
-    font-size: 6px;
+    @apply text-[8px] text-blue-600 dark:text-stone-400 mt-auto text-left font-medium leading-tight;
+    display: flex;
+    align-items: center; /* Vertically centers icon with text */
+    gap: 2px;
   }
 
-
-  .special.purnima,
-  .special.amavasya {
-    font-size: 8px;
+  .tithi-display.special {
+    @apply font-semibold;
   }
 
-  .icon {
-    width: 11px;
-    height: 11px;
+  .tithi-display.purnima {
+    @apply text-yellow-700 dark:text-yellow-400;
   }
 
+  .tithi-display.amavasya {
+    @apply text-purple-700 dark:text-purple-400;
+  }
+
+  /* Event dot */
+  .event-dot {
+    @apply absolute bottom-1 right-1 w-2 h-2 bg-orange-500 dark:bg-blue-400 rounded-full;
+  }
+
+  /* Weekday header */
+  .weekday {
+    @apply text-center font-semibold text-xs uppercase py-1 text-white dark:text-gray-300 rounded-sm;
+  }
+
+  /* Grid layout for mobile */
   .calendar-grid {
     grid-auto-rows: auto;
   }
 
-  .event-dot {
-    height: .4rem;
-    width: .4rem;
-  }
-}
-
-@media (max-width: 380px) {
-  .calendar-day {
-    max-width: 66px;
-    min-height: 32px;
-    max-height: 40px;
+  /* Responsive overrides */
+  @media (max-width: 499px) {
+    .icon {
+      width: 13px;
+      height: 13px;
+    }
   }
 
-  .main-number {
-    font-size: 0.7rem;
+  @media (max-width: 415px) {
+    .calendar-day {
+      max-width: 80px;
+      min-height: 40px;
+      font-size: 0.7rem;
+    }
+
+    .main-number {
+      font-size: 0.75rem;
+    }
+
+    .sub-number {
+      font-size: 8px;
+    }
+
+    .sub-text {
+      font-size: 8px;
+      margin-top: 8px;
+      margin-bottom: 8px;
+    }
+
+
+    .tithi-display {
+      font-size: 6px;
+    }
+
+
+    .special.purnima,
+    .special.amavasya {
+      font-size: 8px;
+    }
+
+    .icon {
+      width: 11px;
+      height: 11px;
+    }
+
+    .calendar-grid {
+      grid-auto-rows: auto;
+    }
+
+    .event-dot {
+      height: .4rem;
+      width: .4rem;
+    }
   }
 
-  .sub-number {
-    font-size: 6px;
+  @media (max-width: 380px) {
+    .calendar-day {
+      max-width: 66px;
+      min-height: 32px;
+      max-height: 40px;
+    }
+
+    .main-number {
+      font-size: 0.7rem;
+    }
+
+    .sub-number {
+      font-size: 6px;
+    }
+
+    .tithi-display {
+      font-size: 5px;
+    }
+
+    .sub-text {
+      font-size: 8px;
+      margin-top: 6px;
+      margin-bottom: 6px;
+    }
+
+    .special.purnima,
+    .special.amavasya {
+      font-size: 7px;
+    }
+
+
+
+    .event-dot {
+      height: .38rem;
+      width: .38rem;
+    }
   }
 
-  .tithi-display {
-    font-size: 5px;
+  @media (max-height: 650px) {
+    .calendar-day {
+      max-width: 66px;
+      min-height: 24px;
+      max-height: 40px;
+    }
+
+    .footer {
+      font-size: 8px;
+    }
+
+    .main-number {
+      font-size: 0.7rem;
+    }
+
+    .sub-number {
+      font-size: 6px;
+    }
+
+    .sub-text {
+      font-size: 9px;
+      margin-top: 6px;
+      margin-bottom: 6px;
+    }
+
+    .tithi-display {
+      font-size: 5px;
+    }
+
+    .special.purnima,
+    .special.amavasya {
+      font-size: 7px;
+    }
+
+    .event-dot {
+      height: .38rem;
+      width: .38rem;
+    }
   }
 
-  .sub-text {
-    font-size: 8px;
-    margin-top: 6px;
-    margin-bottom: 6px;
-  }
+  @media (max-width: 415px) and (max-height: 650px) {
+    .calendar-day {
+      max-width: 60px;
+      min-height: 24px;
+      max-height: 36px;
+    }
 
-  .special.purnima,
-  .special.amavasya {
-    font-size: 7px;
-  }
+    .text-xs {
+      font-size: 9px;
+      line-height: 0.8rem;
+    }
 
-  .icon {
-    display: none;
-  }
+    .sub-text {
+      font-size: 8px;
+      margin-top: 6px;
+      margin-bottom: 6px;
+    }
 
-  .event-dot {
-    height: .38rem;
-    width: .38rem;
-  }
-}
+    .footer {
+      font-size: 8px;
+    }
 
-@media (max-height: 650px) {
-  .calendar-day {
-    max-width: 66px;
-    min-height: 24px;
-    max-height: 40px;
-  }
-  .footer {
-    font-size: 8px;
-  }
-
-  .main-number {
-    font-size: 0.7rem;
-  }
-
-  .sub-number {
-    font-size: 6px;
-  }
-
-  .sub-text {
-    font-size: 9px;
-    margin-top: 6px;
-    margin-bottom: 6px;
-  }
-
-  .tithi-display {
-    font-size: 5px;
-  }
-
-  .special.purnima,
-  .special.amavasya {
-    font-size: 7px;
-  }
-  .icon {
-    display: none;
-  }
-
-  .event-dot {
-    height: .38rem;
-    width: .38rem;
-  }
-}
-
-@media (max-width: 415px) and (max-height: 650px) {
-  .calendar-day {
-    max-width: 60px;
-    min-height: 24px;
-    max-height: 36px;
-  }
-
-  .text-xs {
-    font-size: 9px;
-    line-height: 0.8rem;
-  }
-
-  .sub-text {
-    font-size: 8px;
-    margin-top: 6px;
-    margin-bottom: 6px;
-  }
-
-  .footer {
-    font-size: 8px;
-  }
-
-  .icon {
-    display: none;
-  }
-  .event-dot {
-    height: .35rem;
-    width: .35rem;
+    .event-dot {
+      height: .35rem;
+      width: .35rem;
+    }
   }
 }

@@ -1,6 +1,7 @@
 import React from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { toDevanagari, fromDevanagari, getMonthWarning } from '../lib/lib';
+import { toDevanagari, fromDevanagari, getMonthWarning } from '../../lib/lib';
+import {NEPALI_BS_MONTHS, GREGORIAN_MONTHS} from '../../constants/constants'
 interface CalendarControlsProps {
     activeSystem: 'bs' | 'ad';
     currentYear: number | null;
@@ -13,9 +14,6 @@ interface CalendarControlsProps {
     onNextYear: () => void;
 }
 
-const BIKRAM_SAMBAT_MONTHS = ["वैशाख", "जेठ", "असार", "साउन", "भदौ", "असोज", "कार्तिक", "मंसिर", "पुष", "माघ", "फाल्गुन", "चैत"];
-const GREGORIAN_MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-
 const CalendarControls: React.FC<CalendarControlsProps> = ({
     activeSystem,
     currentYear,
@@ -27,7 +25,7 @@ const CalendarControls: React.FC<CalendarControlsProps> = ({
     onPrevYear,
     onNextYear
 }) => {
-    const months = activeSystem === 'bs' ? BIKRAM_SAMBAT_MONTHS : GREGORIAN_MONTHS;
+    const months = activeSystem === 'bs' ? NEPALI_BS_MONTHS : GREGORIAN_MONTHS;
 
     // Compute warning only if year is valid
     const warning = React.useMemo(() => {
@@ -50,7 +48,7 @@ const CalendarControls: React.FC<CalendarControlsProps> = ({
     };
 
     return (
-        <div className="flex flex-col items-center justify-between p-2 bg-white dark:bg-gray-700/50 flex-shrink-0 w-full">
+        <div className="flex flex-col items-center justify-between p-2 bg-slate-200 dark:bg-gray-700/50 flex-shrink-0 w-full">
             {/* Navigation and controls row */}
             <div className="flex items-center justify-between w-full">
                 <div className="flex items-center gap-2 sm:gap-3">
@@ -74,8 +72,8 @@ const CalendarControls: React.FC<CalendarControlsProps> = ({
                     <select
                         value={currentMonth}
                         onChange={(e) => onMonthChange(parseInt(e.target.value))}
-                        className="px-3 py-2 bg-white dark:bg-gray-700 border border-blue-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm text-blue-900 dark:text-gray-100"
-                        style={activeSystem === 'bs' ? { fontFamily: "'Noto Sans Devanagari', sans-serif" } : {}}
+                        className="h-auto px-3 py-2 bg-slate-200 dark:bg-gray-700 border border-blue-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base font-sans text-blue-900 dark:text-gray-100"
+                        style={activeSystem === 'bs' ? {} : {}}
                     >
                         {months.map((month, index) => (
                             <option key={index} value={index}>
@@ -88,7 +86,7 @@ const CalendarControls: React.FC<CalendarControlsProps> = ({
                         type="text"
                         value={activeSystem === 'bs' ? toDevanagari(currentYear || '') : (currentYear === null ? '' : String(currentYear))}
                         onChange={handleYearInputChange}
-                        className="w-20 px-3 py-2 text-center bg-white dark:bg-gray-700 border border-blue-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm text-blue-900 dark:text-gray-100"
+                        className="w-20 px-3 py-2 text-center bg-slate-200 dark:bg-gray-700 border border-blue-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base text-blue-900 dark:text-gray-100"
                         style={activeSystem === 'bs' ? { fontFamily: "'Noto Sans Devanagari', sans-serif" } : {}}
                     />
                 </div>

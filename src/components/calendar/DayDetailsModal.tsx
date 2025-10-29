@@ -1,6 +1,6 @@
 import React from 'react';
 import { X } from 'lucide-react';
-import { calculate } from '../lib/lib';
+import { calculate } from '../../lib/lib';
 
 interface DayDetailsModalProps {
     date: Date | null;
@@ -25,7 +25,7 @@ const DayDetailsModal: React.FC<DayDetailsModalProps> = ({ date, isOpen, onClose
                 className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
                 onClick={handleBackdropClick}
             >
-                <div className="bg-white dark:bg-gray-900 rounded-xl p-4 max-w-md w-full">
+                <div className="bg-slate-200 dark:bg-gray-900 rounded-xl p-4 max-w-md w-full">
                     <div className="flex justify-between items-center mb-3">
                         <h2 className="text-lg font-bold text-red-500">Error</h2>
                         <button
@@ -46,9 +46,9 @@ const DayDetailsModal: React.FC<DayDetailsModalProps> = ({ date, isOpen, onClose
             className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
             onClick={handleBackdropClick}
         >
-            <div className="bg-white dark:bg-gray-900 rounded-xl shadow-2xl max-w-2xl w-full max-h-[85vh] overflow-y-auto ring-1 ring-transparent dark:ring-gray-700/80 dark:shadow-[0_20px_50px_rgba(0,0,0,0.7)] backdrop-blur-sm">
+            <div className="bg-slate-200 dark:bg-gray-900 rounded-xl shadow-2xl max-w-2xl w-full max-h-[85vh] overflow-y-auto ring-1 ring-transparent dark:ring-gray-700/80 dark:shadow-[0_20px_50px_rgba(0,0,0,0.7)] backdrop-blur-sm">
                 {/* Header */}
-                <div className="sticky top-0 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 p-4 rounded-t-xl">
+                <div className="sticky top-0 bg-slate-200 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 p-4 rounded-t-xl">
                     <div className="flex justify-between items-start">
                         <div>
                             <h2
@@ -127,7 +127,7 @@ const DayDetailsModal: React.FC<DayDetailsModalProps> = ({ date, isOpen, onClose
                             </h3>
                             <div className="space-y-2">
                     {data.events.map((event: { name: string; detail?: string; holiday?: boolean; category?: string }, index: number) => (
-                        <div key={index} className="bg-white/70 dark:bg-gray-800/70 rounded-lg p-3">
+                        <div key={index} className="bg-slate-200/70 dark:bg-gray-800/70 rounded-lg p-3">
                                         <div className="flex items-start justify-between">
                                             <div className="flex-1">
                                                 <div className="flex items-center gap-2 mb-1">

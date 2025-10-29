@@ -1,6 +1,6 @@
 import React from 'react';
-
-import { fromBikramSambat, toBikramSambat, getBikramMonthInfo, toDevanagari, calculate } from '../lib/lib';
+import {NEPALI_WEEKDAYS_SHORT, GREGORIAN_WEEKDAYS_SHORT} from '../../constants/constants'
+import { fromBikramSambat, toBikramSambat, getBikramMonthInfo, toDevanagari, calculate } from '../../lib/lib';
 
 interface CalendarGridProps {
     activeSystem: 'bs' | 'ad';
@@ -8,9 +8,6 @@ interface CalendarGridProps {
     currentMonth: number;
     onDayClick: (date: Date) => void;
 }
-
-const WEEKDAYS_NEPALI = ["आइत", "सोम", "मङ्गल", "बुध", "बिही", "शुक्र", "शनि"];
-const WEEKDAYS_ENGLISH = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 // Timezone Helper to get current date in Nepal
 function getNepalDate(): Date {
@@ -42,13 +39,10 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
     currentMonth,
     onDayClick
 }) => {
-    // Use the timezone-aware helper function to get today's date in Nepal
+    // Timezone-aware helper function to get today's date in Nepal
     const today = getNepalDate();
     const todayBs = toBikramSambat(today);
-
-    const weekdays = activeSystem === 'bs' ? WEEKDAYS_NEPALI : WEEKDAYS_ENGLISH;
-
-    // Use consistent calculation for both display and events
+    const weekdays = activeSystem === 'bs' ? NEPALI_WEEKDAYS_SHORT : GREGORIAN_WEEKDAYS_SHORT;
     const renderBikramSambatCalendar = () => {
         if (currentYear === null) {
             return (
@@ -76,8 +70,6 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
         // Days of the month
         for (let day = 1; day <= monthInfo.totalDays; day++) {
             const date = fromBikramSambat(currentYear, currentMonth, day);
-            
-            // Use the main calculate function for consistency
             const panchanga = calculate(date);
             
             if (!panchanga || panchanga.error) {
@@ -139,12 +131,12 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
                         {date.getUTCDate()}
                     </span>
                     {isPurnima && (
-                        <svg className="icon absolute top-1 left-1 w-5 h-5 sm:w-4 sm:h-4 xs:w-2 xs:h-2" viewBox="0 0 24 24" fill="none">
+                        <svg className="icon absolute h-5 sm:w-4 sm:h-4 xs:w-2 xs:h-2" viewBox="0 0 24 24" fill="none">
                             <circle cx="12" cy="12" r="10" className="icon fill-yellow-400 dark:fill-yellow-300 stroke-yellow-600 dark:stroke-yellow-500" strokeWidth="1" />
                         </svg>
                     )}
                     {isAmavasya && (
-                        <svg className="icon absolute top-2 left-2 w-5 h-5 sm:w-4 sm:h-4 xs:w-3 xs:h-3" viewBox="0 0 24 24" fill="none">
+                        <svg className="icon absolute  h-5 sm:w-4 sm:h-4 xs:w-3 xs:h-3" viewBox="0 0 24 24" fill="none">
                             <circle cx="12" cy="12" r="10" className="icon fill-gray-800 dark:fill-gray-600 stroke-gray-900 dark:stroke-gray-500" strokeWidth="1" />
                         </svg>
                     )}
@@ -245,12 +237,12 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
                         {toDevanagari(panchanga.bsDay?.toString() ?? day.toString())}
                     </span>
                     {isPurnima && (
-                        <svg className="icon absolute top-2 left-2 w-5 h-5" viewBox="0 0 24 24" fill="none">
+                        <svg className="icon absolute  h-5" viewBox="0 0 24 24" fill="none">
                             <circle cx="12" cy="12" r="10" className="icon  fill-yellow-400 dark:fill-yellow-300 stroke-yellow-600 dark:stroke-yellow-500" strokeWidth="1" />
                         </svg>
                     )}
                     {isAmavasya && (
-                        <svg className="icon absolute top-2 left-2 w-5 h-5" viewBox="0 0 24 24" fill="none">
+                        <svg className="icon absolute h-5" viewBox="0 0 24 24" fill="none">
                             <circle cx="12" cy="12" r="10" className="icon fill-gray-800 dark:fill-gray-600 stroke-gray-900 dark:stroke-gray-500" strokeWidth="1" />
                         </svg>
                     )}
@@ -282,14 +274,27 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
                 ))}
             </div>
 
-            {/* Calendar Grid */}
-            <div className="grid grid-cols-7 gap-1 calendar-grid">
-                {activeSystem === 'bs' ? renderBikramSambatCalendar() : renderGregorianCalendar()}
-            </div>
-            <div className="flex-grow" />
-            {activeSystem === 'bs' ? <div><span className="text-tithi-warning sub-text text-yellow-600 dark:text-yellow-700"> ⚠️तिथिहरु सुर्योदयको समयमा गणना गरिएको छ। तिथी  सधैं सुर्योदयको समयमा पर्ने दिनमा देखाइएको छ।</span></div> : <div>
-                <span className="text-tithi-warning sub-text text-yellow-600 dark:text-yellow-600"> ⚠️tithis are calculated at sunrise. if tithi spans multiple days, it is alwaysshown on the day it falls in which falls in sunrise.</span></div>}
-        </div>
+           {/* Calendar Grid */}
+<div className="grid grid-cols-7 gap-1 calendar-grid">
+  {activeSystem === 'bs' ? renderBikramSambatCalendar() : renderGregorianCalendar()}
+</div>
+
+<div className="flex-grow" />
+
+{activeSystem === 'bs' ? (
+  <div className="mt-2">
+    <span className="text-tithi-warning sub-text text-yellow-600 dark:text-yellow-700">
+      ⚠️तिथिहरु सुर्योदयको समयमा गणना गरिएको छ। तिथी सधैं सुर्योदयको समयमा पर्ने दिनमा देखाइएको छ।
+    </span>
+  </div>
+) : (
+  <div className="mt-2">
+    <span className="text-tithi-warning sub-text text-yellow-600 dark:text-yellow-600">
+      ⚠️tithis are calculated at sunrise. If a tithi spans multiple days, it is always shown on the day it falls at sunrise.
+    </span>
+  </div>
+)}
+      </div>
     );
 };
 

@@ -8,47 +8,27 @@ import { Bsdata } from '../data/monthData';
 
 export { Bsdata };
 
-// Constants
-
 // Base Surya Siddhanta Constants (used by solar and lunar calculations)
 export const YugaRotation = {
-    'star': 1582237828, 'sun': 4320000, 'moon': 57753336,
-    'mercury': 17937060, 'venus': 7022376, 'mars': 2296832,
-    'jupiter': 364220, 'saturn': 146568, 'Candrocca': 488203,
-    'Rahu': -232238
+    'star': 1582237828, 'sun': 4320000, 'moon': 57753336, 'Candrocca': 488203
 };
 export const YugaCivilDays = 1577917828;
 export const PlanetApogee = { 'sun': 77 + 17 / 60 };
 export const PlanetCircumm = { 'sun': 13 + 50 / 60, 'moon': 31 + 50 / 60 };
-
-// Constants for Algorithmic Fallback
 const SOLAR_YEAR_IN_DAYS = YugaCivilDays / YugaRotation.sun;
 export const KaliEpoch = 588465.5; // UJJAIN_KALI_EPOCH, Julian days from AD epoch at Ujjain midnight
 const KATHMANDU_LONGITUDE = 85.324;
 const UJJAIN_LONGITUDE = 75.776;
 const DESHANTARA = (KATHMANDU_LONGITUDE - UJJAIN_LONGITUDE) / 360; // Longitude difference correction
-
-// General Constants
 export const rad = 180 / Math.PI;
+
+// can be imported from constants. but keeping here for easier usage.
 export const solarMonths = ["वैशाख", "ज्येष्ठ", "आषाढ", "श्रावण", "भाद्रपद", "आश्विन", "कार्तिक", "मार्गशीर्ष", "पौष", "माघ", "फाल्गुन", "चैत्र"];
 export const weekdays = ["आइतबार", "सोमबार", "मङ्गलबार", "बुधबार", "बिहीबार", "शुक्रबार", "शनिबार"];
-
-// Panchanga Names Arrays
 export const TITHI_NAMES = [
     "प्रतिपदा", "द्वितीया", "तृतीया", "चतुर्थी", "पञ्चमी", "षष्ठी", "सप्तमी", "अष्टमी", "नवमी", "दशमी",
     "एकादशी", "द्वादशी", "त्रयोदशी", "चतुर्दशी", "पूर्णिमा", "अमावस्या"
 ];
-
-export function resolveTithiName(tithiDay: number, paksha: string): string {
-    if (paksha === "कृष्ण पक्ष" && tithiDay === 15) return TITHI_NAMES[15];
-    if (paksha === "शुक्ल पक्ष" && tithiDay === 15) return TITHI_NAMES[14];
-    return TITHI_NAMES[tithiDay - 1];
-}
-export const NAKSHATRA_NAMES = ["अश्विनी", "भरणी", "कृत्तिका", "रोहिणी", "मृगशिरा", "आर्द्रा", "पुनर्वसु", "पुष्य", "अश्लेषा", "मघा", "पूर्वफाल्गुनी", "उत्तरफाल्गुनी", "हस्त", "चित्रा", "स्वाती", "विशाखा", "अनुराधा", "ज्येष्ठा", "मूल", "पूर्वाषाढा", "उत्तराषाढा", "श्रवण", "धनिष्ठा", "शतभिषा", "पूर्वभाद्रपदा", "उत्तरभाद्रपदा", "रेवती"];
-export const YOGA_NAMES = ["विष्कुम्भ", "प्रीति", "आयुष्मान्", "सौभाग्य", "शोभन", "अतिगण्ड", "सुकर्मा", "धृति", "शूल", "गण्ड", "वृद्धि", "ध्रुव", "व्याघात", "हर्षण", "वज्र", "सिद्धि", "व्यतीपात", "वरीयान्", "परिघ", "शिव", "सिद्ध", "साध्य", "शुभ", "शुक्ल", "ब्रह्म", "इन्द्र", "वैधृति"];
-export const KARANA_NAMES = ["किंस्तुघ्न", "बव", "बालव", "कौलव", "तैतिल", "गर", "वणिज", "विष्टि", "शकुनि", "चतुष्पाद", "नाग"];
-export const RASHI_NAMES = ["मेष", "वृषभ", "मिथुन", "कर्कट", "सिंह", "कन्या", "तुला", "वृश्चिक", "धनु", "मकर", "कुम्भ", "मीन"];
-
 
 // Helper & Utility Functions
 export function toDevanagari(n: number | string): string {
@@ -79,20 +59,20 @@ export function formatMonthDay(month: number, day: number): string {
 
 // Julian Day Converters (Exactly from reference.html for historical accuracy)
 export function toJulianDay(year: number, month: number, day: number) {
-            const month_ = month + 1;
-            const a = Math.floor((14 - month_) / 12);
-            const y = year + 4800 - a;
-            const m = month_ + 12 * a - 3;
-            let jdn = day + Math.floor((153 * m + 2) / 5) + 365 * y + Math.floor(y / 4);
-            if (year > 1582 || (year === 1582 && month > 9) || (year === 1582 && month === 9 && day >= 15)) {
-                jdn = jdn - Math.floor(y / 100) + Math.floor(y / 400) - 32045;
-            } else {
-                jdn = jdn - 32083;
-            }
-            return jdn - 0.5;
-        }
+    const month_ = month + 1;
+    const a = Math.floor((14 - month_) / 12);
+    const y = year + 4800 - a;
+    const m = month_ + 12 * a - 3;
+    let jdn = day + Math.floor((153 * m + 2) / 5) + 365 * y + Math.floor(y / 4);
+    if (year > 1582 || (year === 1582 && month > 9) || (year === 1582 && month === 9 && day >= 15)) {
+        jdn = jdn - Math.floor(y / 100) + Math.floor(y / 400) - 32045;
+    } else {
+        jdn = jdn - 32083;
+    }
+    return jdn - 0.5;
+}
 
-        export function fromJulianDay(jd: number): Date {
+export function fromJulianDay(jd: number): Date {
     // Split JD into integer and fractional parts
     const z = Math.floor(jd + 0.5);
     const f = (jd + 0.5) - z;
@@ -212,12 +192,22 @@ export function trueLongitudeMoon(ahar: number): number {
     return zero360(meanLong - manda);
 }
 
+export function resolveTithiName(tithiDay: number, paksha: string): string {
+    if (paksha === "कृष्ण पक्ष" && tithiDay === 15) return TITHI_NAMES[15];
+    if (paksha === "शुक्ल पक्ष" && tithiDay === 15) return TITHI_NAMES[14];
+    return TITHI_NAMES[tithiDay - 1];
+}
+export const NAKSHATRA_NAMES = ["अश्विनी", "भरणी", "कृत्तिका", "रोहिणी", "मृगशिरा", "आर्द्रा", "पुनर्वसु", "पुष्य", "अश्लेषा", "मघा", "पूर्वफाल्गुनी", "उत्तरफाल्गुनी", "हस्त", "चित्रा", "स्वाती", "विशाखा", "अनुराधा", "ज्येष्ठा", "मूल", "पूर्वाषाढा", "उत्तराषाढा", "श्रवण", "धनिष्ठा", "शतभिषा", "पूर्वभाद्रपदा", "उत्तरभाद्रपदा", "रेवती"];
+export const YOGA_NAMES = ["विष्कुम्भ", "प्रीति", "आयुष्मान्", "सौभाग्य", "शोभन", "अतिगण्ड", "सुकर्मा", "धृति", "शूल", "गण्ड", "वृद्धि", "ध्रुव", "व्याघात", "हर्षण", "वज्र", "सिद्धि", "व्यतीपात", "वरीयान्", "परिघ", "शिव", "सिद्ध", "साध्य", "शुभ", "शुक्ल", "ब्रह्म", "इन्द्र", "वैधृति"];
+export const KARANA_NAMES = ["किंस्तुघ्न", "बव", "बालव", "कौलव", "तैतिल", "गर", "वणिज", "विष्टि", "शकुनि", "चतुष्पाद", "नाग"];
+export const RASHI_NAMES = ["मेष", "वृषभ", "मिथुन", "कर्कट", "सिंह", "कन्या", "तुला", "वृश्चिक", "धनु", "मकर", "कुम्भ", "मीन"];
+
 export function _getPanchangaBasics(gregorianDate: Date) {
     const jd = toJulianDay(gregorianDate.getUTCFullYear(), gregorianDate.getUTCMonth(), gregorianDate.getUTCDate());
     const ahar = jd - KaliEpoch;
-    
+
     const sunEvents = getSunriseSunset(gregorianDate);
-    let sunriseFraction = 0.25; 
+    let sunriseFraction = 0.25;
     if (sunEvents.sunrise !== "N/A") {
         const [hr, min] = sunEvents.sunrise.split(':').map(Number);
         sunriseFraction = (hr * 60 + min) / 1440;
@@ -287,7 +277,7 @@ export function calculateAdhikaMasa(ahar: number): string {
 }
 
 
-// Main Conversion Logic (Hybrid Approach)
+// Main Bikram date Conversion Logic (Hybrid Approach)
 export interface BikramDate { year: number; monthIndex: number; day: number; monthName: string; isComputed: boolean; }
 
 // Public: Gregorian -> Bikram Sambat
@@ -317,18 +307,18 @@ export function toBikramSambat(gregorianDate: Date): BikramDate {
             remainingDays -= daysInYear;
         }
     }
-    
-    const jd = toJulianDay(gregorianDate.getUTCFullYear(), gregorianDate.getUTCMonth(), gregorianDate.getUTCDate());
-            const ahar_at_ujjain_midnight = jd - KaliEpoch;
-            
-            const sauraMasaResult = getSauraMasaDay(ahar_at_ujjain_midnight);
-            const monthIndex = sauraMasaResult.m;
 
-            // Direct calculation for year
-            const aharForYearCalc = ahar_at_ujjain_midnight + (4 - monthIndex) * 30;
-            const yearKali = Math.floor(aharForYearCalc / SOLAR_YEAR_IN_DAYS);
-            const yearSaka = yearKali - 3179;
-            const finalBsYear = yearSaka + 135;
+    const jd = toJulianDay(gregorianDate.getUTCFullYear(), gregorianDate.getUTCMonth(), gregorianDate.getUTCDate());
+    const ahar_at_ujjain_midnight = jd - KaliEpoch;
+
+    const sauraMasaResult = getSauraMasaDay(ahar_at_ujjain_midnight);
+    const monthIndex = sauraMasaResult.m;
+
+    // Direct calculation for year
+    const aharForYearCalc = ahar_at_ujjain_midnight + (4 - monthIndex) * 30;
+    const yearKali = Math.floor(aharForYearCalc / SOLAR_YEAR_IN_DAYS);
+    const yearSaka = yearKali - 3179;
+    const finalBsYear = yearSaka + 135;
     return { year: finalBsYear, monthIndex: sauraMasaResult.m, day: sauraMasaResult.d, monthName: solarMonths[sauraMasaResult.m], isComputed: true };
 }
 
@@ -348,9 +338,9 @@ export function fromBikramSambat(bsYear: number, monthIndex: number, day: number
         return resultDate;
     } else {
         const ahar_at_ujjain_midnight = findAharForBsDate(bsYear, monthIndex, day);
-            const julian_date = KaliEpoch + ahar_at_ujjain_midnight;
-            return fromJulianDay(julian_date);
-        }
+        const julian_date = KaliEpoch + ahar_at_ujjain_midnight;
+        return fromJulianDay(julian_date);
+    }
 }
 
 
@@ -380,57 +370,57 @@ export function getBikramMonthInfo(bsYear: number, monthIndex: number) {
         startDayOfWeek: firstDayAd.getUTCDay(),
         monthName: solarMonths[monthIndex],
         year: bsYear,
-        isComputed: true 
+        isComputed: true
     };
 }
 
 const getCurrentBsYear = (): number => {
-  return toBikramSambat(new Date()).year;
+    return toBikramSambat(new Date()).year;
 };
 
 export function getMonthWarning(
-  calendarType: 'bs' | 'ad',
-  year: number,
-  monthIndex: number
+    calendarType: 'bs' | 'ad',
+    year: number,
+    monthIndex: number
 ): { showWarning: boolean; message: string } {
-  let displayedBsYear: number;
+    let displayedBsYear: number;
 
-  if (calendarType === 'bs') {
-    displayedBsYear = year;
-  } else {
-    const firstDayAd = new Date(Date.UTC(year, monthIndex, 1));
-    const bs = toBikramSambat(firstDayAd);
-    displayedBsYear = bs.year;
-  }
+    if (calendarType === 'bs') {
+        displayedBsYear = year;
+    } else {
+        const firstDayAd = new Date(Date.UTC(year, monthIndex, 1));
+        const bs = toBikramSambat(firstDayAd);
+        displayedBsYear = bs.year;
+    }
 
-  const isPrecomputed = isBsYearPrecomputed(displayedBsYear);
-  const currentBsYear = getCurrentBsYear();
-  const isFutureYear = displayedBsYear > currentBsYear;
+    const isPrecomputed = isBsYearPrecomputed(displayedBsYear);
+    const currentBsYear = getCurrentBsYear();
+    const isFutureYear = displayedBsYear > currentBsYear;
 
-  // If NOT precomputed → computed warning
-  if (!isPrecomputed) {
-    return {
-      showWarning: true,
-      message:
-        calendarType === 'bs'
-          ? 'यो महिनाको डाटा खगोलीय गणना बाट प्राप्त गरिएको हो, सटीकता कम हुन सक्छ।'
-          : 'This month includes dates calculated using fallback algorithms and may be less accurate.',
-    };
-  }
+    // If NOT precomputed → computed warning
+    if (!isPrecomputed) {
+        return {
+            showWarning: true,
+            message:
+                calendarType === 'bs'
+                    ? 'यो महिनाको डाटा खगोलीय गणना बाट प्राप्त गरिएको हो, सटीकता कम हुन सक्छ।'
+                    : 'This month includes dates calculated using fallback algorithms and may be less accurate.',
+        };
+    }
 
-  // If precomputed AND in a future BS year → future warning
-  if (isFutureYear) {
-    return {
-      showWarning: true,
-      message:
-        calendarType === 'bs'
-          ? 'भविष्यका बर्षमा महिनाको डाटा आधिकारिक  नभएकोले, वास्तविक दिन फरक हुन सक्छ।'
-          : 'Future year month data is not officially recognized; actual dates may vary.',
-    };
-  }
+    // If precomputed AND in a future BS year → future warning
+    if (isFutureYear) {
+        return {
+            showWarning: true,
+            message:
+                calendarType === 'bs'
+                    ? 'भविष्यका बर्षमा महिनाको डाटा आधिकारिक  नभएकोले, वास्तविक दिन फरक हुन सक्छ।'
+                    : 'Future year month data is not officially recognized; actual dates may vary.',
+        };
+    }
 
-  // current BS year → no warning
-  return { showWarning: false, message: '' };
+    // current BS year → no warning
+    return { showWarning: false, message: '' };
 }
 
 export function isBsYearPrecomputed(bsYear: number | null): boolean {
@@ -454,61 +444,80 @@ export function isAdMonthPrecomputed(adYear: number | null, adMonth: number): bo
 
 
 type SunriseSunset = {
-  sunrise: string;
-  sunset: string;
+    sunrise: string;
+    sunset: string;
 };
 
 const to12Hour = (hh: number, mm: number): string => {
-  const period = hh < 12 ? "बिहान" : "साँझ";   // AM → बिहान, PM → साँझ
-  const hour12 = hh % 12 === 0 ? 12 : hh % 12;  // 12-hour format
-  return `${hour12}:${mm.toString().padStart(2, "0")} ${period}`;
+    const period = hh < 12 ? "बिहान" : "साँझ";   // AM → बिहान, PM → साँझ
+    const hour12 = hh % 12 === 0 ? 12 : hh % 12;  // 12-hour format
+    return `${hour12}:${mm.toString().padStart(2, "0")} ${period}`;
 };
 
 export function getSunriseSunset(
-  date: Date,
-  lat: number = 27.7172,      // Kathmandu latitude
-  lon: number = 85.3240,      // Kathmandu longitude
-  tz: number = 5.75           // Nepal Time offset in hours
+    date: Date,
+    lat: number = 27.7172,      // Kathmandu latitude
+    lon: number = 85.3240,      // Kathmandu longitude
+    tz: number = 5.75           // Nepal Time offset in hours
 ): SunriseSunset {
 
-  const jd0 = toJulianDay(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate());
-  const n = jd0 - 2451545.0 + 0.0008;
-  const jStar = n - lon / 360.0;
-  const M = zero360(357.5291 + 0.98560028 * jStar);
-  const C = 1.9148 * sinDeg(M) + 0.0200 * sinDeg(2 * M) + 0.0003 * sinDeg(3 * M);
-  const lambda = zero360(M + 102.9372 + C + 180.0);
-  const Jtransit = 2451545.0 + jStar + 0.0053 * sinDeg(M) - 0.0069 * sinDeg(2 * lambda);
-  const delta = arcsinDeg(sinDeg(lambda) * sinDeg(23.44));
-  const cosH = (sinDeg(-0.833) - sinDeg(lat) * sinDeg(delta)) / (cosDeg(lat) * cosDeg(delta));
+    const jd0 = toJulianDay(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate());
+    const n = jd0 - 2451545.0 + 0.0008;
+    const jStar = n - lon / 360.0;
+    const M = zero360(357.5291 + 0.98560028 * jStar);
+    const C = 1.9148 * sinDeg(M) + 0.0200 * sinDeg(2 * M) + 0.0003 * sinDeg(3 * M);
+    const lambda = zero360(M + 102.9372 + C + 180.0);
+    const Jtransit = 2451545.0 + jStar + 0.0053 * sinDeg(M) - 0.0069 * sinDeg(2 * lambda);
+    const delta = arcsinDeg(sinDeg(lambda) * sinDeg(23.44));
+    const cosH = (sinDeg(-0.833) - sinDeg(lat) * sinDeg(delta)) / (cosDeg(lat) * cosDeg(delta));
 
-  if (!isFinite(cosH) || cosH < -1 || cosH > 1) {
-    return { sunrise: "N/A", sunset: "N/A" };
-  }
+    if (!isFinite(cosH) || cosH < -1 || cosH > 1) {
+        return { sunrise: "N/A", sunset: "N/A" };
+    }
 
-  const H = Math.acos(cosH) * (180 / Math.PI);
-  const Jrise = Jtransit - H / 360.0;
-  const Jset  = Jtransit + H / 360.0;
+    const H = Math.acos(cosH) * (180 / Math.PI);
+    const Jrise = Jtransit - H / 360.0;
+    const Jset = Jtransit + H / 360.0;
 
-  const riseUtc = fromJulianDay(Jrise);
-  const setUtc  = fromJulianDay(Jset);
-  const tzMinutes = Math.round(tz * 60);
+    const riseUtc = fromJulianDay(Jrise);
+    const setUtc = fromJulianDay(Jset);
+    const tzMinutes = Math.round(tz * 60);
 
-  const toLocalHHMM = (utcDate: Date, isSunrise: boolean): string => {
-    let totalMinutes = utcDate.getUTCHours() * 60 + utcDate.getUTCMinutes() + tzMinutes;
-    totalMinutes = ((totalMinutes % 1440) + 1440) % 1440;
+    const toLocalHHMM = (utcDate: Date, isSunrise: boolean): string => {
+        let totalMinutes = utcDate.getUTCHours() * 60 + utcDate.getUTCMinutes() + tzMinutes;
+        totalMinutes = ((totalMinutes % 1440) + 1440) % 1440;
 
-    let hh = Math.floor(totalMinutes / 60);
-    const mm = totalMinutes % 60;
+        let hh = Math.floor(totalMinutes / 60);
+        const mm = totalMinutes % 60;
 
-    // Ensure sunrise in morning, sunset in evening
-    if (isSunrise && hh >= 12) hh -= 12;
-    if (!isSunrise && hh < 12) hh += 12;
+        // Ensure sunrise in morning, sunset in evening
+        if (isSunrise && hh >= 12) hh -= 12;
+        if (!isSunrise && hh < 12) hh += 12;
 
-    return to12Hour(hh, mm);
-  };
+        return to12Hour(hh, mm);
+    };
 
-  return {
-    sunrise: toLocalHHMM(riseUtc, true),
-    sunset:  toLocalHHMM(setUtc, false),
-  };
+    return {
+        sunrise: toLocalHHMM(riseUtc, true),
+        sunset: toLocalHHMM(setUtc, false),
+    };
 }
+
+export function getDaysInADMonth(year: number, month: number): number {
+    // month is 1-based, Date constructor needs 0-based month
+    return new Date(year, month, 0).getDate();
+}
+
+
+import { NEPALI_NUMERALS } from '../constants/constants';
+
+export const formatDegrees = (decimal: number): string => {
+    const deg = Math.floor(decimal);
+    const minFloat = (decimal - deg) * 60;
+    const min = Math.floor(minFloat);
+
+    const formattedDeg = toDevanagari(deg).padStart(2, NEPALI_NUMERALS[0]);
+    const formattedMin = toDevanagari(min).padStart(2, NEPALI_NUMERALS[0]);
+
+    return `${formattedDeg}° ${formattedMin}'`;
+};

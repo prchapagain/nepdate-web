@@ -1,15 +1,19 @@
-import React, { useEffect, useState, useRef } from 'react';
-import CalendarHeader from './components/CalendarHeader';
-import CalendarControls from './components/CalendarControls';
-import CalendarGrid from './components/CalendarGrid';
-import DayDetailsModal from './components/DayDetailsModal';
-import MonthlyEvents from './components/MonthlyEvents';
-import Footer from './components/Footer';
-import AboutPopup from './AboutPopup';
+import { useEffect, useState, useRef } from 'react';
+import CalendarHeader from './components/calendar/CalendarHeader';
+import CalendarControls from './components/calendar/CalendarControls';
+import CalendarGrid from './components/calendar/CalendarGrid';
+import DayDetailsModal from './components/calendar/DayDetailsModal';
+import MonthlyEvents from './components/calendar/MonthlyEvents';
+import Footer from './components/calendar/Footer';
+import AboutPopup from './pages/AboutPopup';
 import { toBikramSambat, fromBikramSambat, fromJulianDay, toJulianDay } from './lib/lib';
-import Converter from './components/Converter';
-import { Menu, X, Download, Info, Home, SwitchCamera } from 'lucide-react';
+import { Menu, X, Download, Info, Home, SwitchCamera, Moon, Sun } from 'lucide-react';
 import { registerSW } from 'virtual:pwa-register';
+import { lazy, Suspense } from 'react';
+import { NEPALI_LABELS } from './constants/constants';
+
+const KundaliPage = lazy(() => import('./pages/KundaliPage'));
+const ConverterPage = lazy(() => import('./pages/ConverterPage'));
 
 // Reusable Toast Component with fade animation
 const ExitToast: React.FC<{ message: string; visible: boolean }> = ({ message, visible }) => (
@@ -27,7 +31,7 @@ const App: React.FC = () => {
     registerSW({ immediate: true });
   }, []);
 
-  const [activeView, setActiveView] = useState<'calendar' | 'converter'>('calendar');
+  const [activeView, setActiveView] = useState<'calendar' | 'converter' | 'kundali'>('calendar');
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
   const [activeSystem, setActiveSystem] = useState<'bs' | 'ad'>('bs');
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
@@ -230,35 +234,45 @@ const App: React.FC = () => {
     };
   }, [isMenuOpen]);
 
-  // Back button handling (standalone): close menu first, otherwise double-back to exit
+  // Back button handling (standalone): close overlays in order, then double-back to exit
   useEffect(() => {
     if (!isStandalone) return;
 
     const handlePopState = () => {
+      if (isModalOpen) {
+        setIsModalOpen(false);
+        window.history.pushState(null, '', window.location.href);
+        return;
+      }
+      if (isAboutOpen) {
+        setIsAboutOpen(false);
+        window.history.pushState(null, '', window.location.href);
+        return;
+      }
       if (isMenuOpen) {
         setIsMenuOpen(false);
         window.history.pushState(null, '', window.location.href);
         return;
       }
-
+      if (activeView !== 'calendar') {
+        setActiveView('calendar');
+        window.history.pushState(null, '', window.location.href);
+        return;
+      }
       if (backPressedOnce) {
         window.history.go(-2);
       } else {
         setBackPressedOnce(true);
         setShowExitToast(true);
-
-        // vibration feedback
         if (navigator.vibrate) {
           navigator.vibrate(50);
         }
-
         if (timeoutRef.current) clearTimeout(timeoutRef.current);
         timeoutRef.current = window.setTimeout(() => {
           setBackPressedOnce(false);
           setShowExitToast(false);
           timeoutRef.current = null;
         }, 2000);
-
         window.history.pushState(null, '', window.location.href);
       }
     };
@@ -270,27 +284,28 @@ const App: React.FC = () => {
       window.removeEventListener('popstate', handlePopState);
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
     };
-  }, [isStandalone, backPressedOnce, isMenuOpen]);
+  }, [isStandalone, backPressedOnce, isMenuOpen, isModalOpen, isAboutOpen, activeView]);
 
   return (
     <div
-      className="min-h-screen flex flex-col bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors overflow-hidden relative"
+      className="min-h-screen flex flex-col bg-slate-200 dark:bg-gray-800 text-gray-900 dark:text-gray-100 transition-colors relative"
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
     >
       {/* HEADER */}
-      <header className="px-4 py-2 border-b dark:border-gray-700 bg-white dark:bg-gray-900 z-30">
+      <header className="px-4 py-2 border-b dark:border-gray-700 bg-slate-200 dark:bg-gray-800 z-30">
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
             <button
               onClick={() => setIsMenuOpen(true)}
               className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-800"
+              aria-label="Open menu"
             >
               <Menu className="w-5 h-5" />
             </button>
             <h1 className="text-lg sm:text-xl font-semibold text-gray-900 dark:text-gray-100">
-              Bikram Calendar
+              {NEPALI_LABELS.Nepdate_calendar}
             </h1>
           </div>
         </div>
@@ -317,8 +332,9 @@ const App: React.FC = () => {
 
       {/* SIDE MENU */}
       <aside
-        className={`fixed top-0 left-0 z-50 w-64 h-full bg-white dark:bg-gray-900 shadow-xl transform transition-transform duration-300 ease-in-out
+        className={`fixed top-0 left-0 z-50 w-64 h-full bg-slate-200 dark:bg-gray-800 shadow-xl transform transition-transform duration-300 ease-in-out
         ${isMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}
+        inert-hidden={!isMenuOpen}
       >
         <div className="flex flex-col h-full p-4">
           <div className="flex justify-between items-center mb-4">
@@ -326,6 +342,7 @@ const App: React.FC = () => {
             <button
               onClick={() => setIsMenuOpen(false)}
               className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-800"
+              aria-label="Close menu"
             >
               <X className="w-5 h-5" />
             </button>
@@ -336,13 +353,22 @@ const App: React.FC = () => {
               onClick={() => { setActiveView('calendar'); setIsMenuOpen(false); }}
               className="px-3 py-2 text-left rounded hover:bg-gray-200 dark:hover:bg-gray-800 flex items-center gap-2"
             >
-              <Home className="w-4 h-4" /> Home
+              <Home className="w-4 h-4" /> {NEPALI_LABELS.home}
             </button>
             <button
               onClick={() => { setActiveView('converter'); setIsMenuOpen(false); }}
               className="px-3 py-2 text-left rounded hover:bg-gray-200 dark:hover:bg-gray-800 flex items-center gap-2"
             >
-              <SwitchCamera className="w-4 h-4" /> Converter
+              <SwitchCamera className="w-4 h-4" /> {NEPALI_LABELS.converter}
+            </button>
+            <button
+              onClick={() => { setActiveView('kundali'); setIsMenuOpen(false); }}
+              className="px-3 py-2 text-left rounded hover:bg-gray-200 dark:hover:bg-gray-800 flex items-center gap-2"
+            >
+              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10"/>
+                <path d="M12 2v20M2 12h20"/>
+              </svg> {NEPALI_LABELS.kundali}
             </button>
             <a
               href="https://github.com/khumnath/nepdate/tree/page"
@@ -351,7 +377,7 @@ const App: React.FC = () => {
               onClick={() => setIsMenuOpen(false)}
               className="px-3 py-2 text-left rounded hover:bg-gray-200 dark:hover:bg-gray-800 flex items-center gap-2"
             >
-              <Menu className="w-4 h-4" /> Source Code
+              <Menu className="w-4 h-4" />  {NEPALI_LABELS.sourceCode}
             </a>
             <button
               onClick={() => {
@@ -360,7 +386,7 @@ const App: React.FC = () => {
               }}
               className="px-3 py-2 text-left rounded hover:bg-gray-200 dark:hover:bg-gray-800 flex items-center gap-2"
             >
-              <Info className="w-4 h-4" /> About
+              <Info className="w-4 h-4" /> {NEPALI_LABELS.about}
             </button>
 
             {!isStandalone && canInstall && (
@@ -371,7 +397,7 @@ const App: React.FC = () => {
                 }}
                 className="px-3 py-2 text-left rounded bg-blue-600 text-white hover:bg-blue-700 flex items-center gap-2"
               >
-                <Download className="w-4 h-4" /> Install App
+                <Download className="w-4 h-4" /> {NEPALI_LABELS.installApp}
               </button>
             )}
 
@@ -381,60 +407,87 @@ const App: React.FC = () => {
                 onClick={() => setIsMenuOpen(false)}
                 className="px-3 py-2 text-left rounded bg-green-600 text-white hover:bg-green-700 flex items-center gap-2"
               >
-                <Info className="w-4 h-4" /> Open App
+                <Info className="w-4 h-4" /> {NEPALI_LABELS.openApp}
               </a>
             )}
+            <button
+              onClick={() => { toggleTheme(); setIsMenuOpen(false); }}
+              className="px-3 py-2 text-left rounded hover:bg-gray-200 dark:hover:bg-gray-800 flex items-center gap-2"
+            >
+              {theme === 'light' ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
+              <span>{theme === 'light' ? NEPALI_LABELS.darkMode : NEPALI_LABELS.lightMode}</span>
+            </button>
           </nav>
 
           <div className="mt-auto text-xs text-gray-500 dark:text-gray-400 border-t border-gray-200 dark:border-gray-700 pt-4">
-            © {new Date().getFullYear()} Nepdate Calendar Project
+            © {new Date().getFullYear()} {NEPALI_LABELS.project}
           </div>
         </div>
       </aside>
 
       {isAboutOpen && <AboutPopup setIsAboutOpen={setIsAboutOpen} />}
 
-      {activeView === 'calendar' ? (
-        <main className="flex-1 flex flex-col overflow-hidden px-2 sm:px-4 md:px-6 lg:px-40 max-w-7xl mx-auto w-full">
-            <section className="py-2 sm:py-3">
-            <CalendarControls
-                activeSystem={activeSystem}
-                currentYear={currentYear}
-                currentMonth={currentMonth}
-                onYearChange={(y) => (activeSystem === 'bs' ? setCurrentBsYear(y) : setCurrentAdYear(y))}
-                onMonthChange={(m) => (activeSystem === 'bs' ? setCurrentBsMonth(m) : setCurrentAdMonth(m))}
-                onPrevMonth={() => changeMonth('prev')}
-                onNextMonth={() => changeMonth('next')}
-                onPrevYear={() => changeYear('prev')}
-                onNextYear={() => changeYear('next')}
-            />
-            </section>
+      {/* MAIN CONTENT AREA */}
+      <div className="flex-1 overflow-hidden">
+        {/* content wrapper with scrollable region; pb-20 ensures space for fixed footer (approx 5rem) */}
+        <div className="h-full overflow-auto px-2 sm:px-4 md:px-6 lg:px-40 max-w-7xl mx-auto w-full pb-20">
+          {activeView === 'kundali' ? (
+            <Suspense fallback={
+              <div className="flex items-center justify-center min-h-[60vh]">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+              </div>
+            }>
+              <KundaliPage onBack={() => setActiveView('calendar')} />
+            </Suspense>
+          ) : activeView === 'calendar' ? (
+            <main className="flex flex-col min-h-[60vh]">
+              <section className="py-2 sm:py-3">
+                <CalendarControls
+                    activeSystem={activeSystem}
+                    currentYear={currentYear}
+                    currentMonth={currentMonth}
+                    onYearChange={(y) => (activeSystem === 'bs' ? setCurrentBsYear(y) : setCurrentAdYear(y))}
+                    onMonthChange={(m) => (activeSystem === 'bs' ? setCurrentBsMonth(m) : setCurrentAdMonth(m))}
+                    onPrevMonth={() => changeMonth('prev')}
+                    onNextMonth={() => changeMonth('next')}
+                    onPrevYear={() => changeYear('prev')}
+                    onNextYear={() => changeYear('next')}
+                />
+              </section>
 
-            <section className="flex-1 overflow-auto p-2 sm:p-3 md:p-4">
-            <CalendarGrid
-                activeSystem={activeSystem}
-                currentYear={currentYear}
-                currentMonth={currentMonth}
-                onDayClick={handleDayClick}
-            />
-            
+              <section className="flex-1 overflow-auto p-2 sm:p-3 md:p-4">
+                <CalendarGrid
+                    activeSystem={activeSystem}
+                    currentYear={currentYear}
+                    currentMonth={currentMonth}
+                    onDayClick={handleDayClick}
+                />
 
-            <section className=" events mt-3 sm:mt-4">
-            <MonthlyEvents activeSystem={activeSystem} currentYear={currentYear} currentMonth={currentMonth} />
-            </section>
-            </section>
+                <section className="events mt-3 sm:mt-4">
+                  <MonthlyEvents activeSystem={activeSystem} currentYear={currentYear} currentMonth={currentMonth} />
+                </section>
+              </section>
+            </main>
+          ) : activeView === 'converter' ? (
+            <Suspense fallback={
+              <div className="flex items-center justify-center min-h-[60vh]">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+              </div>
+            }>
+              <ConverterPage onBack={() => setActiveView('calendar')} />
+            </Suspense>
+          ) : null}
+        </div>
+      </div>
 
-
-           <div className="fixed bottom-0 left-0 right-0 w-full bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-700">
+      {/* FIXED FOOTER */}
+      <div className="fixed bottom-0 left-0 right-0 w-full bg-slate-200 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 z-50">
         <Footer />
       </div>
-        </main>
-      ) : (
-        <Converter onBack={() => setActiveView('calendar')} />
-      )}
 
       <DayDetailsModal date={selectedDate} isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
-    {/* Toast for double back to exit */}
+
+      {/* Toast for double back to exit */}
       <ExitToast
         message={
           activeSystem === 'bs'
@@ -448,4 +501,3 @@ const App: React.FC = () => {
 };
 
 export default App;
-
