@@ -28,6 +28,13 @@ export interface KundaliRequest {
 
 // ... other types like KundaliResponse, PlanetInfo, etc.
 
+// Fix: Add and export TimedPanchangaElement interface to resolve import error in kundaliService.ts.
+export interface TimedPanchangaElement {
+  name: string;
+  start: string;
+  end: string;
+}
+
 export interface PlanetInfo {
   planet: string;
   eclipticLongitude: number;
@@ -53,6 +60,18 @@ export interface DashaInfo {
   subDashas?: DashaInfo[];
 }
 
+export interface AshtaKootaValues {
+  varna: string;
+  vasya: string;
+  yoni: string;
+  gana: string;
+  nadi: string;
+  tatva: string;
+  paya: string;
+  rashiLord: string;
+  lagnesh: string;
+}
+
 export interface DivisionalChart {
   name: string;
   planets: {
@@ -66,6 +85,8 @@ export interface DivisionalChart {
   ascendant: {
     sign: number;
     degreesInSign: number;
+    nakshatra: string;
+    nakshatraPada: number;
   };
 }
 
@@ -87,28 +108,65 @@ export interface KundaliResponse {
     zodiac: string;
     houseSystem: string;
     calculationUtc: string;
+    version: string;
   };
   planets: PlanetInfo[];
   ascendant: {
     longitude: number;
     sign: number;
     degreesInSign: number;
+    nakshatra: string;
+    nakshatraPada: number;
   };
   houses: HouseInfo[];
   nakshatra: {
     index: number;
     pada: number;
     nameNepali: string;
+    start: string;
+    end: string;
   };
   tithi: {
     tithiNumber: number;
     paksha: string;
+    start: string;
+    end: string;
   };
   dashaSequence: DashaInfo[];
+  tribhagiDasha: DashaInfo[];
+  yoginiDasha: DashaInfo[];
+  ashtottariDasha: DashaInfo[];
+  jaiminiDasha: DashaInfo[];
   divisionalCharts: DivisionalChart[];
-  yoga: string;
-  karana: string;
+  yoga: TimedPanchangaElement;
+  karana: TimedPanchangaElement;
+  ashtaKoota: AshtaKootaValues;
+  // Fix: Add missing properties to align with the object created in kundaliService.ts, resolving type error.
+  sunRise: string;
+  sunSet: string;
+  moonRise: string;
+  moonSet: string;
 }
+
+export interface GunaMilanScore {
+    varna: number;
+    vasya: number;
+    tara: number;
+    yoni: number;
+    grahaMaitri: number;
+    gana: number;
+    bhakoot: number;
+    nadi: number;
+    total: number;
+}
+
+export interface ComparisonResult {
+    groom: KundaliResponse;
+    bride: KundaliResponse;
+    score: GunaMilanScore;
+    conclusion: string;
+}
+
 
 export interface ServiceError {
   error: string;

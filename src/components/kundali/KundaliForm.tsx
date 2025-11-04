@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { LoaderIcon, ChevronDownIcon, LocationIcon, MapIcon, XIcon } from '../../data/icons';
+import { LoaderIcon, ChevronDownIcon, LocationIcon, MapIcon, XIcon, SearchIcon } from '../../data/icons';
 import type { KundaliRequest } from '../../../types/types';
 import { NEPALI_LABELS, NEPALI_BS_MONTHS } from '../../constants/constants';
 import { nepaliLocations, TIMEZONE_OFFSETS } from '../../data/timezone';
@@ -8,13 +8,26 @@ import { MapContainer, TileLayer, Marker, useMapEvents, useMap } from 'react-lea
 import tzlookup from 'tz-lookup';
 import { toBikramSambat, fromBikramSambat, getDaysInADMonth, toDevanagari } from '../../lib/lib';
 
+export interface DefaultFormValues {
+  name: string;
+  dateSystem: 'BS' | 'AD';
+  bsYear: number;
+  bsMonth: number;
+  bsDay: number;
+  hour: number;
+  minute: number;
+  second: number;
+  period: 'AM' | 'PM';
+}
+
 interface KundaliFormProps {
   onCalculate: (data: KundaliRequest) => void;
   isLoading: boolean;
+  isEmbedded?: boolean;
+  defaultValues?: DefaultFormValues;
 }
 
 
-const version = __APP_VERSION__;
 const kathmandu = nepaliLocations.find(
   loc => loc.romanization.toLowerCase() === "kathmandu"
 );
@@ -182,39 +195,35 @@ const GroupedSelect: React.FC<GroupedSelectProps> = ({ label, children, ...props
 
 
 // --- KundaliForm Component ---
-export const KundaliForm: React.FC<KundaliFormProps> = ({ onCalculate, isLoading }) => {
-  const [name, setName] = useState('प्रयोगकर्ता');
-  const [dateSystem, setDateSystem] = useState<'BS' | 'AD'>('BS');
-
-  // showSearchModal with a mode-based state
-  const [locationModalMode, setLocationModalMode] = useState<'closed' | 'search' | 'manual'>('closed');
-
-
-
-  // --- States and Memos ---
+export const KundaliForm: React.FC<KundaliFormProps> = ({ onCalculate, isLoading, isEmbedded = false, defaultValues }) => {
   const today = new Date();
   const bsToday = toBikramSambat(today);
+
+  const [name, setName] = useState(defaultValues?.name || 'प्रयोगकर्ता');
+  const [dateSystem, setDateSystem] = useState<'BS' | 'AD'>(defaultValues?.dateSystem || 'BS');
+
+  const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
+  const [modalView, setModalView] = useState<'search' | 'manual'>('search');
 
   const [adYear, setAdYear] = useState<number>(today.getFullYear());
   const [adMonth, setAdMonth] = useState<number>(today.getMonth() + 1); // JS months are 0-based
   const [adDay, setAdDay] = useState<number>(today.getDate());
 
-  const [bsYear, setBsYear] = useState<number>(bsToday.year);
-  const [bsMonth, setBsMonth] = useState<number>(bsToday.monthIndex + 1); // bikram.ts uses 0-based monthIndex
-  const [bsDay, setBsDay] = useState<number>(bsToday.day);
+  const [bsYear, setBsYear] = useState<number>(defaultValues?.bsYear || bsToday.year);
+  const [bsMonth, setBsMonth] = useState<number>(defaultValues?.bsMonth || bsToday.monthIndex + 1); // bikram.ts uses 0-based monthIndex
+  const [bsDay, setBsDay] = useState<number>(defaultValues?.bsDay || bsToday.day);
 
-  const [period, setPeriod] = useState<'AM' | 'PM'>('PM');
-  const [hour, setHour] = useState<number>(4);
-  const [minute, setMinute] = useState<number>(15);
-  const [second, setSecond] = useState<number>(0);
-  const [relation, setRelation] = useState<string>(NEPALI_LABELS.self);
-  const [locationMode, setLocationMode] = useState<'nepal' | 'manual'>('nepal');
-  const [nepalLocation, setNepalLocation] = useState(defaultLocation);
+  const [period, setPeriod] = useState<'AM' | 'PM'>(defaultValues?.period || 'PM');
+  const [hour, setHour] = useState<number>(defaultValues?.hour || 4);
+  const [minute, setMinute] = useState<number>(defaultValues?.minute || 15);
+  const [second, setSecond] = useState<number>(defaultValues?.second || 0);
+
+  const [selectedLocation, setSelectedLocation] = useState(defaultLocation);
   const [manualLat, setManualLat] = useState<number>(defaultLocation?.latitude ?? 27.7172);
   const [manualLon, setManualLon] = useState<number>(defaultLocation?.longitude ?? 85.3240);
   const [manualZoneId, setManualZoneId] = useState<string>(defaultLocation?.zoneId ?? 'Asia/Kathmandu');
   const [showMap, setShowMap] = useState<boolean>(false);
-  const [locationSearch, setLocationSearch] = useState<string>(defaultLocation?.name ?? 'Kathmandu');
+  const [locationSearch, setLocationSearch] = useState<string>('');
 
 
   useEffect(() => {
@@ -251,14 +260,14 @@ export const KundaliForm: React.FC<KundaliFormProps> = ({ onCalculate, isLoading
 
   const filteredLocations = useMemo(() => {
     const searchTerm = locationSearch.toLowerCase().trim();
-    if (!searchTerm || searchTerm === nepalLocation?.name.toLowerCase().trim()) {
-      return nepaliLocations;
+    if (!searchTerm) {
+      return nepaliLocations.slice(0, 50); // Show a limited list initially
     }
     return nepaliLocations.filter(loc =>
       loc.name.includes(searchTerm) ||
       (loc.romanization && loc.romanization.toLowerCase().includes(searchTerm))
     );
-  }, [locationSearch, nepalLocation?.name]);
+  }, [locationSearch]);
 
   useEffect(() => {
     if (dateSystem === 'BS' && bsDay > daysInMonth) setBsDay(daysInMonth);
@@ -266,20 +275,30 @@ export const KundaliForm: React.FC<KundaliFormProps> = ({ onCalculate, isLoading
   }, [daysInMonth, dateSystem, bsDay, adDay]);
 
   // --- Handlers and Submit Logic ---
-  const handleNepalLocationChange = (selected: typeof nepaliLocations[0]) => {
-    setNepalLocation(selected);
+  const handleLocationSelect = (selected: typeof nepaliLocations[0]) => {
+    setSelectedLocation(selected);
     setManualLat(selected.latitude);
     setManualLon(selected.longitude);
     setManualZoneId(selected.zoneId);
+    setIsLocationModalOpen(false);
   };
 
   const handleMapSelect = (lat: number, lon: number) => {
     setManualLat(lat);
     setManualLon(lon);
+    // Update selected location to reflect manual input
+    setSelectedLocation({
+      name: `${lat.toFixed(4)}, ${lon.toFixed(4)}`,
+      romanization: 'Manual Selection',
+      latitude: lat,
+      longitude: lon,
+      zoneId: manualZoneId,
+      offset: TIMEZONE_OFFSETS.find(tz => tz.zoneId === manualZoneId)?.offset ?? 5.75
+    });
+    setIsLocationModalOpen(false); // Close main modal after map selection
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const getKundaliRequestData = (): KundaliRequest => {
     const pad = (n: number) => n.toString().padStart(2, '0');
     let finalAdYear = adYear, finalAdMonth = adMonth, finalAdDay = adDay;
 
@@ -295,437 +314,261 @@ export const KundaliForm: React.FC<KundaliFormProps> = ({ onCalculate, isLoading
     if (period === 'AM' && hour === 12) h24 = 0;
 
     const datetimeString = `${finalAdYear}-${pad(finalAdMonth)}-${pad(finalAdDay)}T${pad(h24)}:${pad(minute)}:${pad(second)}`;
-    const finalLat = locationMode === 'nepal' ? (nepalLocation?.latitude ?? 27.7172) : manualLat;
-    const finalLon = locationMode === 'nepal' ? (nepalLocation?.longitude ?? 85.3240) : manualLon;
-    const finalZoneId = locationMode === 'nepal' ? (nepalLocation?.zoneId ?? 'Asia/Kathmandu') : manualZoneId;
+    const finalLat = selectedLocation.latitude;
+    const finalLon = selectedLocation.longitude;
+    const finalZoneId = selectedLocation.zoneId;
     const foundTimezone = TIMEZONE_OFFSETS.find(tz => tz.zoneId === finalZoneId);
-    const finalOffset = foundTimezone
-      ? foundTimezone.offset
-      : 5.75;
+    const finalOffset = foundTimezone ? foundTimezone.offset : 5.75;
 
-    onCalculate({
-      name,
-      datetime: datetimeString,
-      latitude: finalLat,
-      longitude: finalLon,
-      zoneId: finalZoneId,
-      offset: finalOffset,
+    return {
+      name, datetime: datetimeString, latitude: finalLat, longitude: finalLon,
+      zoneId: finalZoneId, offset: finalOffset,
       options: {
-        zodiac: 'SIDEREAL',
-        ayanamsa: 'LAHIRI',
-        houseSystem: 'WHOLE_SIGN',
-        divisionalCharts: [9],
-        dashaSystem: 'VIMSHOTTARI',
+        zodiac: 'SIDEREAL', ayanamsa: 'LAHIRI', houseSystem: 'WHOLE_SIGN',
+        divisionalCharts: [9], dashaSystem: 'VIMSHOTTARI',
       },
-    });
+    };
+  };
+
+  const kundaliRequestData = useMemo(() => getKundaliRequestData(), [
+    name, dateSystem, adYear, adMonth, adDay, bsYear, bsMonth, bsDay,
+    hour, minute, second, period, selectedLocation
+  ]);
+
+  useEffect(() => {
+    if (isEmbedded) {
+      // Debounce the calculation call to avoid excessive re-renders on every keystroke
+      const handler = setTimeout(() => {
+        onCalculate(kundaliRequestData);
+      }, 500); // 500ms delay
+
+      // Cleanup function to clear timeout on unmount or if dependencies change
+      return () => {
+        clearTimeout(handler);
+      };
+    }
+  }, [isEmbedded, onCalculate, kundaliRequestData]);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onCalculate(kundaliRequestData);
   };
 
   return (
-    <>
-      {/* --- PAGE WRAPPER --- */}
-      <div
-        style={{ width: '100%', minHeight: 800, paddingTop: 24, paddingBottom: 24 }}
-        className="bg-slate-200 dark:bg-gray-800 flex justify-center items-start overflow-y-auto"
-      >
-        <form
-          onSubmit={handleSubmit}
-          className="kundali-card bg-slate-50 rounded-xl shadow-lg w-full lg:p-4 md:p-1  space-y-4 text-sm md:text-base dark:bg-gray-800 dark:text-gray-200 dark:border dark:border-gray-700"
-          style={{ maxWidth: 1200 }}
-        >
-          <div className="text-center">
-            <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-blue-700 dark:text-blue-300">
-              {NEPALI_LABELS.mainTitle}
-            </h2>
-            <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-              App Version: <span className="font-mono">{version}</span>
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 xl:grid-cols-2 xl:gap-x-8">
-
-            {/* --- LEFT COLUMN --- */}
-            <div className="space-y-3 md:space-y-4">
-              <div>
-                <label className="block font-medium text-stone-700 mb-1 dark:text-stone-300">{NEPALI_LABELS.name}</label>
-                <input
-                  type="text"
-                  value={name}
-                  onChange={e => setName(e.target.value)}
-                  className="w-full px-3 py-2 border border-stone-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-300 dark:focus:ring-blue-400 dark:focus:border-blue-400"
-                  required
-                />
-              </div>
-
-              {/* Date Input Section */}
-              <div>
-                <div className="flex justify-between py-1.5 items-center mb-1">
-                  <label className="block font-medium text-stone-700 dark:text-stone-300">
-                    {NEPALI_LABELS.dateOfBirth}
-                  </label>
-                  <div className="flex bg-gray-200  py-2 rounded-md p-0.5 w-auto dark:bg-gray-700">
-                    {(['BS', 'AD'] as const).map((sys) => (
-                      <button
-                        key={sys}
-                        type="button"
-                        onClick={() => setDateSystem(sys)}
-                        className={`px-3 py-1 text-xs rounded-md transition-colors duration-200 ${dateSystem === sys
-                          ? 'bg-blue-500 text-white shadow dark:bg-blue-400 dark:text-blue-900'
-                          : 'text-gray-600 hover:bg-gray-300 dark:text-gray-300 dark:hover:bg-gray-600'
-                          }`}
-                      >
-                        {sys === 'BS' ? NEPALI_LABELS.bs : NEPALI_LABELS.ad}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {dateSystem === 'BS' ? (
-                  <InputGroup>
-                    <GroupedSelect label={NEPALI_LABELS.year} value={bsYear} onChange={e => setBsYear(+e.target.value)}>
-                      {bsYears.map(y => <option key={y} value={y}>{toDevanagari(y)}</option>)}
-                    </GroupedSelect>
-                    <GroupedSelect label={NEPALI_LABELS.month} value={bsMonth} onChange={e => setBsMonth(+e.target.value)}>
-                      {Array.from({ length: 12 }, (_, i) => i + 1).map(m => (
-                        <option key={m} value={m}>{NEPALI_BS_MONTHS[m - 1]}</option>
-                      ))}
-                    </GroupedSelect>
-                    <GroupedSelect label={NEPALI_LABELS.day} value={bsDay} onChange={e => setBsDay(+e.target.value)}>
-                      {Array.from({ length: daysInMonth }, (_, i) => i + 1).map(d => <option key={d} value={d}>{toDevanagari(d)}</option>)}
-                    </GroupedSelect>
-                  </InputGroup>
-                ) : (
-                  <InputGroup>
-                    <GroupedSelect label={NEPALI_LABELS.year} value={adYear} onChange={e => setAdYear(+e.target.value)}>
-                      {adYears.map(y => <option key={y} value={y}>{toDevanagari(y)}</option>)}
-                    </GroupedSelect>
-                    <GroupedSelect label={NEPALI_LABELS.month} value={adMonth} onChange={e => setAdMonth(+e.target.value)}>
-                      {Array.from({ length: 12 }, (_, i) => i + 1).map(m => (
-                        <option key={m} value={m}>{toDevanagari(m)}</option>
-                      ))}
-                    </GroupedSelect>
-                    <GroupedSelect label={NEPALI_LABELS.day} value={adDay} onChange={e => setAdDay(+e.target.value)}>
-                      {Array.from({ length: daysInMonth }, (_, i) => i + 1).map(d => <option key={d} value={d}>{toDevanagari(d)}</option>)}
-                    </GroupedSelect>
-                  </InputGroup>
-                )}
-              </div>
-
-              {/* Time of Birth */}
-              <div>
-                <label className="block font-medium text-stone-700 mb-1 dark:text-stone-300">{NEPALI_LABELS.birthTimeLabel}</label>
-                <InputGroup>
-                  <GroupedSelect label={NEPALI_LABELS.hour} value={hour} onChange={e => setHour(+e.target.value)}>
-                    {hours.map(h => <option key={h} value={h}>{toDevanagari(h)}</option>)}
-                  </GroupedSelect>
-                  <GroupedSelect label={NEPALI_LABELS.minute} value={minute} onChange={e => setMinute(+e.target.value)}>
-                    {minutesSeconds.map(m => (
-                      <option key={m} value={m}>
-                        {toDevanagari(m.toString().padStart(2, '0'))}
-                      </option>
-                    ))}
-                  </GroupedSelect>
-                  <GroupedSelect label={NEPALI_LABELS.second} value={second} onChange={e => setSecond(+e.target.value)}>
-                    {minutesSeconds.map(s => (
-                      <option key={s} value={s}>
-                        {toDevanagari(s.toString().padStart(2, '0'))}
-                      </option>
-                    ))}
-                  </GroupedSelect>
-                </InputGroup>
-                <div className="mt-1.5">
-                  <div className="flex bg-gray-200 rounded-md p-0.5 w-full dark:bg-gray-700">
-                    {(['AM', 'PM'] as const).map((key) => (
-                      <button
-                        key={key}
-                        type="button"
-                        onClick={() => setPeriod(key)}
-                        className={`w-full px-3 py-1.5 text-sm rounded-md transition-colors duration-200 ${period === key ? 'bg-blue-500 text-white shadow dark:bg-blue-400 dark:text-blue-900' : 'text-gray-600 hover:bg-gray-300 dark:text-gray-300 dark:hover:bg-gray-600'
-                          }`}
-                      >
-                        {NEPALI_LABELS[key.toLowerCase() as 'am' | 'pm']}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              {/* Relation */}
-              <div>
-                <label className="block font-medium text-stone-700 mb-1 dark:text-stone-300">{NEPALI_LABELS.relation}</label>
-                <select
-                  value={relation}
-                  onChange={e => setRelation(e.target.value)}
-                  className="w-full bg-gray-100 border border-gray-300 rounded-md py-2 px-3 text-sm text-gray-800 focus:outline-none focus:bg-slate-200 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 dark:focus:bg-gray-600 dark:focus:border-blue-400"
-                >
-                  <option>{NEPALI_LABELS.self}</option>
-                  <option>छोरा</option>
-                  <option>छोरी</option>
-                  <option>जीवनसाथी</option>
-                </select>
-              </div>
-            </div>
-
-            {/* --- RIGHT COLUMN --- */}
-
-            <div className="space-y-3 md:space-y-4 mt-3 xl:mt-0">
-              {/* Location Section --- */}
-              <div>
-                <label className="block font-medium text-stone-700 mb-1 dark:text-stone-300">
-                  {NEPALI_LABELS.birthPlace}
-                </label>
-
-                <div className="flex bg-gray-200 rounded-md p-0.5 w-full mb-2 dark:bg-gray-700">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setLocationMode('nepal');
-                      if (nepalLocation) {
-                        setLocationSearch(nepalLocation.name);
-                      }
-                    }}
-                    className={`w-full px-3 py-1.5 text-sm rounded-md transition-colors duration-200 ${locationMode === 'nepal'
-                      ? 'bg-blue-500 text-white shadow dark:bg-blue-400 dark:text-blue-900'
-                      : 'text-gray-600 hover:bg-gray-300 dark:text-gray-300 dark:hover:bg-gray-600'
-                      }`}
-                  >
-                    <LocationIcon className="w-4 h-4 inline-block -mt-0.5 mr-1" />
-                    {NEPALI_LABELS.selectFromList || "Select from Nepal"}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setLocationMode('manual');
-                      setLocationModalMode('manual'); // Open modal in manual mode
-                    }}
-                    className={`w-full px-3 py-1.5 text-sm rounded-md transition-colors duration-200 ${locationMode === 'manual'
-                      ? 'bg-blue-500 text-white shadow dark:bg-blue-400 dark:text-blue-900'
-                      : 'text-gray-600 hover:bg-gray-300 dark:text-gray-300 dark:hover:bg-gray-600'
-                      }`}
-                  >
-                    <MapIcon className="w-4 h-4 inline-block -mt-0.5 mr-1" />
-                    {NEPALI_LABELS.enterManually || "Enter Manually"}
-                  </button>
-                </div>
-
-                {/* Trigger input for modal search */}
-                {locationMode === 'nepal' && (
-                  <input
-                    type="text"
-                    value={locationSearch}
-                    readOnly
-                    onFocus={() => setLocationModalMode('search')}
-                    onClick={() => setLocationModalMode('search')}
-                    placeholder={NEPALI_LABELS.searchLocation}
-                    className="w-full px-3 py-2 border border-stone-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 dark:focus:ring-blue-400 dark:focus:border-blue-400"
-                  />
-                )}
-
-
-
-                {/* --- Unified Location Info Box --- */}
-                <div className="mt-2 p-2 bg-gray-100 dark:bg-gray-700 rounded-md text-center">
-                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    {NEPALI_LABELS.selectedLocation || "Selected Location"}
-                  </span>
-                  <div className="text-xs text-gray-600 dark:text-gray-400 mt-1 flex justify-center flex-wrap gap-x-3 gap-y-1">
-                    <span>{NEPALI_LABELS.latitudeShort || "Lat"}: {manualLat.toFixed(4)}</span>
-                    <span>{NEPALI_LABELS.longitudeShort || "Lon"}: {manualLon.toFixed(4)}</span>
-                    <span>TZ: {manualZoneId}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* --- Full-screen modal for search AND manual entry --- */}
-            {locationModalMode !== 'closed' && (
-              <div
-                style={{
-                  position: 'fixed',
-                  inset: 0,
-                  backgroundColor: 'rgba(0,0,0,0.5)',
-                  zIndex: 9999,
-                  display: 'flex',
-                  flexDirection: 'column',
-                }}
-              >
-                {/* --- CONDITIONAL MODAL CONTENT --- */}
-                {locationModalMode === 'search' ? (
-                  <>
-                    {/* Modal header with input */}
-                    <div className="bg-white dark:bg-gray-800 p-3 shadow-md flex items-center">
-                      <input
-                        autoFocus
-                        type="text"
-                        value={locationSearch}
-                        onChange={(e) => setLocationSearch(e.target.value)}
-                        placeholder={NEPALI_LABELS.searchLocation}
-                        className="flex-1 px-3 py-2 border border-stone-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 dark:focus:ring-blue-400 dark:focus:border-blue-400"
-                      />
-                      <button
-                        onClick={() => setLocationModalMode('closed')}
-                        className="ml-2 px-3 py-2 bg-red-500 text-white rounded-md"
-                      >
-                        {NEPALI_LABELS.close}
-                      </button>
-                    </div>
-
-                    {/* Results list */}
-                    <div className="flex-1 overflow-y-auto bg-white dark:bg-gray-800 dark:text-gray-200">
-                      {filteredLocations.map(loc => (
-                        <div
-                          key={loc.name}
-                          className="p-3 border-b cursor-pointer hover:bg-gray-100 dark:border-gray-700 dark:hover:bg-gray-700"
-                          onClick={() => {
-                            handleNepalLocationChange(loc);
-                            setLocationSearch(loc.name);
-                            setLocationModalMode('closed');
-                          }}
-                        >
-                          {loc.name}
-                        </div>
-                      ))}
-                      <div
-                        className="p-3 border-t font-medium cursor-pointer hover:bg-gray-100 dark:border-gray-700 dark:hover:bg-gray-700"
-                        onClick={() => {
-                          setLocationMode('manual');
-                          setLocationModalMode('manual'); // Switch modal to manual mode
-                        }}
-                      >
-                        --- {NEPALI_LABELS.outsideNepal} ---
-                      </div>
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    {/* Modal header */}
-                    <div className="bg-white dark:bg-gray-800 p-3 shadow-md flex justify-between items-center">
-                      <h3 className="text-lg font-semibold dark:text-gray-200">{NEPALI_LABELS.enterManually || "Enter Manually"}</h3>
-                      <button
-                        onClick={() => setLocationModalMode('closed')}
-                        className="px-3 py-2 bg-red-500 text-white rounded-md"
-                      >
-                        {NEPALI_LABELS.close}
-                      </button>
-                    </div>
-
-                    {/* Manual entry form */}
-                    <div className="flex-1 overflow-y-auto bg-white dark:bg-gray-800 p-4 space-y-3">
-                      <div className="grid grid-cols-2 gap-2">
-                        <div>
-                          <label className="block text-xs text-gray-500 mb-0.5 dark:text-gray-400">
-                            {NEPALI_LABELS.latitude}
-                          </label>
-                          <input
-                            type="number"
-                            step="any"
-                            value={manualLat}
-                            onChange={e => setManualLat(parseFloat(e.target.value))}
-                            className="w-full px-3 py-2 text-sm border border-stone-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 dark:focus:ring-blue-400 dark:focus:border-blue-400"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-xs text-gray-500 mb-0.5 dark:text-gray-400">
-                            {NEPALI_LABELS.longitude}
-                          </label>
-                          <input
-                            type="number"
-                            step="any"
-                            value={manualLon}
-                            onChange={e => setManualLon(parseFloat(e.target.value))}
-                            className="w-full px-3 py-2 text-sm border border-stone-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 dark:focus:ring-blue-400 dark:focus:border-blue-400"
-                          />
-                        </div>
-                      </div>
-                      <div>
-                        <FormSelect
-                          label={NEPALI_LABELS.timezone}
-                          value={manualZoneId}
-                          onChange={e => setManualZoneId(e.target.value)}
-                        >
-                          {TIMEZONE_OFFSETS.map((tz) => (
-                            <option key={tz.zoneId} value={tz.zoneId}>
-                              {tz.label}
-                            </option>
-                          ))}
-                        </FormSelect>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => setShowMap(true)}
-                        className="w-full flex items-center justify-center gap-2 bg-blue-50 text-blue-700 border border-blue-200 rounded-md text-sm py-2 hover:bg-blue-100 dark:bg-blue-900 dark:text-blue-200 dark:border-blue-700 dark:hover:bg-blue-800"
-                      >
-                        <MapIcon className="w-4 h-4" />
-                        {NEPALI_LABELS.selectOnMap}
-                      </button>
-
-
-                      {/* --- Location Info Box(inside manual location box)--- */}
-                      <div className="mt-2 p-2 bg-gray-100 dark:bg-gray-700 rounded-md text-center">
-                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                          {NEPALI_LABELS.selectedLocation || "Selected Location"}
-                        </span>
-                        <div className="text-xs text-gray-600 dark:text-gray-400 mt-1 flex justify-center flex-wrap gap-x-3 gap-y-1">
-                          <span>{NEPALI_LABELS.latitudeShort || "Lat"}: {manualLat.toFixed(4)}</span>
-                          <span>{NEPALI_LABELS.longitudeShort || "Lon"}: {manualLon.toFixed(4)}</span>
-                          <span>TZ: {manualZoneId}</span>
-                        </div>
-                      </div>
-                    </div>
-                    {/* Modal footer */}
-                    <div className="bg-white dark:bg-gray-800 p-3 border-t dark:border-gray-700 flex justify-between">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setLocationMode('nepal');
-                          setLocationModalMode('search');
-                        }}
-                        className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 dark:bg-gray-600 dark:text-gray-200 dark:hover:bg-gray-500"
-                      >
-                        {NEPALI_LABELS?.baktoSearchLocation ?? "Back to Search"}
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setLocationModalMode('closed')}
-                        className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 dark:bg-blue-400 dark:text-blue-900 dark:hover:bg-blue-500"
-                      >
-                        {NEPALI_LABELS?.selectLocationConform ?? "Confirm Selection"}
-                      </button>
-                    </div>
-                  </>
-                )}
-              </div>
-            )}
-
-
-            {/* --- SUBMIT BUTTON --- */}
-            <div style={{ position: 'relative' }} className="bg-slate-50/90 pt-4 pb-2 px-4 rounded-b-xl dark:bg-gray-800/90">
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="w-full flex justify-center items-center py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-blue-300 disabled:cursor-not-allowed dark:bg-blue-400 dark:text-blue-900 dark:hover:bg-blue-500 dark:hover:text-white dark:focus:ring-blue-300 dark:disabled:bg-blue-200 dark:disabled:text-gray-500"
-              >
-                {isLoading ? (
-                  <>
-                    <LoaderIcon className="w-5 h-5 mr-3 animate-spin" />
-                    {NEPALI_LABELS.calculating}
-                  </>
-                ) : (
-                  NEPALI_LABELS.calculate
-                )}
-              </button>
-            </div>
-          </div>
-        </form>
+    <form
+      onSubmit={handleSubmit}
+      className="space-y-6 bg-slate-50 dark:bg-gray-800/50 rounded-xl p-4"
+    >
+      {/* Name Input */}
+      <div className="relative">
+        <input
+          type="text"
+          id="name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          required
+          className="w-full bg-gray-100 border border-gray-300 rounded-md py-2 px-3 text-sm text-gray-800 focus:outline-none focus:bg-slate-200 focus:border-blue-400 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 dark:focus:bg-gray-600 dark:focus:border-blue-400"
+        />
+        <label htmlFor="name" className="absolute -top-2 left-2.5 bg-gray-100 px-1 text-xs text-gray-500 dark:bg-gray-700 dark:text-gray-400">
+          {NEPALI_LABELS.name}
+        </label>
       </div>
 
-      {/* Map Modal */}
+      {/* Date System Toggle */}
+      <div className="flex justify-center">
+        <div className="flex p-1 bg-gray-200 dark:bg-gray-700 rounded-md">
+          <button
+            type="button"
+            onClick={() => setDateSystem('BS')}
+            className={`px-4 py-1 text-sm rounded ${dateSystem === 'BS' ? 'bg-blue-500 text-white' : 'text-gray-600 dark:text-gray-300'}`}
+          >
+            {NEPALI_LABELS.bs}
+          </button>
+          <button
+            type="button"
+            onClick={() => setDateSystem('AD')}
+            className={`px-4 py-1 text-sm rounded ${dateSystem === 'AD' ? 'bg-blue-500 text-white' : 'text-gray-600 dark:text-gray-300'}`}
+          >
+            {NEPALI_LABELS.ad}
+          </button>
+        </div>
+      </div>
+
+      {/* Date Inputs */}
+      <InputGroup>
+        <GroupedSelect
+          label={NEPALI_LABELS.year}
+          value={dateSystem === 'BS' ? bsYear : adYear}
+          onChange={(e) => (dateSystem === 'BS' ? setBsYear(Number(e.target.value)) : setAdYear(Number(e.target.value)))}
+        >
+          {(dateSystem === 'BS' ? bsYears : adYears).map((y) => <option key={y} value={y}>{toDevanagari(y)}</option>)}
+        </GroupedSelect>
+        <GroupedSelect
+          label={NEPALI_LABELS.month}
+          value={dateSystem === 'BS' ? bsMonth : adMonth}
+          onChange={(e) => (dateSystem === 'BS' ? setBsMonth(Number(e.target.value)) : setAdMonth(Number(e.target.value)))}
+        >
+          {Array.from({ length: 12 }, (_, i) => (
+            <option key={i + 1} value={i + 1}>
+              {dateSystem === 'BS' ? NEPALI_BS_MONTHS[i] : (i + 1)}
+            </option>
+          ))}
+        </GroupedSelect>
+        <GroupedSelect
+          label={NEPALI_LABELS.day}
+          value={dateSystem === 'BS' ? bsDay : adDay}
+          onChange={(e) => (dateSystem === 'BS' ? setBsDay(Number(e.target.value)) : setAdDay(Number(e.target.value)))}
+        >
+          {Array.from({ length: daysInMonth }, (_, i) => <option key={i + 1} value={i + 1}>{toDevanagari(i + 1)}</option>)}
+        </GroupedSelect>
+      </InputGroup>
+
+      {/* Time Inputs */}
+      <InputGroup>
+        <GroupedSelect
+          label={NEPALI_LABELS.hour}
+          value={hour}
+          onChange={(e) => setHour(Number(e.target.value))}
+        >
+          {hours.map((h) => <option key={h} value={h}>{toDevanagari(h)}</option>)}
+        </GroupedSelect>
+        <GroupedSelect
+          label={NEPALI_LABELS.minute}
+          value={minute}
+          onChange={(e) => setMinute(Number(e.target.value))}
+        >
+          {minutesSeconds.map((m) => <option key={m} value={m}>{toDevanagari(m)}</option>)}
+        </GroupedSelect>
+        <GroupedSelect
+          label={NEPALI_LABELS.second}
+          value={second}
+          onChange={(e) => setSecond(Number(e.target.value))}
+        >
+          {minutesSeconds.map((s) => <option key={s} value={s}>{toDevanagari(s)}</option>)}
+        </GroupedSelect>
+      </InputGroup>
+      <div className="flex justify-center">
+        <div className="flex p-1 bg-gray-200 dark:bg-gray-700 rounded-md">
+          <button
+            type="button"
+            onClick={() => setPeriod('AM')}
+            className={`px-4 py-1 text-sm rounded ${period === 'AM' ? 'bg-blue-500 text-white' : 'text-gray-600 dark:text-gray-300'}`}
+          >
+            {NEPALI_LABELS.am}
+          </button>
+          <button
+            type="button"
+            onClick={() => setPeriod('PM')}
+            className={`px-4 py-1 text-sm rounded ${period === 'PM' ? 'bg-blue-500 text-white' : 'text-gray-600 dark:text-gray-300'}`}
+          >
+            {NEPALI_LABELS.pm}
+          </button>
+        </div>
+      </div>
+
+      {/* Location Input */}
+      <div className="relative">
+        <label className="absolute -top-2 left-2.5 bg-gray-100 px-1 text-xs text-gray-500 dark:bg-gray-700 dark:text-gray-400 z-10">{NEPALI_LABELS.location}</label>
+        <button
+          type="button"
+          onClick={() => { setIsLocationModalOpen(true); setModalView('search'); }}
+          className="w-full bg-gray-100 border border-gray-300 rounded-md py-2 px-3 text-sm text-gray-800 focus:outline-none focus:bg-slate-200 focus:border-blue-400 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 flex justify-between items-center text-left"
+        >
+          <span>{selectedLocation.name} <span className="text-gray-500 dark:text-gray-400 text-xs">({selectedLocation.romanization})</span></span>
+          <LocationIcon className="w-4 h-4 text-gray-500" />
+        </button>
+      </div>
+
+      {isLocationModalOpen && (
+        <div className="fixed inset-0 flex items-start justify-center bg-black/60 z-50 p-4 pt-8 sm:pt-8 transition-opacity" onClick={() => setIsLocationModalOpen(false)}>
+          <div className="bg-slate-200 dark:bg-gray-800 w-full h-full sm:h-auto sm:max-h-[90vh] sm:rounded-lg shadow-xl max-w-lg p-4 flex flex-col transition-transform" onClick={(e) => e.stopPropagation()}>
+            <div className="flex justify-between items-center pb-3 border-b dark:border-gray-700">
+              <h3 className="text-lg font-semibold">{modalView === 'search' ? NEPALI_LABELS.searchOrSelectLocation : NEPALI_LABELS.enterManually}</h3>
+              <button onClick={() => setIsLocationModalOpen(false)} className="text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-100"><XIcon className="w-5 h-5" /></button>
+            </div>
+
+            {modalView === 'search' ? (
+              <>
+                <div className="relative my-4">
+                  <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <input
+                    type="text"
+                    placeholder={NEPALI_LABELS.locationSearchPlaceholder}
+                    value={locationSearch}
+                    onChange={(e) => setLocationSearch(e.target.value)}
+                    className="w-full bg-gray-100 border border-gray-300 rounded-md py-2 pl-10 pr-3 text-sm text-gray-800 focus:outline-none focus:bg-slate-200 focus:border-blue-400 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 dark:focus:bg-gray-600 dark:focus:border-blue-400"
+                  />
+                </div>
+                <div className="overflow-y-auto flex-1">
+                  {filteredLocations.map(loc => (
+                    <div key={loc.name} onClick={() => handleLocationSelect(loc)} className="p-2.5 cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-900/50 rounded-md text-sm flex justify-between">
+                      <span>{loc.name}</span>
+                      <span className="text-gray-500 dark:text-gray-400">{loc.romanization}</span>
+                    </div>
+                  ))}
+                </div>
+                <div className="pt-3 mt-3 border-t dark:border-gray-700 text-center">
+                  <button onClick={() => setModalView('manual')} className="text-sm text-blue-600 dark:text-blue-400 hover:underline">
+                    {NEPALI_LABELS.cantFindLocation} {NEPALI_LABELS.enterManuallyOrMap}
+                  </button>
+                </div>
+              </>
+            ) : (
+              <div className="pt-4 space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="relative">
+                    <input type="number" step="0.0001" id="latitude" value={manualLat} onChange={(e) => setManualLat(parseFloat(e.target.value))} required className="w-full bg-gray-100 border border-gray-300 rounded-md py-2 px-3 text-sm text-gray-800 focus:outline-none focus:bg-slate-200 focus:border-blue-400 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 dark:focus:bg-gray-600 dark:focus:border-blue-400" />
+                    <label htmlFor="latitude" className="absolute -top-2 left-2.5 bg-slate-200 px-1 text-xs text-gray-500 dark:bg-gray-800 dark:text-gray-400">{NEPALI_LABELS.latitudeShort}</label>
+                  </div>
+                  <div className="relative">
+                    <input type="number" step="0.0001" id="longitude" value={manualLon} onChange={(e) => setManualLon(parseFloat(e.target.value))} required className="w-full bg-gray-100 border border-gray-300 rounded-md py-2 px-3 text-sm text-gray-800 focus:outline-none focus:bg-slate-200 focus:border-blue-400 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 dark:focus:bg-gray-600 dark:focus:border-blue-400" />
+                    <label htmlFor="longitude" className="absolute -top-2 left-2.5 bg-slate-200 px-1 text-xs text-gray-500 dark:bg-gray-800 dark:text-gray-400">{NEPALI_LABELS.longitudeShort}</label>
+                  </div>
+                </div>
+                <FormSelect label={NEPALI_LABELS.timezone} value={manualZoneId} onChange={(e) => setManualZoneId(e.target.value)}>
+                  {TIMEZONE_OFFSETS.map(tz => <option key={tz.zoneId} value={tz.zoneId}>{tz.label}</option>)}
+                </FormSelect>
+                <button type="button" onClick={() => setShowMap(true)} className="w-full flex justify-center items-center gap-2 py-2 bg-gray-200 hover:bg-gray-300 rounded-md dark:bg-gray-600 dark:hover:bg-gray-500" aria-label={NEPALI_LABELS.selectOnMap}>
+                  <MapIcon className="w-5 h-5" /> {NEPALI_LABELS.selectOnMap}
+                </button>
+                <div className="text-center">
+                  <button onClick={() => setModalView('search')} className="text-sm text-blue-600 dark:text-blue-400 hover:underline">
+                    ← {NEPALI_LABELS.backToSearch}
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
       {showMap && (
         <MapModal
-          initialPosition={[manualLat, manualLon]}
           onClose={() => setShowMap(false)}
           onLocationSelect={handleMapSelect}
+          initialPosition={[manualLat, manualLon]}
         />
       )}
-    </>
+
+      {/* Submit Button (not shown when embedded) */}
+      {!isEmbedded && (
+        <div className="pt-4">
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="w-full flex justify-center items-center py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-blue-500 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-gray-400 disabled:cursor-not-allowed dark:bg-blue-600 dark:hover:bg-blue-700 dark:disabled:bg-gray-500"
+          >
+            {isLoading ? (
+              <>
+                <LoaderIcon className="w-5 h-5 mr-3 animate-spin" />
+                {NEPALI_LABELS.calculating}
+              </>
+            ) : (
+              NEPALI_LABELS.calculate
+            )}
+          </button>
+        </div>
+      )}
+    </form>
   );
 };

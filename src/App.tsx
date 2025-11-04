@@ -294,7 +294,7 @@ const App: React.FC = () => {
       onTouchEnd={handleTouchEnd}
     >
       {/* HEADER */}
-      <header className="px-4 py-2 border-b dark:border-gray-700 bg-slate-200 dark:bg-gray-800 z-30">
+      <header className="px-4 print:hidden py-2 border-b dark:border-gray-700 bg-slate-200 dark:bg-gray-800 z-30">
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
             <button
@@ -481,7 +481,7 @@ const App: React.FC = () => {
       </div>
 
       {/* FIXED FOOTER */}
-      <div className="fixed bottom-0 left-0 right-0 w-full bg-slate-200 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 z-50">
+      <div className="fixed bottom-0 left-0 right-0 w-full bg-slate-200 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 z-50 print:hidden">
         <Footer />
       </div>
 

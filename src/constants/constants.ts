@@ -1,3 +1,4 @@
+
 export const NEPALI_LABELS = {
   home: "मुख्य पृष्ठ",
   converter: "मिति रूपान्तरण",
@@ -12,8 +13,11 @@ export const NEPALI_LABELS = {
   mainTitle: "जन्म कुण्डली",
   Nepdate_calendar: "नेपडेट क्यालेन्डर",
   Software_name: "नेपडेट ज्योतिष",
+  Software_version: `${__APP_VERSION__}`,
   subTitle: "वैदिक ज्योतिष सफ्टवेयर",
   birthDetails: "जन्म विवरण",
+  astrologicalDetails: "ज्योतिषीय विवरण",
+  gunaMilanDetails: "गुण मिलान विवरण",
   name: "नाम",
   namePlaceholder: "नाम",
   dateAndTime: "जन्म मिति र समय",
@@ -27,11 +31,12 @@ export const NEPALI_LABELS = {
   unexpectedError: "एक अप्रत्याशित त्रुटि भयो। कृपया फेरि प्रयास गर्नुहोस्।",
   enterDetailsPrompt: "कृपया आफ्नो जन्म विवरण प्रविष्ट गर्नुहोस् र कुण्डली हेर्नुहोस्।",
   kundaliOf: (name: string) => `${name} को जन्म कुण्डली`,
+  printedDate: "मुद्रित मिती",
   returnToForm: "फर्ममा फर्कनुहोस्",
   returnTomain: "मुख्य पृष्ठमा फर्कनुहोस्",
   downloadKundali: "कुण्डली डाउनलोड गर्नुहोस्",
   mahaDasha_clickToExpand: "महादशा",
-  antarDasha_clickToExpand: "अन्तर्दशा",
+  antarDasha_clickToExpand: "अन्तरदशा",
   exportSVG: "SVG निर्यात गर्नुहोस्",
   exportPNG: "PNG निर्यात गर्नुहोस्",
   print: "प्रिन्ट गर्नुहोस्",
@@ -41,6 +46,12 @@ export const NEPALI_LABELS = {
   dashamsaChart: "दशांश कुंडली (D10)",
   horaChart: "होरा कुंडली (D2)",
   saptamsaChart: "सप्तांश कुंडली (D7)",
+  drekkanaChart: "द्रेष्काण कुण्डली (D3)",
+  dwadamshaChart: "द्वादशांश कुण्डली (D12)",
+  chaturthamshaChart: "चतुर्थांश कुण्डली (D4)",
+  shashtiamshaChart: "षष्ट्यंश कुण्डली (D60)",
+  showMoreCharts: "थप कुण्डलीहरू देखाउनुहोस्",
+  showLessCharts: "कम देखाउनुहोस्",
   planetaryPositions: "ग्रह स्थिति",
   planet: "ग्रह",
   rashi: "राशि",
@@ -49,15 +60,20 @@ export const NEPALI_LABELS = {
   pada: "पद",
   retrograde: "वक्री",
   ascendantShort: "ल",
-  generalInfo: "सामान्य जानकारी",
   moonSign: "चन्द्र राशि",
   sunSign: "सूर्य राशि",
   lagna: "लग्न",
+  lagnesh: "लग्नेश",
   birthNakshatra: "जन्म नक्षत्र",
   tithi: "तिथि",
   yoga: "योग",
   karana: "करण",
   dashaPeriods: "विंशोत्तरी दशा",
+  tribhagiDasha: "त्रिभागी दशा",
+  yoginiDasha: "योगिनी दशा",
+  ashtottariDasha: "अष्टोत्तरी दशा",
+  jaiminiDasha: "जैमिनी चर दशा",
+  jaiminiProportionalNote: "अन्तरदशा अवधि समानुपातिक प्रणालीमा आधारित छ।",
   mahaDasha: "महादशा",
   antarDasha: "अन्तरदशा",
   startsOn: "सुरु",
@@ -79,7 +95,7 @@ export const NEPALI_LABELS = {
   selectOnMap: "नक्सामा छान्नुहोस्",
   TIMEZONE_OFFSETS: "समय क्षेत्र अफसेटहरू",
   selectLocation: "स्थान छान्नुहोस्",
-  enterManually: "स्थान खोज्नुहोस्(नेपाल बाहिर पनि)",
+  enterManually: "स्थान म्यानुअल रूपमा प्रविष्ट गर्नुहोस्",
   selectFromList: "सूचीबाट छान्नुहोस्(नेपाल मात्र)",
   timezone: "समय क्षेत्र छान्नुहोस्",
   baktoSearchLocation: "नेपाली स्थान खोज्नुहोस्",
@@ -102,7 +118,45 @@ export const NEPALI_LABELS = {
   latitudeShort: "अक्षांश",
   longitudeShort: "देशान्तर",
   searchLocation: "स्थान खोज्नुहोस्(जिल्ला वा शहर)...",
-  close: "बन्द गर्नुहोस्"
+  close: "बन्द गर्नुहोस्",
+  varna: "वर्ण",
+  vasya: "वश्य",
+  yoni: "योनि",
+  grahaMaitri: "ग्रह मैत्री",
+  gana: "गण",
+  bhakoot: "भकूट",
+  nadi: "नाडी",
+  rashiLord: "राशि स्वामी",
+  tatva: "तत्व",
+  paya: "पाय",
+  individual: "व्यक्तिगत कुण्डली",
+  comparison: "गुण मिलान",
+  groom: "वर",
+  bride: "वधु",
+  groomDetails: "वरको विवरण",
+  brideDetails: "वधुको विवरण",
+  calculateComparison: "गुण मिलान गर्नुहोस्",
+  gunaMilanTableTitle: "अष्टकूट गुण मिलान",
+  koota: "कूट",
+  maxPoints: "अधिकतम अंक",
+  obtainedPoints: "प्राप्त अंक",
+  tara: "तारा",
+  totalPoints: "कुल योग",
+  conclusion: "निष्कर्ष",
+  mobilePrintHint: "मोबाइलमा प्रिन्ट गर्न समस्या भएमा, ब्राउजरको 'Share' मेनुमा गएर 'Print' विकल्प प्रयोग गर्नुहोस्।",
+  searchOrSelectLocation: "स्थान खोज्नुहोस् वा छान्नुहोस्",
+  cantFindLocation: "स्थान भेटिएन?",
+  enterManuallyOrMap: "नक्सा वा म्यानुअल प्रविष्टि",
+  backToSearch: "खोजमा फर्कनुहोस्",
+  locationSearchPlaceholder: "शहर वा जिल्लाको नाम लेख्नुहोस्...",
+  dailyTimings: "दैनिक समय",
+  sunrise: "सूर्योदय",
+  sunset: "सूर्यास्त",
+  moonrise: "चन्द्रोदय",
+  moonset: "चन्द्रास्त",
+  yesterdayFrom: "हिजो देखि",
+  previousDayFrom: "अघिल्लो दिन देखि",
+  subDashaPrintNote: "अन्तरदशाको विस्तृत विवरण हेर्नको लागि, कृपया वेब वा मोबाइल एप प्रयोग गर्नुहोस्।",
 };
 
 export const NEPALI_PLANETS: { [key: string]: string } = {
@@ -116,6 +170,14 @@ export const NEPALI_PLANETS: { [key: string]: string } = {
   RAHU: "राहु",
   KETU: "केतु",
   ASCENDANT: "लग्न",
+  Mangala: 'मङ्गला',
+  Pingala: 'पिङ्गला',
+  Dhanya: 'धान्या',
+  Bhramari: 'भ्रामरी',
+  Bhadrika: 'भद्रिका',
+  Ulka: 'उल्का',
+  Siddha: 'सिद्धा',
+  Sankata: 'सङ्कटा'
 };
 
 
@@ -260,3 +322,122 @@ export const NEPALI_KARANA: string[] = [
 ];
 
 export const BACKEND_NAME = "Nepdate-AstroCalc";
+
+export const VARNA_MAP: Record<number, string> = {
+    1: 'Kshatriya', 4: 'Brahmin', 7: 'Shudra', 10: 'Vaishya',
+    2: 'Vaishya', 5: 'Kshatriya', 8: 'Brahmin', 11: 'Shudra',
+    3: 'Shudra', 6: 'Vaishya', 9: 'Kshatriya', 12: 'Brahmin'
+};
+export const NEPALI_VARNA: Record<string, string> = {
+    'Brahmin': 'ब्राह्मण',
+    'Kshatriya': 'क्षत्रिय',
+    'Vaishya': 'वैश्य',
+    'Shudra': 'शूद्र'
+};
+
+export const VASYA_MAP: Record<number, string> = {
+    1: 'Chatushpada', 2: 'Chatushpada', 3: 'Dwipada', 4: 'Jalachara', 5: 'Vanachara',
+    6: 'Dwipada', 7: 'Dwipada', 8: 'Keeta', 9: 'Dwipada', // Sagittarius is mixed, often considered Dwipada
+    10: 'Chatushpada', 11: 'Dwipada', 12: 'Jalachara'
+};
+
+export const NEPALI_VASYA: Record<string, string> = {
+    'Chatushpada': 'चतुष्पाद',
+    'Dwipada': 'द्विपद',
+    'Jalachara': 'जलचर',
+    'Vanachara': 'वनचर',
+    'Keeta': 'कीट'
+};
+
+// Yoni mapping based on Nakshatra index (0-26)
+export const YONI_MAP: Record<number, string> = {
+    0: 'Ashwa', 1: 'Gaja', 2: 'Mesha', 3: 'Sarpa', 4: 'Sarpa', 5: 'Shwana',
+    6: 'Marjara', 7: 'Mesha', 8: 'Marjara', 9: 'Mushaka', 10: 'Mushaka', 11: 'Gau',
+    12: 'Mahisha', 13: 'Vyaghra', 14: 'Mahisha', 15: 'Vyaghra', 16: 'Mriga', 17: 'Mriga',
+    18: 'Shwana', 19: 'Vanara', 20: 'Nakula', 21: 'Vanara', 22: 'Simha', 23: 'Ashwa',
+    24: 'Simha', 25: 'Gau', 26: 'Gaja'
+};
+export const NEPALI_YONI: Record<string, string> = {
+    'Ashwa': 'अश्व', 'Gaja': 'गज', 'Mesha': 'मेष', 'Sarpa': 'सर्प', 'Shwana': 'श्वान',
+    'Marjara': 'मार्जार', 'Mushaka': 'मूषक', 'Gau': 'गौ', 'Mahisha': 'महिष', 'Vyaghra': 'व्याघ्र',
+    'Mriga': 'मृग', 'Vanara': 'वानर', 'Nakula': 'नकुल', 'Simha': 'सिंह'
+};
+
+// Gana mapping based on Nakshatra index (0-26)
+export const GANA_MAP: Record<number, string> = {
+    0: 'Deva', 1: 'Manushya', 2: 'Rakshasa', 3: 'Manushya', 4: 'Deva', 5: 'Manushya',
+    6: 'Deva', 7: 'Deva', 8: 'Rakshasa', 9: 'Rakshasa', 10: 'Manushya', 11: 'Manushya',
+    12: 'Deva', 13: 'Rakshasa', 14: 'Deva', 15: 'Rakshasa', 16: 'Deva', 17: 'Rakshasa',
+    18: 'Rakshasa', 19: 'Manushya', 20: 'Manushya', 21: 'Deva', 22: 'Rakshasa', 23: 'Rakshasa',
+    24: 'Manushya', 25: 'Manushya', 26: 'Deva'
+};
+export const NEPALI_GANA: Record<string, string> = {
+    'Deva': 'देव',
+    'Manushya': 'मनुष्य',
+    'Rakshasa': 'राक्षस'
+};
+
+// Nadi mapping based on Nakshatra index (0-26)
+export const NADI_MAP: Record<number, string> = {
+    0: 'Adi', 1: 'Madhya', 2: 'Antya', 3: 'Antya', 4: 'Madhya', 5: 'Adi',
+    6: 'Adi', 7: 'Madhya', 8: 'Antya', 9: 'Antya', 10: 'Madhya', 11: 'Adi',
+    12: 'Adi', 13: 'Madhya', 14: 'Antya', 15: 'Antya', 16: 'Madhya', 17: 'Adi',
+    18: 'Adi', 19: 'Madhya', 20: 'Antya', 21: 'Antya', 22: 'Madhya', 23: 'Adi',
+    24: 'Adi', 25: 'Madhya', 26: 'Antya'
+};
+export const NEPALI_NADI: Record<string, string> = {
+    'Adi': 'आद्य',
+    'Madhya': 'मध्य',
+    'Antya': 'अन्त्य'
+};
+
+// Tatva (Element) mapping based on Rashi number (1-12)
+export const TATVA_MAP: Record<number, string> = {
+    1: 'Agni', 2: 'Prithvi', 3: 'Vayu', 4: 'Jal',
+    5: 'Agni', 6: 'Prithvi', 7: 'Vayu', 8: 'Jal',
+    9: 'Agni', 10: 'Prithvi', 11: 'Vayu', 12: 'Jal'
+};
+
+export const NEPALI_TATVA: Record<string, string> = {
+    'Agni': 'अग्नि',
+    'Prithvi': 'पृथ्वी',
+    'Vayu': 'वायु',
+    'Jal': 'जल'
+};
+
+// Paya (Foot) Nepali Names
+export const NEPALI_PAYA: Record<string, string> = {
+    'Suvarna': 'सुवर्ण (सुन)',
+    'Rajat': 'रजत (चाँदी)',
+    'Tamra': 'ताम्र (तामा)',
+    'Loha': 'लौह (फलाम)'
+};
+
+// Fix: Add GRAHA_MAITRI constant
+export const GRAHA_MAITRI: Record<string, Record<string, 'Friend' | 'Neutral' | 'Enemy'>> = {
+    SUN:     { SUN: 'Friend', MOON: 'Friend', MARS: 'Friend', MERCURY: 'Neutral', JUPITER: 'Friend', VENUS: 'Enemy', SATURN: 'Enemy' },
+    MOON:    { SUN: 'Friend', MOON: 'Friend', MARS: 'Neutral', MERCURY: 'Friend', JUPITER: 'Neutral', VENUS: 'Neutral', SATURN: 'Neutral' },
+    MARS:    { SUN: 'Friend', MOON: 'Friend', MARS: 'Friend', MERCURY: 'Enemy', JUPITER: 'Friend', VENUS: 'Neutral', SATURN: 'Neutral' },
+    MERCURY: { SUN: 'Friend', MOON: 'Enemy', MARS: 'Neutral', MERCURY: 'Friend', JUPITER: 'Neutral', VENUS: 'Friend', SATURN: 'Friend' },
+    JUPITER: { SUN: 'Friend', MOON: 'Friend', MARS: 'Friend', MERCURY: 'Neutral', JUPITER: 'Friend', VENUS: 'Enemy', SATURN: 'Neutral' },
+    VENUS:   { SUN: 'Neutral', MOON: 'Enemy', MARS: 'Neutral', MERCURY: 'Friend', JUPITER: 'Neutral', VENUS: 'Friend', SATURN: 'Friend' },
+    SATURN:  { SUN: 'Enemy', MOON: 'Enemy', MARS: 'Enemy', MERCURY: 'Friend', JUPITER: 'Neutral', VENUS: 'Friend', SATURN: 'Friend' }
+};
+
+// Fix: Add YONI_COMPATIBILITY constant
+export const YONI_COMPATIBILITY: Record<string, Record<string, number>> = {
+    'Ashwa':   {'Ashwa': 4, 'Gaja': 2, 'Mesha': 2, 'Sarpa': 2, 'Shwana': 2, 'Marjara': 2, 'Mushaka': 2, 'Gau': 1, 'Mahisha': 0, 'Vyaghra': 1, 'Mriga': 2, 'Vanara': 2, 'Nakula': 2, 'Simha': 1},
+    'Gaja':    {'Ashwa': 2, 'Gaja': 4, 'Mesha': 3, 'Sarpa': 2, 'Shwana': 2, 'Marjara': 2, 'Mushaka': 1, 'Gau': 2, 'Mahisha': 2, 'Vyaghra': 0, 'Mriga': 2, 'Vanara': 2, 'Nakula': 2, 'Simha': 1},
+    'Mesha':   {'Ashwa': 2, 'Gaja': 3, 'Mesha': 4, 'Sarpa': 3, 'Shwana': 2, 'Marjara': 2, 'Mushaka': 2, 'Gau': 2, 'Mahisha': 2, 'Vyaghra': 2, 'Mriga': 2, 'Vanara': 0, 'Nakula': 2, 'Simha': 2},
+    'Sarpa':   {'Ashwa': 2, 'Gaja': 2, 'Mesha': 3, 'Sarpa': 4, 'Shwana': 2, 'Marjara': 2, 'Mushaka': 1, 'Gau': 2, 'Mahisha': 2, 'Vyaghra': 2, 'Mriga': 2, 'Vanara': 2, 'Nakula': 0, 'Simha': 2},
+    'Shwana':  {'Ashwa': 2, 'Gaja': 2, 'Mesha': 2, 'Sarpa': 2, 'Shwana': 4, 'Marjara': 1, 'Mushaka': 2, 'Gau': 2, 'Mahisha': 2, 'Vyaghra': 2, 'Mriga': 0, 'Vanara': 2, 'Nakula': 2, 'Simha': 2},
+    'Marjara': {'Ashwa': 2, 'Gaja': 2, 'Mesha': 2, 'Sarpa': 2, 'Shwana': 1, 'Marjara': 4, 'Mushaka': 0, 'Gau': 2, 'Mahisha': 2, 'Vyaghra': 2, 'Mriga': 2, 'Vanara': 2, 'Nakula': 2, 'Simha': 2},
+    'Mushaka': {'Ashwa': 2, 'Gaja': 1, 'Mesha': 2, 'Sarpa': 1, 'Shwana': 2, 'Marjara': 0, 'Mushaka': 4, 'Gau': 2, 'Mahisha': 2, 'Vyaghra': 2, 'Mriga': 2, 'Vanara': 2, 'Nakula': 2, 'Simha': 2},
+    'Gau':     {'Ashwa': 1, 'Gaja': 2, 'Mesha': 2, 'Sarpa': 2, 'Shwana': 2, 'Marjara': 2, 'Mushaka': 2, 'Gau': 4, 'Mahisha': 2, 'Vyaghra': 0, 'Mriga': 2, 'Vanara': 2, 'Nakula': 2, 'Simha': 2},
+    'Mahisha': {'Ashwa': 0, 'Gaja': 2, 'Mesha': 2, 'Sarpa': 2, 'Shwana': 2, 'Marjara': 2, 'Mushaka': 2, 'Gau': 2, 'Mahisha': 4, 'Vyaghra': 2, 'Mriga': 2, 'Vanara': 2, 'Nakula': 2, 'Simha': 2},
+    'Vyaghra': {'Ashwa': 1, 'Gaja': 0, 'Mesha': 2, 'Sarpa': 2, 'Shwana': 2, 'Marjara': 2, 'Mushaka': 2, 'Gau': 0, 'Mahisha': 2, 'Vyaghra': 4, 'Mriga': 2, 'Vanara': 2, 'Nakula': 2, 'Simha': 2},
+    'Mriga':   {'Ashwa': 2, 'Gaja': 2, 'Mesha': 2, 'Sarpa': 2, 'Shwana': 0, 'Marjara': 2, 'Mushaka': 2, 'Gau': 2, 'Mahisha': 2, 'Vyaghra': 2, 'Mriga': 4, 'Vanara': 2, 'Nakula': 2, 'Simha': 2},
+    'Vanara':  {'Ashwa': 2, 'Gaja': 2, 'Mesha': 0, 'Sarpa': 2, 'Shwana': 2, 'Marjara': 2, 'Mushaka': 2, 'Gau': 2, 'Mahisha': 2, 'Vyaghra': 2, 'Mriga': 2, 'Vanara': 4, 'Nakula': 2, 'Simha': 2},
+    'Nakula':  {'Ashwa': 2, 'Gaja': 2, 'Mesha': 2, 'Sarpa': 0, 'Shwana': 2, 'Marjara': 2, 'Mushaka': 2, 'Gau': 2, 'Mahisha': 2, 'Vyaghra': 2, 'Mriga': 2, 'Vanara': 2, 'Nakula': 4, 'Simha': 2},
+    'Simha':   {'Ashwa': 1, 'Gaja': 1, 'Mesha': 2, 'Sarpa': 2, 'Shwana': 2, 'Marjara': 2, 'Mushaka': 2, 'Gau': 2, 'Mahisha': 2, 'Vyaghra': 2, 'Mriga': 2, 'Vanara': 2, 'Nakula': 2, 'Simha': 4}
+};

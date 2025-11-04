@@ -21,7 +21,9 @@ interface BirthChartProps {
   planets: ChartPlanet[];
   ascendantSign: number;
   ascendantDegrees?: number;
-  chartType?: 'lagna' | 'chandra' | 'navamsha' | 'dashamsa' | 'hora' | 'saptamsa';
+  ascendantNakshatra?: string;
+  ascendantNakshatraPada?: number;
+  chartType?: 'lagna' | 'chandra' | 'navamsha' | 'dashamsa' | 'hora' | 'saptamsa' | 'drekkana' | 'dwadamsha' | 'chaturthamsha' | 'shashtiamsha';
 }
 
 const RASHI_TO_CSS_ROTATION: Record<number, number> = {
@@ -54,6 +56,8 @@ export const BirthChart: React.FC<BirthChartProps> = ({
   planets,
   ascendantSign,
   ascendantDegrees,
+  ascendantNakshatra,
+  ascendantNakshatraPada,
   chartType = 'lagna',
 }) => {
   const [selectedHouse, setSelectedHouse] = useState<number | null>(null);
@@ -77,7 +81,7 @@ export const BirthChart: React.FC<BirthChartProps> = ({
 
   return (
     <div className="birth-chart-wrapper text-stone-800 dark:text-stone-100">
-      <div className="birth-chart relative">
+      <div className="birth-chart">
         {Array.from({ length: 12 }, (_, i) => i + 1).map((house) => {
           const housePlanets = planetsByHouse.get(house) || [];
           const rotation = RASHI_TO_CSS_ROTATION[house];
@@ -87,7 +91,7 @@ export const BirthChart: React.FC<BirthChartProps> = ({
 
           // Ascendant marker
           if (
-            ['lagna', 'dashamsa', 'hora', 'saptamsa'].includes(chartType) &&
+            chartType !== 'chandra' &&
             house === ascendantSign
           ) {
             contentItems.push(
@@ -114,13 +118,7 @@ export const BirthChart: React.FC<BirthChartProps> = ({
                 <span className={p.retrograde ? 'retrograde' : ''}>
                   {NEPALI_PLANET_ABBREVIATIONS[p.planet]}
                 </span>
-                {chartType === 'navamsha' && p.nakshatraPada !== undefined && (
-                  <span>
-                    ({NEPALI_NAKSHATRA_ABBREVIATIONS[p.nakshatra]}
-                    {toDevanagari(p.nakshatraPada)})
-                  </span>
-                )}
-                {chartType !== 'navamsha' && p.degreesInSign !== undefined && (
+                {p.degreesInSign !== undefined && (
                   <span className="planet-deg">{formatDegreesNepali(p.degreesInSign)}</span>
                 )}
               </div>
@@ -138,123 +136,126 @@ export const BirthChart: React.FC<BirthChartProps> = ({
             </div>
           );
         })}
-        <div className="chart-center-dot text-2xl font-bold dark:text-blue-400">ॐ</div>
+        <div className="chart-center-dot text-2xl font-bold dark:text-red-400">ॐ</div>
 
         {/* Overlay */}
-        {['lagna', 'chandra', 'dashamsa', 'hora', 'saptamsa'].includes(chartType) && (
-          <ClickableOverlay cx={200} cy={200} onSelect={(house) => setSelectedHouse(house)} />
-        )}
+        <ClickableOverlay cx={200} cy={200} onSelect={(house) => setSelectedHouse(house)} />
       </div>
 
       {/* Popup modal */}
-      {['lagna', 'chandra', 'dashamsa', 'hora', 'saptamsa'].includes(chartType) &&
-        selectedHouse && (
+      {selectedHouse && (
+        <div
+          className="fixed inset-0 flex items-center justify-center bg-black/50 z-50"
+          onClick={() => setSelectedHouse(null)}
+        >
           <div
-            className="fixed inset-0 flex items-center justify-center bg-black/50 z-50"
-            onClick={() => setSelectedHouse(null)}
+            className="bg-slate-200 dark:bg-gray-800 dark:text-stone-100 rounded-lg shadow-lg p-6 max-w-md w-full transition-colors duration-300"
+            onClick={(e) => e.stopPropagation()}
           >
-            <div
-              className="bg-slate-200 dark:bg-gray-800 dark:text-stone-100 rounded-lg shadow-lg p-6 max-w-md w-full transition-colors duration-300"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <h3 className="font-bold text-lg mb-2">
-                घर {toDevanagari(selectedHouse)} – {NEPALI_RASHI[selectedHouse - 1]} (स्वामी:{' '}
-                {NEPALI_PLANETS[RASHI_LORDS[selectedHouse]]})
-              </h3>
+            <h3 className="font-bold text-lg mb-2 text-blue-600 dark:text-blue-400">
+              घर {toDevanagari(selectedHouse)} – {NEPALI_RASHI[selectedHouse - 1]} (स्वामी:{' '}
+              {NEPALI_PLANETS[RASHI_LORDS[selectedHouse]]})
+            </h3>
 
-              {/* Ascendant marker */}
-              {['lagna', 'dashamsa', 'hora', 'saptamsa'].includes(chartType) &&
-                selectedHouse === ascendantSign &&
-                ascendantDegrees !== undefined && (
-                  <div className="mb-2">
-                    <div className="flex justify-between">
-                      <span>
-                        {NEPALI_PLANET_ABBREVIATIONS['ASCENDANT']} (
-                        {NEPALI_RASHI[ascendantSign - 1]})
-                      </span>
-                      <span>
-                        {formatDegreesNepali(ascendantDegrees)} ({formatPercent(ascendantDegrees)})
-                      </span>
-                    </div>
-                    <div className="w-full bg-gray-200 dark:bg-gray-800 h-2 rounded">
-                      <div
-                        className="bg-green-500 h-2 rounded"
-                        style={{ width: `${Math.round((ascendantDegrees / 30) * 100)}%` }}
-                      />
-                    </div>
-                  </div>
-                )}
-
-              {/* Chandra Lagna marker */}
-              {chartType === 'chandra' && selectedHouse === 1 && moon && (
+            {/* Ascendant marker */}
+            {chartType !== 'chandra' &&
+              selectedHouse === ascendantSign &&
+              ascendantDegrees !== undefined && (
                 <div className="mb-2">
-                  <div className="flex justify-between">
-                    <span>{NEPALI_PLANET_ABBREVIATIONS['ASCENDANT']} (चन्द्र)</span>
+                  <div className="flex justify-between text-stone-800 dark:text-stone-100">
+                    <span>
+                      {NEPALI_PLANET_ABBREVIATIONS['ASCENDANT']} (
+                      {NEPALI_RASHI[ascendantSign - 1]})
+                    </span>
+                    <span>
+                      {formatDegreesNepali(ascendantDegrees)} ({formatPercent(ascendantDegrees)})
+                    </span>
                   </div>
-                  <div className="w-full bg-gray-200 dark:bg-gray-800 h-2 rounded">
-                    <div
-                      className="bg-green-500 h-2 rounded"
-                      style={{
-                        width: `${Math.round(((moon.degreesInSign || 0) / 30) * 100)}%`,
-                      }}
-                    />
-                  </div>
-                  {moon.nakshatra && moon.nakshatraPada && (
-                    <div className="text-sm text-red-600 dark:text-red-400 font-semibold mt-1">
-                      जनम नक्षत्र:{' '}
-                      {NEPALI_NAKSHATRA_ABBREVIATIONS[moon.nakshatra]}
-                      {toDevanagari(moon.nakshatraPada)}
+                  {ascendantNakshatra && ascendantNakshatraPada && (
+                    <div className="text-sm ml-2 text-gray-600 dark:text-gray-400">
+                      {NEPALI_NAKSHATRA_ABBREVIATIONS[ascendantNakshatra]}
+                      {toDevanagari(ascendantNakshatraPada)}
                     </div>
                   )}
+                  <div className="w-full bg-gray-200 dark:bg-gray-700 h-2 rounded">
+                    <div
+                      className="bg-green-500 h-2 rounded"
+                      style={{ width: `${Math.round((ascendantDegrees / 30) * 100)}%` }}
+                    />
+                  </div>
                 </div>
               )}
 
-              {/* Planets */}
-              {(planetsByHouse.get(selectedHouse) || []).map((p) => {
-                if (chartType === 'chandra' && selectedHouse === 1 && p.planet === 'MOON') {
-                  return null;
-                }
+            {/* Chandra Lagna marker */}
+            {chartType === 'chandra' && selectedHouse === 1 && moon && (
+              <div className="mb-2">
+                <div className="flex justify-between text-stone-800 dark:text-stone-100">
+                  <span>{NEPALI_PLANET_ABBREVIATIONS['ASCENDANT']} (चन्द्र)</span>
+                </div>
+                <div className="w-full bg-gray-200 dark:bg-gray-700 h-2 rounded">
+                  <div
+                    className="bg-green-500 h-2 rounded"
+                    style={{
+                      width: `${Math.round(((moon.degreesInSign || 0) / 30) * 100)}%`,
+                    }}
+                  />
+                </div>
+                {moon.nakshatra && moon.nakshatraPada && (
+                  <div className="text-sm text-red-600 dark:text-red-400 font-semibold mt-1">
+                    जनम नक्षत्र:{' '}
+                    {NEPALI_NAKSHATRA_ABBREVIATIONS[moon.nakshatra]}
+                    {toDevanagari(moon.nakshatraPada)}
+                  </div>
+                )}
+              </div>
+            )}
 
-                const percent =
-                  p.degreesInSign !== undefined
-                    ? Math.round((p.degreesInSign / 30) * 100)
-                    : null;
+            {/* Planets */}
+            {(planetsByHouse.get(selectedHouse) || []).map((p) => {
+              if (chartType === 'chandra' && selectedHouse === 1 && p.planet === 'MOON') {
+                return null;
+              }
 
-                return (
-                  <div key={p.planet} className="mb-2">
-                    <div className="flex justify-between">
-                      <span className={p.retrograde ? 'retrograde font-bold' : ''}>
-                        {NEPALI_PLANETS[p.planet]}
+              const percent =
+                p.degreesInSign !== undefined
+                  ? Math.round((p.degreesInSign / 30) * 100)
+                  : null;
+
+              return (
+                <div key={p.planet} className="mb-2">
+                  <div className="flex justify-between text-stone-800 dark:text-stone-100">
+                    <span className={p.retrograde ? 'font-bold text-blue-600 dark:text-blue-400' : ''}>
+                      {NEPALI_PLANETS[p.planet]}
+                    </span>
+                    {p.degreesInSign !== undefined && (
+                      <span>
+                        {formatDegreesNepali(p.degreesInSign)} (
+                        {formatPercent(p.degreesInSign)})
                       </span>
-                      {p.degreesInSign !== undefined && (
-                        <span>
-                          {formatDegreesNepali(p.degreesInSign)} (
-                          {formatPercent(p.degreesInSign)})
-                        </span>
-                      )}
-                    </div>
-
-                    {p.nakshatra && p.nakshatraPada && chartType === 'navamsha' && (
-                      <div className="text-sm ml-2 text-gray-600 dark:text-gray-400">
-                        {NEPALI_NAKSHATRA_ABBREVIATIONS[p.nakshatra]}
-                        {toDevanagari(p.nakshatraPada)}
-                      </div>
-                    )}
-
-                    {percent !== null && (
-                      <div className="w-full bg-gray-200 dark:bg-gray-800 h-2 rounded">
-                        <div
-                          className="bg-blue-500 h-2 rounded"
-                          style={{ width: `${percent}%` }}
-                        />
-                      </div>
                     )}
                   </div>
-                );
-              })}
-            </div>
+
+                  {p.nakshatra && p.nakshatraPada && (
+                    <div className="text-sm ml-2 text-gray-600 dark:text-gray-400">
+                      {NEPALI_NAKSHATRA_ABBREVIATIONS[p.nakshatra]}
+                      {toDevanagari(p.nakshatraPada)}
+                    </div>
+                  )}
+
+                  {percent !== null && (
+                    <div className="w-full bg-gray-200 dark:bg-gray-700 h-2 rounded">
+                      <div
+                        className="bg-blue-500 h-2 rounded"
+                        style={{ width: `${percent}%` }}
+                      />
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
-        )}
+        </div>
+      )}
     </div>
   );
 };

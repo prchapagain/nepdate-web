@@ -449,3 +449,19 @@
     }
   }
 }
+
+/* print override */
+@media print {
+  .overflow-hidden {
+    overflow: visible !important;
+    max-height: max-content !important;
+  }
+}
+
+@media print {
+  .print-hidden {
+    display: none !important;
+    height: 0 !important;
+  }
+}
+

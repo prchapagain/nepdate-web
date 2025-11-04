@@ -1,29 +1,98 @@
-import React from 'react';
+import React, { useState } from 'react';
 import type { KundaliResponse } from '../../../types/types';
 import BirthChart from './BirthChart';
 import { PlanetaryTable } from './PlanetaryTable';
 import { BirthDetailsCard } from './BirthDetailsCard';
 import { DashaTable } from './DashaTable';
-import { NEPALI_LABELS } from '../../constants/constants';
+import { NEPALI_BS_MONTHS, NEPALI_LABELS } from '../../constants/constants';
+import { PrintIcon, ChevronDownIcon } from '../../data/icons';
+import { toBikramSambat, toDevanagari } from '../../lib/bikram';
 
 interface KundaliDisplayProps {
   data: KundaliResponse;
   onReturnToForm: () => void;
 }
 
-export const KundaliDisplay: React.FC<KundaliDisplayProps> = ({ data, onReturnToForm }) => {
-  const navamsaChartData = data.divisionalCharts.find((c) => c.name === 'Navamsa (D9)');
-  const dashamsaChartData = data.divisionalCharts.find((c) => c.name === 'Dashamsa (D10)');
-  const horaChartData = data.divisionalCharts.find((c) => c.name === 'Hora (D2)');
-  const saptamsaChartData = data.divisionalCharts.find((c) => c.name === 'Saptamsa (D7)');
+const ChartItem: React.FC<{ chart: any }> = ({ chart }) => {
+  if (!chart.chartData) return null;
+  const chartPlanets = 'planets' in chart.chartData ? chart.chartData.planets : [];
+  const ascendantSign = 'ascendant' in chart.chartData ? chart.chartData.ascendant.sign : 1;
+  const ascendantDegrees = 'ascendant' in chart.chartData ? chart.chartData.ascendant.degreesInSign : undefined;
+  const ascendantNakshatra = 'ascendant' in chart.chartData ? chart.chartData.ascendant.nakshatra : undefined;
+  const ascendantNakshatraPada = 'ascendant' in chart.chartData ? chart.chartData.ascendant.nakshatraPada : undefined;
 
   return (
-    <div className="dashboard-container  bg-slate-50 rounded-xl shadow-lg w-full  lg:max-w-4xl xl:max-w-6xl lg:p-4 md:p-1 space-y-4 text-sm md:text-base dark:bg-gray-800 dark:text-gray-200 dark:border dark:border-gray-700">
+    <div key={chart.title} className="chart-instance dark:bg-gray-800">
+      <h3 className="text-lg font-semibold mb-2 text-center dark:text-blue-400">{chart.title}</h3>
+      <div className="chart-card dark:bg-gray-800 rounded-lg p-2 transition-colors duration-300">
+        <BirthChart
+          planets={chartPlanets.map((p: any) => ({
+            planet: p.planet,
+            rashi: 'rashi' in p ? p.rashi : p.sign,
+            degreesInSign: 'degreesInSign' in p ? p.degreesInSign : undefined,
+            retrograde: p.retrograde,
+            nakshatra: p.nakshatra,
+            nakshatraPada: p.nakshatraPada
+          }))}
+          ascendantSign={ascendantSign}
+          ascendantDegrees={ascendantDegrees}
+          ascendantNakshatra={ascendantNakshatra}
+          ascendantNakshatraPada={ascendantNakshatraPada}
+          chartType={chart.type as any}
+        />
+      </div>
+    </div>
+  );
+};
+
+
+export const KundaliDisplay: React.FC<KundaliDisplayProps> = ({ data, onReturnToForm }) => {
+  const [showMoreCharts, setShowMoreCharts] = useState(false);
+
+  const navamsaChartData = data.divisionalCharts.find((c) => c.name.includes('D9'));
+  const dashamsaChartData = data.divisionalCharts.find((c) => c.name.includes('D10'));
+  const drekkanaChartData = data.divisionalCharts.find((c) => c.name.includes('D3'));
+  const dwadamshaChartData = data.divisionalCharts.find((c) => c.name.includes('D12'));
+  const chaturthamshaChartData = data.divisionalCharts.find((c) => c.name.includes('D4'));
+  const shashtiamshaChartData = data.divisionalCharts.find((c) => c.name.includes('D60'));
+
+  const defaultCharts = [
+    { type: 'lagna', title: NEPALI_LABELS.rashiChart, chartData: data },
+    { type: 'chandra', title: NEPALI_LABELS.chandraChart, chartData: data },
+    { type: 'navamsha', title: NEPALI_LABELS.navamsaChart, chartData: navamsaChartData },
+    { type: 'dashamsa', title: NEPALI_LABELS.dashamsaChart, chartData: dashamsaChartData },
+  ];
+
+  const moreCharts = [
+    { type: 'drekkana', title: NEPALI_LABELS.drekkanaChart, chartData: drekkanaChartData },
+    { type: 'dwadamsha', title: NEPALI_LABELS.dwadamshaChart, chartData: dwadamshaChartData },
+    { type: 'chaturthamsha', title: NEPALI_LABELS.chaturthamshaChart, chartData: chaturthamshaChartData },
+    { type: 'shashtiamsha', title: NEPALI_LABELS.shashtiamshaChart, chartData: shashtiamshaChartData },
+  ].filter(c => c.chartData);
+
+  const now = new Date();
+  const bsDate = toBikramSambat(now);
+
+  const formattedDate = `${toDevanagari(bsDate.year)} ${NEPALI_BS_MONTHS[bsDate.monthIndex]} ${toDevanagari(bsDate.day)}`;
+
+  const timeFormatted = now.toLocaleTimeString('ne-NP', {
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true,
+  });
+
+
+
+
+  return (
+    <div className="kundali-display-container flex flex-col bg-slate-200 rounded-xl shadow-lg w-full  lg:max-w-4xl xl:max-w-6xl lg:p-4 md:p-1 space-y-4 text-sm md:text-base dark:bg-gray-800 dark:text-gray-200 dark:border dark:border-gray-700 pb-40 print:pb-0">
       {/* Header */}
       <header className="kundali-card rounded-lg text-center dark:bg-gray-800 dark:text-blue-400 transition-colors duration-300">
         <h2 className="text-3xl self-center font-bold text-blue-400 dark:text-blue-400">
           {NEPALI_LABELS.kundaliOf(data.birthDetails.name)}
         </h2>
+        <div className="hidden text-xs self-center print:block font-bold text-gray-400 dark:text-gray-400(">{NEPALI_LABELS.printedDate}: {formattedDate} {timeFormatted}</div>
+
       </header>
 
       {/* Planet Table + Birth Details */}
@@ -31,7 +100,7 @@ export const KundaliDisplay: React.FC<KundaliDisplayProps> = ({ data, onReturnTo
         <div className="flex flex-col">
           <div className="lg:col-span-2 flex flex-col">
             <div className="flex-1 kundali-card p-4 rounded-lg bg-slate-200 dark:bg-gray-800 dark:text-stone-100 shadow transition-colors duration-300">
-              <BirthDetailsCard data={data} layout="two-column" />
+              <BirthDetailsCard data={data} />
             </div>
           </div>
           <div className="flex-1 kundali-card lg:p-4 md:p-1 rounded-lg bg-slate-200 dark:bg-gray-800 dark:text-stone-100 shadow transition-colors duration-300">
@@ -40,145 +109,82 @@ export const KundaliDisplay: React.FC<KundaliDisplayProps> = ({ data, onReturnTo
         </div>
       </div>
 
-      {/* Charts Section */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mt-6">
-        {/* Rashi (D1) chart */}
-        <div className="chart-instance dark:bg-gray-800">
-          <h3 className="text-lg font-semibold mb-2 text-center dark:text-blue-400">
-            {NEPALI_LABELS.rashiChart}
-          </h3>
-          <div className="chart-card dark:bg-gray-800 rounded-lg p-2 transition-colors duration-300">
-            <BirthChart
-              planets={data.planets}
-              ascendantSign={data.ascendant.sign}
-              ascendantDegrees={data.ascendant.degreesInSign}
-              chartType="lagna"
-            />
-          </div>
+      {/* Charts Section - Screen View */}
+      <div className="print:hidden">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mt-6">
+          {defaultCharts.map(chart => <ChartItem key={chart.type} chart={chart} />)}
         </div>
 
-        {/* Navamsa (D9) chart */}
-        {navamsaChartData && (
-          <div className="chart-instance">
-            <h3 className="text-lg font-semibold mb-2 text-center dark:text-blue-400">
-              {NEPALI_LABELS.navamsaChart}
-            </h3>
-            <div className="chart-card dark:bg-gray-800 rounded-lg p-2 transition-colors duration-300">
-              <BirthChart
-                planets={navamsaChartData.planets.map((p) => ({
-                  planet: p.planet,
-                  rashi: p.sign,
-                  retrograde: p.retrograde,
-                  nakshatra: p.nakshatra,
-                  nakshatraPada: p.nakshatraPada,
-                }))}
-                ascendantSign={navamsaChartData.ascendant.sign}
-                chartType="navamsha"
-              />
+        {moreCharts.length > 0 && (
+          <>
+            <div className={`grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6 mt-6 transition-all duration-500 ease-in-out overflow-hidden ${showMoreCharts ? 'max-h-[2000px] opacity-100' : 'max-h-0 opacity-0'}`}>
+              {showMoreCharts && moreCharts.map(chart => <ChartItem key={chart.type} chart={chart} />)}
             </div>
-          </div>
-        )}
-
-        {/* Dashamsa (D10) chart */}
-        {dashamsaChartData && (
-          <div className="chart-instance">
-            <h3 className="text-lg font-semibold mb-2 text-center dark:text-blue-400">
-              {NEPALI_LABELS.dashamsaChart}
-            </h3>
-            <div className="chart-card dark:bg-gray-800 rounded-lg p-2 transition-colors duration-300">
-              <BirthChart
-                planets={dashamsaChartData.planets.map((p) => ({
-                  planet: p.planet,
-                  rashi: p.sign,
-                  retrograde: p.retrograde,
-                  nakshatra: p.nakshatra,
-                  nakshatraPada: p.nakshatraPada,
-                  degreesInSign: p.degreesInSign,
-                }))}
-                ascendantSign={dashamsaChartData.ascendant.sign}
-                ascendantDegrees={dashamsaChartData.ascendant.degreesInSign}
-                chartType="dashamsa"
-              />
+            <div className="text-center mt-4">
+              <button
+                onClick={() => setShowMoreCharts(!showMoreCharts)}
+                className="flex items-center justify-center gap-2 mx-auto px-4 py-2 text-sm font-medium text-blue-600 dark:text-blue-400 bg-blue-100/50 dark:bg-blue-900/20 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/40 transition"
+              >
+                <span>{showMoreCharts ? NEPALI_LABELS.showLessCharts : NEPALI_LABELS.showMoreCharts}</span>
+                <ChevronDownIcon className={`w-4 h-4 transition-transform duration-300 ${showMoreCharts ? 'rotate-180' : ''}`} />
+              </button>
             </div>
-          </div>
+          </>
         )}
+      </div>
 
-        {/* Hora (D2) chart */}
-        {horaChartData && (
-          <div className="chart-instance">
-            <h3 className="text-lg font-semibold mb-2 text-center dark:text-blue-400">
-              {NEPALI_LABELS.horaChart}
-            </h3>
-            <div className="chart-card dark:bg-gray-800 rounded-lg p-2 transition-colors duration-300">
-              <BirthChart
-                planets={horaChartData.planets.map((p) => ({
-                  planet: p.planet,
-                  rashi: p.sign,
-                  retrograde: p.retrograde,
-                  nakshatra: p.nakshatra,
-                  nakshatraPada: p.nakshatraPada,
-                  degreesInSign: p.degreesInSign,
-                }))}
-                ascendantSign={horaChartData.ascendant.sign}
-                ascendantDegrees={horaChartData.ascendant.degreesInSign}
-                chartType="hora"
-              />
+      {/* Charts Section - Print View */}
+      <div className="hidden print:block">
+        <div className="flex flex-wrap -mx-3 mt-6 pt-6 border-t-2 border-dashed border-gray-300 dark:border-gray-700">
+          {[...defaultCharts, ...moreCharts].map(chart => (
+            <div key={`print-${chart.type}`} className="w-1/2 px-3 mb-6 break-inside-avoid">
+              <ChartItem chart={chart} />
             </div>
-          </div>
-        )}
-
-        {/* Saptamsa (D7) chart */}
-        {saptamsaChartData && (
-          <div className="chart-instance">
-            <h3 className="text-lg font-semibold mb-2 text-center dark:text-blue-400">
-              {NEPALI_LABELS.saptamsaChart}
-            </h3>
-            <div className="chart-card dark:bg-gray-800 rounded-lg p-2 transition-colors duration-300">
-              <BirthChart
-                planets={saptamsaChartData.planets.map((p) => ({
-                  planet: p.planet,
-                  rashi: p.sign,
-                  retrograde: p.retrograde,
-                  nakshatra: p.nakshatra,
-                  nakshatraPada: p.nakshatraPada,
-                  degreesInSign: p.degreesInSign,
-                }))}
-                ascendantSign={saptamsaChartData.ascendant.sign}
-                ascendantDegrees={saptamsaChartData.ascendant.degreesInSign}
-                chartType="saptamsa"
-              />
-            </div>
-          </div>
-        )}
-
-        {/* Chandra chart */}
-        <div className="chart-instance">
-          <h3 className="text-lg font-semibold mb-2 text-center dark:text-blue-400">
-            {NEPALI_LABELS.chandraChart}
-          </h3>
-          <div className="chart-card dark:bg-gray-800 rounded-lg p-2 transition-colors duration-300">
-            <BirthChart
-              planets={data.planets}
-              ascendantSign={data.ascendant.sign}
-              ascendantDegrees={data.ascendant.degreesInSign}
-              chartType="chandra"
-            />
-          </div>
+          ))}
         </div>
       </div>
 
-      {/* Dasha table */}
-      <DashaTable dashaSequence={data.dashaSequence} />
-      <div className='h-32 '></div>
+
+      {/* Dasha tables */}
+      <DashaTable dashaSequence={data.dashaSequence} title={NEPALI_LABELS.dashaPeriods} />
+      {data.tribhagiDasha && data.tribhagiDasha.length > 0 && (
+        <DashaTable dashaSequence={data.tribhagiDasha} title={NEPALI_LABELS.tribhagiDasha} />
+      )}
+      {data.yoginiDasha && data.yoginiDasha.length > 0 && (
+        <DashaTable dashaSequence={data.yoginiDasha} title={NEPALI_LABELS.yoginiDasha} />
+      )}
+      {data.ashtottariDasha && data.ashtottariDasha.length > 0 && (
+        <DashaTable dashaSequence={data.ashtottariDasha} title={NEPALI_LABELS.ashtottariDasha} />
+      )}
+      {data.jaiminiDasha && data.jaiminiDasha.length > 0 && (
+        <DashaTable dashaSequence={data.jaiminiDasha} title={NEPALI_LABELS.jaiminiDasha} />
+      )}
+
+      {/* Print-only Footer */}
+      <div className="hidden print:block text-center text-xs text-gray-500 pt-4 mt-4 border-t border-gray-300">
+        <p>© {new Date().getFullYear()} {NEPALI_LABELS.project}</p>
+        <p className="mt-1">{data.birthDetails.name} को कुण्डली</p>
+      </div>
 
       {/* Return to form button */}
-      <div className="fixed bottom-12 left-1/2 transform -translate-x-1/2 z-[999]">
-        <button
-          className="bg-blue-600 dark:bg-blue-600 text-white px-6 py-2 rounded shadow-md hover:bg-blue-700 dark:hover:bg-blue-800 transition"
-          onClick={onReturnToForm}
-        >
-          ← {NEPALI_LABELS.returnToForm}
-        </button>
+      <div className="fixed bottom-12 left-1/2 transform -translate-x-1/2 z-[999] print:hidden w-full px-4 text-center">
+        <div className="flex gap-4 justify-center">
+          <button
+            className="bg-blue-600 dark:bg-blue-600 text-white px-6 py-2 rounded shadow-md hover:bg-blue-700 dark:hover:bg-blue-800 transition flex items-center gap-2"
+            onClick={onReturnToForm}
+          >
+            ← {NEPALI_LABELS.returnToForm}
+          </button>
+          <button
+            className="bg-gray-600 dark:bg-gray-500 text-white px-6 py-2 rounded shadow-md hover:bg-gray-700 dark:hover:bg-gray-600 transition flex items-center gap-2"
+            onClick={() => window.print()}
+          >
+            <PrintIcon className="w-4 h-4" /> {NEPALI_LABELS.print}
+          </button>
+        </div>
+        <p className="text-xs text-gray-500 dark:text-gray-400 mt-2 md:hidden">
+          {NEPALI_LABELS.mobilePrintHint}
+        </p>
       </div>
     </div>
   );
