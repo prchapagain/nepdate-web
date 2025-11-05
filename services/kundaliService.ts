@@ -27,7 +27,9 @@ async function getKundali(req: KundaliRequest): Promise<KundaliResponse | Servic
         const dt = dTime(jd_utc);
         const jd = jd_utc + dt / 24;
         
-        const sunEvents = getSunriseSunset(birthDateUTC, req.latitude, req.longitude, req.offset);
+        // Use a date object representing the local day at UTC midnight for sunrise/sunset calculation
+        const localDayForCalc = new Date(Date.UTC(year, month - 1, day));
+        const sunEvents = getSunriseSunset(localDayForCalc, req.latitude, req.longitude, req.offset);
 
         const ayanamsa = calcayan(jd);
 
