@@ -1,24 +1,11 @@
 import React, { useEffect, useMemo, useState, useImperativeHandle, forwardRef, useRef } from 'react';
 import { LoaderIcon, ChevronDownIcon, LocationIcon, MapIcon, XIcon, SearchIcon } from '../../data/icons';
-import type { KundaliRequest } from '../../../types/types';
+import type { KundaliRequest, DefaultFormValues } from '../../../types/types';
 import { NEPALI_LABELS, NEPALI_BS_MONTHS, GREGORIAN_MONTHS } from '../../constants/constants';
 import { nepaliLocations, TIMEZONE_OFFSETS } from '../../data/timezone';
-import { Bsdata } from '../../data/monthData';
 import { MapContainer, TileLayer, Marker, useMapEvents, useMap } from 'react-leaflet';
 import tzlookup from 'tz-lookup';
-import { toBikramSambat, fromBikramSambat, getDaysInADMonth, toDevanagari, fromDevanagari } from '../../lib/lib';
-
-export interface DefaultFormValues {
-    name: string;
-    dateSystem: 'BS' | 'AD';
-    bsYear: number;
-    bsMonth: number;
-    bsDay: number;
-    hour: number;
-    minute: number;
-    second: number;
-    period: 'AM' | 'PM';
-}
+import { toBikramSambat, getDaysInADMonth, toDevanagari, fromDevanagari, getBikramMonthInfo, fromBikramSambat } from '../../lib/lib';
 
 interface KundaliFormProps {
   onCalculate: (data: KundaliRequest) => void;
@@ -94,7 +81,6 @@ const MapModal: React.FC<MapModalProps> = ({ onClose, onLocationSelect, initialP
     onClose();
   };
 
-  // Use absolute full-screen overlay (reliable than fixed in some WebViews)
   return (
     <div
       style={{
@@ -216,27 +202,6 @@ const AD_YEAR_MAX = 2150;
 const BS_YEAR_MIN = 1960;
 const BS_YEAR_MAX = 2210;
 
-const getDaysInBSMonth = (year: number, month: number): number => {
-    if (!year || !month) return 30;
-    const yearIndex = year - Bsdata.BS_START_YEAR;
-    if (year >= Bsdata.BS_START_YEAR && yearIndex < Bsdata.NP_MONTHS_DATA.length) {
-        const yearData = Bsdata.NP_MONTHS_DATA[yearIndex];
-        return yearData ? yearData[month - 1] : 30;
-    }
-    // Algorithmic fallback
-    try {
-        const firstDayAd = fromBikramSambat(year, month - 1, 1);
-        const nextMonthIndex = (month - 1) === 11 ? 0 : month;
-        const nextYear = (month - 1) === 11 ? year + 1 : year;
-        const firstDayOfNextMonthAd = fromBikramSambat(nextYear, nextMonthIndex, 1);
-        const totalDays = Math.round((firstDayOfNextMonthAd.getTime() - firstDayAd.getTime()) / 86400000);
-        return totalDays > 0 && totalDays < 33 ? totalDays : 30;
-    } catch {
-        return 30; // Fallback if conversion fails
-    }
-};
-
-
 // --- KundaliForm Component ---
 export const KundaliForm = forwardRef<KundaliFormHandle, KundaliFormProps>(({ onCalculate, isLoading, hideSubmitButton = false, defaultValues }, ref) => {
   const today = new Date();
@@ -265,11 +230,11 @@ export const KundaliForm = forwardRef<KundaliFormHandle, KundaliFormProps>(({ on
   const [hour, setHour] = useState<number>(defaultValues?.hour || 4);
   const [minute, setMinute] = useState<number>(defaultValues?.minute || 15);
   const [second, setSecond] = useState<number>(defaultValues?.second || 0);
-  
-  const [selectedLocation, setSelectedLocation] = useState(defaultLocation);
-  const [manualLat, setManualLat] = useState<number>(defaultLocation?.latitude ?? 27.7172);
-  const [manualLon, setManualLon] = useState<number>(defaultLocation?.longitude ?? 85.3240);
-  const [manualZoneId, setManualZoneId] = useState<string>(defaultLocation?.zoneId ?? 'Asia/Kathmandu');
+  const initialLocation = defaultValues?.location || defaultLocation;
+  const [selectedLocation, setSelectedLocation] = useState(initialLocation);
+  const [manualLat, setManualLat] = useState<number>(initialLocation.latitude);
+  const [manualLon, setManualLon] = useState<number>(initialLocation.longitude);
+  const [manualZoneId, setManualZoneId] = useState<string>(initialLocation.zoneId);
   const [showMap, setShowMap] = useState<boolean>(false);
   const [locationSearch, setLocationSearch] = useState<string>('');
 
@@ -300,7 +265,7 @@ export const KundaliForm = forwardRef<KundaliFormHandle, KundaliFormProps>(({ on
     const year = dateSystem === 'BS' ? bsYear : adYear;
     const validYear = year || (dateSystem === 'BS' ? bsToday.year : today.getFullYear());
     return dateSystem === 'BS'
-      ? getDaysInBSMonth(validYear, bsMonth)
+      ? getBikramMonthInfo(validYear, bsMonth - 1).totalDays
       : getDaysInADMonth(validYear, adMonth);
   }, [dateSystem, bsYear, bsMonth, adYear, adMonth, bsToday.year, today]);
 
@@ -644,7 +609,7 @@ export const KundaliForm = forwardRef<KundaliFormHandle, KundaliFormProps>(({ on
       {/* Location Modal */}
       {isLocationModalOpen && (
          <div className="fixed inset-0 flex items-start justify-center bg-black/60 z-50 p-4 pt-8 sm:pt-8 transition-opacity" onClick={() => setIsLocationModalOpen(false)}>
-            <div className="bg-slate-200 dark:bg-gray-800 w-full h-full sm:h-auto sm:max-h-[90vh] sm:rounded-lg shadow-xl max-w-lg p-4 flex flex-col transition-transform" onClick={(e) => e.stopPropagation()}>
+            <div className="bg-slate-200 dark:bg-gray-800 w-full h-3/6 sm:h-3/5 sm:max-h-[90vh] sm:rounded-lg shadow-xl max-w-lg p-4 flex flex-col transition-transform" onClick={(e) => e.stopPropagation()}>
                <div className="flex justify-between items-center pb-3 border-b dark:border-gray-700">
                   <h3 className="text-lg font-semibold">{modalView === 'search' ? NEPALI_LABELS.searchOrSelectLocation : NEPALI_LABELS.enterManually}</h3>
                   <button onClick={() => setIsLocationModalOpen(false)} className="text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-100"><XIcon className="w-5 h-5" /></button>

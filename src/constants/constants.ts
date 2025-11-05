@@ -166,6 +166,14 @@ export const NEPALI_LABELS = {
   },
   proceed: "अगाडि बढ्नुहोस्",
   edit: "सम्पादन गर्नुहोस्",
+  saved: "सुरक्षित",
+  savedKundalis: "सुरक्षित कुण्डलीहरू",
+  noSavedKundalis: "कुनै सुरक्षित कुण्डलीहरू भेटिएन।",
+  load: "लोड गर्नुहोस्",
+  delete: "हटाउनुहोस्",
+  deleteConfirm: "के तपाईं यो कुण्डली हटाउन निश्चित हुनुहुन्छ?",
+  savedOn: "सुरक्षित गरिएको:",
+  view: "हेर्नुहोस्"
 };
 
 export const NEPALI_PLANETS: { [key: string]: string } = {

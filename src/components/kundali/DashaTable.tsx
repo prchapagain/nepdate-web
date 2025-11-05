@@ -27,13 +27,12 @@ export const DashaTable: React.FC<{ dashaSequence: DashaInfo[], title: string }>
     const [expandedDasha, setExpandedDasha] = useState<string | null>(null);
     const isJaimini = title === NEPALI_LABELS.jaiminiDasha;
 
-
     const toggleDasha = (dashaKey: string) => {
         setExpandedDasha(prev => (prev === dashaKey ? null : dashaKey));
     };
 
     return (
-        <div className="kundali-card p-4 sm:p-6 mb-11 print:mb-4 rounded-lg bg-slate-200 dark:bg-gray-800">
+        <div className="kundali-card p-2 sm:p-6 mb-11 print:mb-2 rounded-lg bg-slate-200 dark:bg-gray-800 break-inside-avoid-page page-break-inside-avoid">
             <h3 className="text-xl font-bold text-blue-400 dark:text-blue-400 mb-4 print:hidden">{title}</h3>
             {isJaimini && (
                 <p className="text-xs text-stone-500 dark:text-stone-400 -mt-3 mb-3 px-2 print:hidden">
@@ -67,8 +66,7 @@ export const DashaTable: React.FC<{ dashaSequence: DashaInfo[], title: string }>
                                             {hasSubDashas && (
                                                 <div className="relative group">
                                                     <ChevronDownIcon
-                                                        className={`w-4 h-4 mr-2 text-amber-700 dark:text-blue-400 transition-transform duration-300 ${expandedDasha === dashaKey ? 'rotate-180' : ''
-                                                            }`}
+                                                        className={`w-4 h-4 mr-2 text-amber-700 dark:text-blue-400 transition-transform duration-300 ${expandedDasha === dashaKey ? 'rotate-180' : ''}`}
                                                     />
                                                     <div className="absolute top-full left-1/2 -translate-x-1/2 mt-1 px-2 py-1 bg-zinc-800 text-white text-xs rounded shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-[999] dark:bg-gray-800 dark:text-stone-200">
                                                         {NEPALI_LABELS.antarDasha_clickToExpand}
@@ -85,8 +83,7 @@ export const DashaTable: React.FC<{ dashaSequence: DashaInfo[], title: string }>
                                             <td colSpan={3} className="p-0 border-none">
                                                 <div
                                                     id={`antardasha-${dashaKey}`}
-                                                    className={`overflow-hidden transition-all duration-500 ease-in-out ${expandedDasha === dashaKey ? 'max-h-[1000px]' : 'max-h-0'
-                                                        }`}
+                                                    className={`overflow-hidden transition-all duration-500 ease-in-out ${expandedDasha === dashaKey ? 'max-h-[1000px]' : 'max-h-0'}`}
                                                 >
                                                     <div className="p-4 bg-amber-50/50 dark:bg-amber-900/20">
                                                         <h4 className="font-semibold text-blue-400 dark:text-blue-400 mb-2 pl-2">{isJaimini ? "अन्तरदशा राशि" : NEPALI_LABELS.antarDasha}</h4>
@@ -114,34 +111,34 @@ export const DashaTable: React.FC<{ dashaSequence: DashaInfo[], title: string }>
                                         </tr>
                                     )}
                                 </React.Fragment>
-                            )
+                            );
                         })}
                     </tbody>
                 </table>
             </div>
 
             {/* --- Print View: Static, Main Dashas Only --- */}
-            <div className="hidden print:block mt-6">
-                <h4 className="text-lg font-semibold mb-2 text-stone-800">{title}</h4>
+            <div className="hidden print:block mt-1">
+                <h4 className="text-lg font-semibold mb-1 text-stone-800">{title}</h4>
                 {isJaimini && (
-                    <p className="text-xs text-stone-500 -mt-2 mb-2 px-2 italic">
+                    <p className="text-xs text-stone-500 -mt-1 mb-1 px-2 italic">
                         {NEPALI_LABELS.jaiminiProportionalNote}
                     </p>
                 )}
-                <table className="w-full text-left text-sm border-collapse mb-4">
+                <table className="w-full text-left text-sm border-collapse mb-1">
                     <thead className="border-b-2 border-stone-400 text-stone-600">
                         <tr>
-                            <th className="py-2 px-2">{isJaimini ? "दशा राशि" : NEPALI_LABELS.mahaDasha}</th>
-                            <th className="py-2 px-2">{NEPALI_LABELS.startsOn}</th>
-                            <th className="py-2 px-2">{NEPALI_LABELS.endsOn}</th>
+                            <th className="py-1 px-2">{isJaimini ? "दशा राशि" : NEPALI_LABELS.mahaDasha}</th>
+                            <th className="py-1 px-2">{NEPALI_LABELS.startsOn}</th>
+                            <th className="py-1 px-2">{NEPALI_LABELS.endsOn}</th>
                         </tr>
                     </thead>
                     <tbody>
                         {dashaSequence.slice(0, 12).map((dasha) => (
                             <tr key={`print-${dasha.planet}-${dasha.start}`} className="border-b border-stone-200">
-                                <td className="py-2 px-2 font-medium text-stone-800">{isJaimini ? dasha.planet : NEPALI_PLANETS[dasha.planet]}</td>
-                                <td className="py-2 px-2 text-stone-700">{formatDate(dasha.start)}</td>
-                                <td className="py-2 px-2 text-stone-700">{formatDate(dasha.end)}</td>
+                                <td className="py-1 px-2 font-medium text-stone-800">{isJaimini ? dasha.planet : NEPALI_PLANETS[dasha.planet]}</td>
+                                <td className="py-1 px-2 text-stone-700">{formatDate(dasha.start)}</td>
+                                <td className="py-1 px-2 text-stone-700">{formatDate(dasha.end)}</td>
                             </tr>
                         ))}
                     </tbody>

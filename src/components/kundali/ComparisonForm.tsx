@@ -1,15 +1,18 @@
 import React, { useRef } from 'react';
-import { KundaliForm, type DefaultFormValues, type KundaliFormHandle } from './KundaliForm';
-import type { KundaliRequest } from '../../../types/types';
+import { KundaliForm, type KundaliFormHandle } from './KundaliForm';
+import type { KundaliRequest, DefaultFormValues } from '../../../types/types';
 import { NEPALI_LABELS } from '../../constants/constants';
 import { LoaderIcon } from '../../data/icons';
 
 interface ComparisonFormProps {
     onCalculate: (groomData: KundaliRequest, brideData: KundaliRequest) => void;
     isLoading: boolean;
+    defaultValues?: {
+      groom?: DefaultFormValues,
+      bride?: DefaultFormValues
+    };
 }
 
-// Default values for a 36/36 Guna Milan match
 const defaultGroomValues: DefaultFormValues = {
     name: 'सुरज',
     dateSystem: 'BS',
@@ -19,32 +22,38 @@ const defaultGroomValues: DefaultFormValues = {
     hour: 10,
     minute: 15,
     second: 0,
-    period: 'AM'
+    period: 'AM',
+    location: { name: 'काठमाडौं', romanization: 'kathmandu', latitude: 27.7172, longitude: 85.3240, offset: 5.75, zoneId: 'Asia/Kathmandu' }
 };
 
 const defaultBrideValues: DefaultFormValues = {
     name: 'अम्रिता',
     dateSystem: 'BS',
     bsYear: 2053,
-    bsMonth: 8, // Jestha
+    bsMonth: 8, // Mangsir
     bsDay: 9,
     hour: 2,
     minute: 30,
     second: 0,
-    period: 'PM'
+    period: 'PM',
+    location: { name: 'काठमाडौं', romanization: 'kathmandu', latitude: 27.7172, longitude: 85.3240, offset: 5.75, zoneId: 'Asia/Kathmandu' }
 };
 
 
-export const ComparisonForm: React.FC<ComparisonFormProps> = ({ onCalculate, isLoading }) => {
+export const ComparisonForm: React.FC<ComparisonFormProps> = ({ onCalculate, isLoading, defaultValues }) => {
     const groomFormRef = useRef<KundaliFormHandle>(null);
     const brideFormRef = useRef<KundaliFormHandle>(null);
 
     const handleSubmit = async () => {
-        const groomData = await groomFormRef.current?.validateAndGetData();
-        const brideData = await brideFormRef.current?.validateAndGetData();
+        const groomDataPromise = groomFormRef.current?.validateAndGetData();
+        const brideDataPromise = brideFormRef.current?.validateAndGetData();
 
-        if (groomData && brideData) {
-            onCalculate(groomData, brideData);
+        if (groomDataPromise && brideDataPromise) {
+            const [groomResult, brideResult] = await Promise.all([groomDataPromise, brideDataPromise]);
+            
+            if (groomResult && brideResult) {
+                onCalculate(groomResult, brideResult);
+            }
         }
     };
 
@@ -58,7 +67,7 @@ export const ComparisonForm: React.FC<ComparisonFormProps> = ({ onCalculate, isL
                         onCalculate={() => {}} // This is now handled by the parent
                         isLoading={false}
                         hideSubmitButton={true}
-                        defaultValues={defaultGroomValues}
+                        defaultValues={defaultValues?.groom || defaultGroomValues}
                     />
                 </div>
                 <div className="bg-slate-50 rounded-xl shadow-lg p-4 dark:bg-gray-800/50">
@@ -68,7 +77,7 @@ export const ComparisonForm: React.FC<ComparisonFormProps> = ({ onCalculate, isL
                         onCalculate={() => {}} // This is now handled by the parent
                         isLoading={false}
                         hideSubmitButton={true}
-                        defaultValues={defaultBrideValues}
+                        defaultValues={defaultValues?.bride || defaultBrideValues}
                     />
                 </div>
             </div>

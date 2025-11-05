@@ -179,3 +179,37 @@ export type BikramDate = {
   monthName: string;
   isComputed: boolean;
 };
+
+export interface DefaultFormValues {
+    name: string;
+    dateSystem: 'BS' | 'AD';
+    bsYear: number;
+    bsMonth: number;
+    bsDay: number;
+    hour: number;
+    minute: number;
+    second: number;
+    period: 'AM' | 'PM';
+    location: Location;
+}
+
+export type SavedIndividual = { 
+    id: number; 
+    type: 'individual'; 
+    name: string; 
+    timestamp: string;
+    data: KundaliRequest;
+    defaultValues: DefaultFormValues;
+};
+
+export type SavedComparison = { 
+    id: number; 
+    type: 'comparison'; 
+    groomName: string; 
+    brideName: string; 
+    timestamp: string;
+    data: { groom: KundaliRequest; bride: KundaliRequest; };
+    defaultValues: { groom: DefaultFormValues; bride: DefaultFormValues; };
+};
+
+export type SavedKundaliEntry = SavedIndividual | SavedComparison;

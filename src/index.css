@@ -43,9 +43,12 @@
     border: 1px solid #d2b48c;
     box-sizing: border-box;
   }
+
   .dark .birth-chart {
-    background-color: rgba(31, 41, 55, 0.6); /* gray-800/60 */
-    border-color: #4b5563; /* gray-600 */
+    background-color: rgba(31, 41, 55, 0.6);
+    /* gray-800/60 */
+    border-color: #4b5563;
+    /* gray-600 */
   }
 
   /* Overlay SVG sits above petals but below center dot */
@@ -72,6 +75,7 @@
   .overlay-wedge:hover {
     fill: rgba(0, 0, 0, 0.134);
   }
+
   .dark .overlay-wedge:hover {
     fill: rgba(255, 255, 255, 0.1);
   }
@@ -95,10 +99,14 @@
     font-family: 'Noto Sans Devanagari', 'Mangal', 'Arial', sans-serif;
     color: #f20d0d;
   }
+
   .dark .chart-center-dot {
-    background: rgba(31, 41, 55, 0.8); /* gray-800/80 */
-    border-color: #4b5563; /* gray-600 */
-    color: #f87171; /* red-400 */
+    background: rgba(31, 41, 55, 0.8);
+    /* gray-800/80 */
+    border-color: #4b5563;
+    /* gray-600 */
+    color: #f87171;
+    /* red-400 */
   }
 
   .petal {
@@ -121,6 +129,7 @@
     gap: 1px;
     box-sizing: border-box;
   }
+
   /* Dark mode petal (even) */
   .dark .petal {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 200'%3E%3Cpath d='M 50 200 C 0 150, 0 50, 50 0 C 100 50, 100 150, 50 200 Z' stroke='rgba(113, 113, 122, 0.7)' fill='transparent' stroke-width='1.5'/%3E%3C/svg%3E");
@@ -130,6 +139,7 @@
     fill: rgba(0, 0, 0, 0.05);
     /* subtle hover highlight */
   }
+
   .dark .overlay-wedge:hover {
     fill: rgba(255, 255, 255, 0.05);
   }
@@ -138,6 +148,7 @@
   .petal:nth-child(even) {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 200'%3E%3Cpath d='M 50 200 C 0 150, 0 50, 50 0 C 100 50, 100 150, 50 200 Z' stroke='rgba(210, 180, 140, 0.7)' fill='rgba(210, 180, 140, 0.15)' stroke-width='1.5'/%3E%3C/svg%3E");
   }
+
   /* Dark mode petal (odd) */
   .dark .petal:nth-child(even) {
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 200'%3E%3Cpath d='M 50 200 C 0 150, 0 50, 50 0 C 100 50, 100 150, 50 200 Z' stroke='rgba(113, 113, 122, 0.7)' fill='rgba(113, 113, 122, 0.15)' stroke-width='1.5'/%3E%3C/svg%3E");
@@ -151,8 +162,10 @@
     padding: 1px 3px;
     border-radius: 3px;
   }
+
   .dark .rashi-number {
-    color: #f87171; /* red-400 */
+    color: #f87171;
+    /* red-400 */
   }
 
   .planets-container {
@@ -174,24 +187,30 @@
     white-space: nowrap;
     line-height: 1.2;
   }
+
   .dark .planet-item {
-    color: #d1d5db; /* gray-300 */
+    color: #d1d5db;
+    /* gray-300 */
   }
 
   .planet-item.ascendant {
     color: #b91c1c;
     font-weight: 600;
   }
+
   .dark .planet-item.ascendant {
-    color: #f87171; /* red-400 */
+    color: #f87171;
+    /* red-400 */
   }
 
   .planet-item .retrograde {
     color: #2563eb;
     font-weight: bold;
   }
+
   .dark .planet-item .retrograde {
-    color: #60a5fa; /* blue-400 */
+    color: #60a5fa;
+    /* blue-400 */
   }
 
   .planet-deg {
@@ -199,8 +218,10 @@
     color: #78716c;
     opacity: 0.85;
   }
+
   .dark .planet-deg {
-    color: #9ca3af; /* gray-400 */
+    color: #9ca3af;
+    /* gray-400 */
   }
 
 
@@ -240,7 +261,7 @@
 
   /* Holiday border */
   .calendar-day.holiday {
-    @apply border-orange-300  dark:border-yellow-800;
+    @apply border-orange-300 dark:border-yellow-800;
   }
 
   /* Main number */
@@ -257,7 +278,8 @@
   .tithi-display {
     @apply text-[8px] text-blue-600 dark:text-stone-400 mt-auto text-left font-medium leading-tight;
     display: flex;
-    align-items: center; /* Vertically centers icon with text */
+    align-items: center;
+    /* Vertically centers icon with text */
     gap: 2px;
   }
 
@@ -329,8 +351,8 @@
     }
 
     .icon {
-      width: 11px;
-      height: 11px;
+      width: 10px;
+      height: 10px;
     }
 
     .calendar-grid {
@@ -450,18 +472,44 @@
   }
 }
 
-/* print override */
 @media print {
-  .overflow-hidden {
-    overflow: visible !important;
-    max-height: max-content !important;
-  }
-}
 
-@media print {
+  html,
+  body {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .screen-only-footer {
+    display: none !important;
+    position: static !important;
+    height: 0 !important;
+    overflow: hidden !important;
+  }
+
+
+  .return-to-main {
+    display: none !important;
+    visibility: hidden !important;
+  }
+
   .print-hidden {
     display: none !important;
     height: 0 !important;
   }
-}
 
+  .overflow-hidden {
+    overflow: visible !important;
+    max-height: max-content !important;
+  }
+
+  .kundali-display-container {
+    page-break-before: avoid;
+    page-break-after: avoid;
+    page-break-inside: avoid;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+}
