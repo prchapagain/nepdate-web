@@ -26,8 +26,8 @@ const NavButton: React.FC<{
     onClick={onClick}
     className={`flex items-center px-4 py-2 rounded-md text-sm font-medium transition-colors ${
       isActive
-        ? 'bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-200'
-        : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700'
+        ? 'text-blue-700 dark:text-blue-200' // --- REMOVED hover/active background
+        : 'text-gray-700 dark:text-gray-200 hover:text-blue-600 dark:hover:text-blue-400' // --- CHANGED hover to text color
     }`}
   >
     {icon}
@@ -37,7 +37,7 @@ const NavButton: React.FC<{
 
 export const DesktopTopNav: React.FC<DesktopTopNavProps> = ({ activeView, onNavigate }) => {
   return (
-    <nav className="hidden lg:flex items-center justify-between w-full h-16 px-6 bg-slate-200 dark:bg-gray-800 border-b border-gray-300 dark:border-gray-700 shadow-sm z-30">
+    <nav className="hidden md:flex items-center justify-between w-full h-16 px-6 bg-slate-200 dark:bg-gray-800  z-30">
       
       {/* Left Side: Title */}
       <div className="text-xl font-semibold text-gray-900 dark:text-gray-100">

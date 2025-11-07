@@ -1,6 +1,7 @@
 import React from 'react';
 import { ArrowLeft, Moon, Sun, Sidebar, Smartphone, PanelLeft, PanelTop } from 'lucide-react';
 import { NEPALI_LABELS } from '../constants/constants';
+import { toast } from '../components/shared/toast';
 
 type MenuStyle = 'slide' | 'tabs';
 type DesktopLayoutStyle = 'topbar' | 'sidebar';
@@ -14,6 +15,8 @@ interface SettingsPageProps {
   currentDesktopLayoutStyle: DesktopLayoutStyle;
   onDesktopLayoutStyleChange: (style: DesktopLayoutStyle) => void;
   onResetSettings: () => void;
+  isAndroidApp: boolean;
+  onReloadApp: () => void;
 }
 
 // SettingOption component
@@ -38,6 +41,7 @@ const SettingOption: React.FC<{
 );
 
 
+
 const SettingsPage: React.FC<SettingsPageProps> = ({
   onBack,
   currentTheme,
@@ -46,8 +50,19 @@ const SettingsPage: React.FC<SettingsPageProps> = ({
   onMenuStyleChange,
   currentDesktopLayoutStyle,
   onDesktopLayoutStyleChange,
-  onResetSettings
+  onResetSettings,
+  isAndroidApp,
+  onReloadApp
+  
 }) => {
+  const handleOpenWidgetSettings = () => {
+    if ((window as any).Android && (window as any).Android.openWidgetSettings) {
+      (window as any).Android.openWidgetSettings();
+    } else {
+      console.warn("Android bridge is not available.");
+      toast("Could not open widget settings. Are you in the native app?", "error", 3000);
+    }
+  };
   return (
     <div className="p-3 max-w-2xl mx-auto">
       <header className="flex items-center mb-6">
@@ -58,6 +73,32 @@ const SettingsPage: React.FC<SettingsPageProps> = ({
       </header>
 
       <div className="space-y-5">
+        <section className="p-4 bg-white dark:bg-gray-700 rounded-lg shadow">
+          <h2 className="text-lg font-semibold mb-2">Reload App</h2>
+          <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
+            If you are online, this will clear the app cache and reload from the server. If offline, it will just refresh the current view.
+          </p>
+          <button
+            onClick={onReloadApp}
+            className="px-4 py-2 rounded-lg text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          >
+            Clear Cache and Reload
+          </button>
+        </section>
+        {isAndroidApp && (
+          <section className="p-4 bg-white dark:bg-gray-700 rounded-lg shadow">
+            <h2 className="text-lg font-semibold mb-2">Android Widget</h2>
+            <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
+              Customize the home screen widget for your device.
+            </p>
+            <button
+              onClick={handleOpenWidgetSettings}
+              className="px-4 py-2 rounded-lg text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-800 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            >
+              Open Widget Settings
+            </button>
+          </section>
+        )}
         
         <section className="p-3 bg-white dark:bg-gray-700 rounded-lg shadow">
           <h2 className="text-lg font-semibold mb-3">{NEPALI_LABELS.theme || 'Theme'}</h2>
@@ -78,7 +119,7 @@ const SettingsPage: React.FC<SettingsPageProps> = ({
         </section>
         
         {/* Mobile Menu Style Setting (hidden on desktop) */}
-        <section className="p-4 bg-white dark:bg-gray-700 rounded-lg shadow lg:hidden">
+        <section className="p-4 bg-white dark:bg-gray-700 rounded-lg shadow md:hidden">
           <h2 className="text-lg font-semibold mb-1">{NEPALI_LABELS.mobileNavStyle || 'Mobile Navigation'}</h2>
           <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
             {NEPALI_LABELS.mobileNavDesc || 'Select navigation style for mobile screens.'}
@@ -100,10 +141,10 @@ const SettingsPage: React.FC<SettingsPageProps> = ({
         </section>
         
         {/* Desktop Layout Setting (hidden on mobile) */}
-        <section className="hidden lg:block p-4 bg-white dark:bg-gray-700 rounded-lg shadow">
-          <h2 className="text-lg font-semibold mb-1">{NEPALI_LABELS.desktopNavStyle}</h2>
+        <section className="hidden md:block p-4 bg-white dark:bg-gray-700 rounded-lg shadow">
+          <h2 className="text-lg font-semibold mb-1">{NEPALI_LABELS.desktopNavStyle || "Desktop Layout"}</h2>
           <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
-            {NEPALI_LABELS.desktopNavDesc}
+            {NEPALI_LABELS.desktopNavDesc || "Select layout for desktop screens."}
           </p>
           <div className="flex space-x-4">
             <SettingOption
@@ -122,15 +163,15 @@ const SettingsPage: React.FC<SettingsPageProps> = ({
         </section>
 
         <section className="p-4 bg-white dark:bg-gray-700 rounded-lg shadow">
-          <h2 className="text-lg font-semibold mb-2">{NEPALI_LABELS.resetMessage}</h2>
+          <h2 className="text-lg font-semibold mb-2">{NEPALI_LABELS.resetMessage || "Reset Settings"}</h2>
           <p className="text-sm text-gray-600 dark:text-gray-300 mb-4">
-            {NEPALI_LABELS.resetMessageDesc}
+            {NEPALI_LABELS.resetMessageDesc || "Reset all theme and layout settings to their default values."}
           </p>
           <button
             onClick={onResetSettings}
             className="px-4 py-2 rounded-lg text-sm font-medium text-white bg-red-600 hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-800 transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
           >
-           {NEPALI_LABELS.reset}
+           {NEPALI_LABELS.reset || "Reset to Default"}
           </button>
         </section>
         

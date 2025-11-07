@@ -1,4 +1,4 @@
-import { toDevanagari } from "../lib/lib";
+import { toDevanagari } from "../lib/utils/lib";
 
 export const NEPALI_LABELS = {
   home: "मुख्य पृष्ठ",
@@ -27,6 +27,8 @@ export const NEPALI_LABELS = {
   Software_name: "नेपडेट ज्योतिष",
   Software_version: `${__APP_VERSION__}`,
   subTitle: "वैदिक ज्योतिष सफ्टवेयर",
+  tithiWarning: "⚠️पञ्चाङ्ग सुर्योदय कालिन समयको देखाईएको छ। बिस्तृत रुपमा हेर्न कुण्डली हेर्नुहोस।",
+  tithiWarningEn: " ⚠️tithis are calculated at sunrise. If a tithi spans multiple days, it is always shown on the day it falls at sunrise.",
   birthDetails: "जन्म विवरण",
   astrologicalDetails: "ज्योतिषीय विवरण",
   gunaMilanDetails: "गुण मिलान विवरण",
@@ -122,6 +124,8 @@ export const NEPALI_LABELS = {
   bs: "वि.सं.",
   ad: "ई.सं.",
   bikramsambat: "विक्रम संवत",
+  today: "आज",
+  events: "कार्यक्रम हरु",
   gregorian: "ग्रेगोरियन",
   am: "बिहान",
   pm: "बेलुका",
@@ -337,6 +341,9 @@ export const GREGORIAN_MONTHS_SHORT = [
 
 export const NEPALI_WEEKDAYS: string[] = ['आइतबार', 'सोमबार', 'मंगलबार', 'बुधबार', 'बिहिबार', 'शुक्रबार', 'शनिबार'];
 export const NEPALI_WEEKDAYS_SHORT: string[] = ["आइत", "सोम", "मङ्गल", "बुध", "बिही", "शुक्र", "शनि"];
+export const GREGORIAN_WEEKDAYS = [
+  'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday',
+];
 export const GREGORIAN_WEEKDAYS_SHORT: string[] = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 export const NEPALI_NAKSHATRA: string[] = NAKSHATRA_SYLLABLES.map(n => n.name);

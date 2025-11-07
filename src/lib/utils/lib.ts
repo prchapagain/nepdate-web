@@ -31,5 +31,5 @@ export {
     toBikramSambat,
     getDaysInADMonth,
     formatDegrees
-} from './bikram';
-export { calculate, getEventsForDate, getPanchangaBasics } from './panchangaCore';
+} from '../core/bikram';
+export { calculate, getEventsForDate, getPanchangaBasics } from '../core/panchangaCore';

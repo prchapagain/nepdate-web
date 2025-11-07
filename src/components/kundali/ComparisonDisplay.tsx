@@ -1,7 +1,7 @@
 import React from 'react';
-import type { ComparisonResult } from '../../../types/types';
+import type { ComparisonResult } from '../../types/types';
 import { NEPALI_BS_MONTHS, NEPALI_LABELS, NEPALI_RASHI } from '../../constants/constants';
-import { toBikramSambat, toDevanagari } from '../../lib/lib';
+import { toBikramSambat, toDevanagari } from '../../lib/utils/lib';
 import { PrintIcon } from '../../data/icons';
 import { BirthDetailsCard } from './BirthDetailsCard';
 

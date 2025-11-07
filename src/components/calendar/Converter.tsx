@@ -7,7 +7,7 @@ import {
   toDevanagari, 
   fromDevanagari, 
   Bsdata
-} from '../../lib/lib';
+} from '../../lib/utils/lib';
 
 // Define the boundaries from the data
 const START_BS_YEAR = Bsdata.BS_START_YEAR;

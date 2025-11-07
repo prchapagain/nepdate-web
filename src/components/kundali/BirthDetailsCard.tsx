@@ -1,5 +1,5 @@
 import React from 'react';
-import type { KundaliResponse } from '../../../types/types';
+import type { KundaliResponse } from '../../types/types';
 import {
   NEPALI_LABELS,
   NEPALI_RASHI,
@@ -7,7 +7,7 @@ import {
   NEPALI_WEEKDAYS,
   NEPALI_BS_MONTHS,
 } from '../../constants/constants';
-import { toBikramSambat, toDevanagari, formatDegrees } from '../../lib/lib';
+import { toBikramSambat, toDevanagari, formatDegrees } from '../../lib/utils/lib';
 
 interface BirthDetailsCardProps {
   data: KundaliResponse;

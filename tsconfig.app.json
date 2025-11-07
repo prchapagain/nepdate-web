@@ -20,5 +20,5 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src", "types", "services"]
+  "include": ["src", "src/types", "services", "vite-env.d.ts"]
 }

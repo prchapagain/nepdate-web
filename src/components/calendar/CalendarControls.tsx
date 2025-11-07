@@ -1,6 +1,6 @@
 import React from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { toDevanagari, fromDevanagari, getMonthWarning } from '../../lib/lib';
+import { toDevanagari, fromDevanagari, getMonthWarning } from '../../lib/utils/lib';
 import {NEPALI_BS_MONTHS, GREGORIAN_MONTHS} from '../../constants/constants'
 interface CalendarControlsProps {
     activeSystem: 'bs' | 'ad';

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Sun, Moon } from 'lucide-react';
-import { toDevanagari } from '../../lib/lib';
+import { toDevanagari } from '../../lib/utils/lib';
 import { NEPALI_LABELS, NEPALI_BS_MONTHS, GREGORIAN_MONTHS, GREGORIAN_MONTHS_SHORT, NEPALI_BS_MONTHSShort } from '../../constants/constants';
 
 interface CalendarHeaderProps {
@@ -52,7 +52,7 @@ const adDisplay = adYear !== null
   const gregorianMobileLabel = activeSystem === 'bs' ? NEPALI_LABELS.ad : 'AD';
 
   return (
-    <header className="w-full bg-blue-600 dark:bg-gray-800 backdrop-blur-sm border-b border-blue-700 dark:border-gray-700">
+    <header className="w-full bg-blue-600 dark:bg-gray-800 backdrop-blur-sm border-b border-blue-700 dark:border-gray-700 rounded-lg">
       <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
         {/* Left Controls */}
         <div className="flex items-center gap-3">

@@ -7,16 +7,13 @@ export interface Location {
   offset: number;
 }
 
-// --- FILE: ../types/jyotish_types.ts ---
-// (Showing only the relevant type to be modified)
-
 export interface KundaliRequest {
   name: string;
-  datetime: string;      // e.g., "2000-03-28T22:00:00"
+  datetime: string;
   latitude: number;
   longitude: number;
-  zoneId: string;        // e.g., "Asia/Kathmandu"
-  offset: number;        // <-- ADD THIS LINE (e.g., 5.75 for Nepal)
+  zoneId: string;
+  offset: number;
   options: {
     zodiac: 'SIDEREAL';
     ayanamsa: 'LAHIRI';
@@ -26,9 +23,6 @@ export interface KundaliRequest {
   };
 }
 
-// ... other types like KundaliResponse, PlanetInfo, etc.
-
-// Fix: Add and export TimedPanchangaElement interface to resolve import error in kundaliService.ts.
 export interface TimedPanchangaElement {
   name: string;
   start: string;
@@ -91,8 +85,6 @@ export interface DivisionalChart {
 }
 
 
-
-
 export interface KundaliResponse {
   birthDetails: {
     name: string;
@@ -149,22 +141,22 @@ export interface KundaliResponse {
 }
 
 export interface GunaMilanScore {
-    varna: number;
-    vasya: number;
-    tara: number;
-    yoni: number;
-    grahaMaitri: number;
-    gana: number;
-    bhakoot: number;
-    nadi: number;
-    total: number;
+  varna: number;
+  vasya: number;
+  tara: number;
+  yoni: number;
+  grahaMaitri: number;
+  gana: number;
+  bhakoot: number;
+  nadi: number;
+  total: number;
 }
 
 export interface ComparisonResult {
-    groom: KundaliResponse;
-    bride: KundaliResponse;
-    score: GunaMilanScore;
-    conclusion: string;
+  groom: KundaliResponse;
+  bride: KundaliResponse;
+  score: GunaMilanScore;
+  conclusion: string;
 }
 
 
@@ -181,35 +173,39 @@ export type BikramDate = {
 };
 
 export interface DefaultFormValues {
-    name: string;
-    dateSystem: 'BS' | 'AD';
-    bsYear: number;
-    bsMonth: number;
-    bsDay: number;
-    hour: number;
-    minute: number;
-    second: number;
-    period: 'AM' | 'PM';
-    location: Location;
+  name: string;
+  dateSystem: 'BS' | 'AD';
+  bsYear: number;
+  bsMonth: number;
+  bsDay: number;
+  hour: number;
+  minute: number;
+  second: number;
+  period: 'AM' | 'PM';
+  location: Location;
 }
 
-export type SavedIndividual = { 
-    id: number; 
-    type: 'individual'; 
-    name: string; 
-    timestamp: string;
-    data: KundaliRequest;
-    defaultValues: DefaultFormValues;
+export type SavedIndividual = {
+  id: number;
+  type: 'individual';
+  name: string;
+  timestamp: string;
+  data: KundaliRequest;
+  defaultValues: DefaultFormValues;
 };
 
-export type SavedComparison = { 
-    id: number; 
-    type: 'comparison'; 
-    groomName: string; 
-    brideName: string; 
-    timestamp: string;
-    data: { groom: KundaliRequest; bride: KundaliRequest; };
-    defaultValues: { groom: DefaultFormValues; bride: DefaultFormValues; };
+export type SavedComparison = {
+  id: number;
+  type: 'comparison';
+  groomName: string;
+  brideName: string;
+  timestamp: string;
+  data: { groom: KundaliRequest; bride: KundaliRequest; };
+  defaultValues: { groom: DefaultFormValues; bride: DefaultFormValues; };
 };
+
+export type MenuStyle = 'slide' | 'tabs';
+export type DesktopLayoutStyle = 'topbar' | 'sidebar';
+export type ActiveView = 'calendar' | 'converter' | 'kundali' | 'settings';
 
 export type SavedKundaliEntry = SavedIndividual | SavedComparison;

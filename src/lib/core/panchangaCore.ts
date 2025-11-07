@@ -1,4 +1,4 @@
-import { EventsData } from '../data/eventsData';
+import { EventsData } from '../../data/static/eventsData';
 import {
     solarMonths,
     weekdays,
@@ -18,7 +18,7 @@ import {
     KARANA_NAMES,
     RASHI_NAMES,
     resolveTithiName
-} from '../lib/lib';
+} from '../utils/lib';
 
 // This function uses the purnimanta (full moon) system.
 export function getPanchangaBasics(date: Date, lon: number = 85.3240, tz: number = 5.75): { [key: string]: any } {

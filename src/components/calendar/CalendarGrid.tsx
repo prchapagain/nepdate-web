@@ -1,6 +1,6 @@
 import React from 'react';
-import {NEPALI_WEEKDAYS_SHORT, GREGORIAN_WEEKDAYS_SHORT} from '../../constants/constants'
-import { fromBikramSambat, toBikramSambat, getBikramMonthInfo, toDevanagari, calculate } from '../../lib/lib';
+import {NEPALI_WEEKDAYS_SHORT, GREGORIAN_WEEKDAYS_SHORT, NEPALI_LABELS} from '../../constants/constants'
+import { fromBikramSambat, toBikramSambat, getBikramMonthInfo, toDevanagari, calculate } from '../../lib/utils/lib';
 
 interface CalendarGridProps {
     activeSystem: 'bs' | 'ad';
@@ -283,15 +283,14 @@ const CalendarGrid: React.FC<CalendarGridProps> = ({
 
 {activeSystem === 'bs' ? (
   <div className="mt-2">
-    <span className="text-tithi-warning sub-text text-yellow-600 dark:text-yellow-700">
-      ⚠️तिथिहरु सुर्योदयको समयमा गणना गरिएको छ। तिथी सधैं सुर्योदयको समयमा पर्ने दिनमा देखाइएको छ।
+    <span className="text-tithi-warning text-xs text-yellow-600 dark:text-yellow-700">
+      {NEPALI_LABELS.tithiWarning}
     </span>
   </div>
 ) : (
   <div className="mt-2">
-    <span className="text-tithi-warning sub-text text-yellow-600 dark:text-yellow-600">
-      ⚠️tithis are calculated at sunrise. If a tithi spans multiple days, it is always shown on the day it falls at sunrise.
-    </span>
+    <span className="text-tithi-warning sub-xs text-yellow-600 dark:text-yellow-600">
+     {NEPALI_LABELS.tithiWarningEn} </span>
   </div>
 )}
       </div>

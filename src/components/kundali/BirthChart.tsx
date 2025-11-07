@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import type { PlanetInfo } from '../../../types/types.ts';
+import type { PlanetInfo } from '../../types/types.ts';
 import {
   NEPALI_NAKSHATRA_ABBREVIATIONS,
   NEPALI_PLANET_ABBREVIATIONS,
@@ -7,7 +7,7 @@ import {
   NEPALI_RASHI,
   RASHI_LORDS,
 } from '../../constants/constants';
-import { toDevanagari } from '../../lib/lib';
+import { toDevanagari } from '../../lib/utils/lib.ts';
 import ClickableOverlay from './clickableOverlay';
 
 type ChartPlanet = Pick<

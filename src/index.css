@@ -239,7 +239,7 @@
 
   /* Base mobile-first styles */
   .calendar-day {
-    @apply relative bg-slate-200 dark:bg-gray-700 border border-blue-200 dark:border-gray-600 rounded-lg p-1 cursor-pointer transition-all duration-200 hover:shadow-md hover:border-blue-400 dark:hover:border-blue-500 flex flex-col;
+    @apply relative bg-indigo-200/25 dark:bg-gray-700 border border-blue-200 dark:border-gray-600 rounded-lg p-1 cursor-pointer transition-all duration-200 hover:shadow-md hover:border-blue-400 dark:hover:border-blue-500 flex flex-col;
     max-width: 90px;
     min-height: 50px;
     font-size: 0.75rem;
@@ -313,12 +313,12 @@
   /* Responsive overrides */
   @media (max-width: 499px) {
     .icon {
-      width: 13px;
-      height: 13px;
+      width: 11px;
+      height: 11px;
     }
   }
 
-  @media (max-width: 415px) {
+  @media (max-width: 380px) {
     .calendar-day {
       max-width: 80px;
       min-height: 40px;
@@ -331,12 +331,6 @@
 
     .sub-number {
       font-size: 8px;
-    }
-
-    .sub-text {
-      font-size: 8px;
-      margin-top: 8px;
-      margin-bottom: 8px;
     }
 
 
@@ -365,44 +359,6 @@
     }
   }
 
-  @media (max-width: 380px) {
-    .calendar-day {
-      max-width: 66px;
-      min-height: 32px;
-      max-height: 40px;
-    }
-
-    .main-number {
-      font-size: 0.7rem;
-    }
-
-    .sub-number {
-      font-size: 6px;
-    }
-
-    .tithi-display {
-      font-size: 5px;
-    }
-
-    .sub-text {
-      font-size: 8px;
-      margin-top: 6px;
-      margin-bottom: 6px;
-    }
-
-    .special.purnima,
-    .special.amavasya {
-      font-size: 7px;
-    }
-
-
-
-    .event-dot {
-      height: .38rem;
-      width: .38rem;
-    }
-  }
-
   @media (max-height: 650px) {
     .calendar-day {
       max-width: 66px;
@@ -420,12 +376,6 @@
 
     .sub-number {
       font-size: 6px;
-    }
-
-    .sub-text {
-      font-size: 9px;
-      margin-top: 6px;
-      margin-bottom: 6px;
     }
 
     .tithi-display {
@@ -455,12 +405,6 @@
       line-height: 0.8rem;
     }
 
-    .sub-text {
-      font-size: 8px;
-      margin-top: 6px;
-      margin-bottom: 6px;
-    }
-
     .footer {
       font-size: 8px;
     }
@@ -473,11 +417,15 @@
 }
 
 @media print {
+  * {
+    background-color: transparent !important;
+  }
 
   html,
   body {
     margin: 0 !important;
     padding: 0 !important;
+    
   }
 
   .screen-only-footer {

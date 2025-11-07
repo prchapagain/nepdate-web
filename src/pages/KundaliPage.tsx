@@ -5,9 +5,9 @@ import { ComparisonForm } from '../components/kundali/ComparisonForm';
 import { ComparisonDisplay } from '../components/kundali/ComparisonDisplay';
 import { SavedKundalisModal } from '../components/kundali/SavedKundalisModel';
 import { kundaliService } from '../../services/kundaliService';
-import type { KundaliResponse, ComparisonResult, KundaliRequest, SavedKundaliEntry, DefaultFormValues, Location } from '../../types/types';
+import type { KundaliResponse, ComparisonResult, KundaliRequest, SavedKundaliEntry, DefaultFormValues, Location } from '../types/types';
 import { NEPALI_LABELS } from '../constants/constants';
-import { toBikramSambat } from '../lib/lib';
+import { toBikramSambat } from '../lib/utils/lib';
 import { nepaliLocations } from '../data/timezone';
 
 

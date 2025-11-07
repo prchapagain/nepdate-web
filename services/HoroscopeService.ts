@@ -1,11 +1,11 @@
-import type { PlanetInfo, DashaInfo, AshtaKootaValues, GunaMilanScore, DivisionalChart, HouseInfo, KundaliResponse } from '../types/types';
+import type { PlanetInfo, DashaInfo, AshtaKootaValues, GunaMilanScore, DivisionalChart, HouseInfo, KundaliResponse } from '../src/types/types';
 import { 
     RASHI_LORDS, NEPALI_PLANETS, NEPALI_RASHI,
     VARNA_MAP, NEPALI_VARNA, VASYA_MAP, NEPALI_VASYA, YONI_MAP, NEPALI_YONI,
     GANA_MAP, NEPALI_GANA, NADI_MAP, NEPALI_NADI, TATVA_MAP, NEPALI_TATVA, NEPALI_PAYA,
     GRAHA_MAITRI, YONI_COMPATIBILITY
 } from '../src/constants/constants';
-import { toDevanagari } from '../src/lib/lib';
+import { toDevanagari } from '../src/lib/utils/lib';
 import { d2r, r2d, fix360 } from './astroCalc';
 
 // --- HOUSE & ASCENDANT CALCULATIONS ---

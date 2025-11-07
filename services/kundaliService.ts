@@ -1,6 +1,6 @@
-import type { KundaliRequest, KundaliResponse, ServiceError, ComparisonResult } from '../types/types';
+import type { KundaliRequest, KundaliResponse, ServiceError, ComparisonResult } from '../src/types/types';
 import { NEPALI_NAKSHATRA, NEPALI_YOGA, NEPALI_KARANA } from '../src/constants/constants';
-import { toJulianDay, getSunriseSunset } from '../src/lib/lib';
+import { toJulianDay, getSunriseSunset } from '../src/lib/utils/lib';
 import { dTime, getPlanetPosition, calcayan } from './astroCalc';
 import { findAspectTime, findNakshatraTime, findYogaTime, findNakshatraPadaTime } from './panchangaService';
 import { 

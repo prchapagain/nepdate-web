@@ -4,7 +4,7 @@
  * 2. Algorithmic Fallback: For dates outside the pre-computed range, it falls back to traditional astronomical calculations
  * based on the Surya Siddhanta to ensure wide historical and future date compatibility.
  */
-import { Bsdata } from '../data/monthData';
+import { Bsdata } from '../../data/static/monthData';
 
 export { Bsdata };
 
@@ -509,7 +509,7 @@ export function getDaysInADMonth(year: number, month: number): number {
 }
 
 
-import { NEPALI_NUMERALS } from '../constants/constants';
+import { NEPALI_NUMERALS } from '../../constants/constants';
 
 export const formatDegrees = (decimal: number): string => {
     const deg = Math.floor(decimal);

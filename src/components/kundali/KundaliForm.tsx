@@ -1,11 +1,11 @@
 import React, { useEffect, useMemo, useState, useImperativeHandle, forwardRef, useRef } from 'react';
 import { LoaderIcon, ChevronDownIcon, LocationIcon, MapIcon, XIcon, SearchIcon } from '../../data/icons';
-import type { KundaliRequest, DefaultFormValues } from '../../../types/types';
+import type { KundaliRequest, DefaultFormValues } from '../../types/types';
 import { NEPALI_LABELS, NEPALI_BS_MONTHS, GREGORIAN_MONTHS } from '../../constants/constants';
 import { nepaliLocations, TIMEZONE_OFFSETS } from '../../data/timezone';
 import { MapContainer, TileLayer, Marker, useMapEvents, useMap } from 'react-leaflet';
 import tzlookup from 'tz-lookup';
-import { toBikramSambat, getDaysInADMonth, toDevanagari, fromDevanagari, getBikramMonthInfo, fromBikramSambat } from '../../lib/lib';
+import { toBikramSambat, getDaysInADMonth, toDevanagari, fromDevanagari, getBikramMonthInfo, fromBikramSambat } from '../../lib/utils/lib';
 
 interface KundaliFormProps {
   onCalculate: (data: KundaliRequest) => void;

@@ -1,6 +1,6 @@
 import React from 'react';
 import { X } from 'lucide-react';
-import { calculate } from '../../lib/lib';
+import { calculate } from '../../lib/utils/lib';
 
 interface DayDetailsModalProps {
     date: Date | null;

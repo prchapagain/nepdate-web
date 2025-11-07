@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import type { SavedKundaliEntry } from '../../../types/types';
+import type { SavedKundaliEntry } from '../../types/types';
 import { NEPALI_LABELS } from '../../constants/constants';
 import { XIcon } from '../../data/icons';
 

@@ -1,7 +1,7 @@
 import React from 'react';
-import type { PlanetInfo } from '../../../types/types';
+import type { PlanetInfo } from '../../types/types';
 import { NEPALI_LABELS, NEPALI_PLANETS, NEPALI_RASHI } from '../../constants/constants';
-import { formatDegrees, toDevanagari } from '../../lib/lib';
+import { formatDegrees, toDevanagari } from '../../lib/utils/lib';
 
 interface PlanetaryTableProps {
   planets: PlanetInfo[];

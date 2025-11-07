@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import type { KundaliResponse } from '../../../types/types';
+import type { KundaliResponse } from '../../types/types';
 import BirthChart from './BirthChart';
 import { PlanetaryTable } from './PlanetaryTable';
 import { BirthDetailsCard } from './BirthDetailsCard';
 import { DashaTable } from './DashaTable';
 import { NEPALI_BS_MONTHS, NEPALI_LABELS } from '../../constants/constants';
 import { PrintIcon, ChevronDownIcon } from '../../data/icons';
-import { toBikramSambat, toDevanagari } from '../../lib/bikram';
+import { toBikramSambat, toDevanagari } from '../../lib/core/bikram';
 
 interface KundaliDisplayProps {
   data: KundaliResponse;

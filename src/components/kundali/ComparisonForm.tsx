@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import { KundaliForm, type KundaliFormHandle } from './KundaliForm';
-import type { KundaliRequest, DefaultFormValues } from '../../../types/types';
+import type { KundaliRequest, DefaultFormValues } from '../../types/types';
 import { NEPALI_LABELS } from '../../constants/constants';
 import { LoaderIcon } from '../../data/icons';
 

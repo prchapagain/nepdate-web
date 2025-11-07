@@ -1,4 +1,4 @@
-import type { Location } from '../../types/types';
+import type { Location } from '../types/types';
 
 export const nepaliLocations: Location[] = [
   // Province 1 (Koshi)

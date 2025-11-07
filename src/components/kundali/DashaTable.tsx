@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import type { DashaInfo } from '../../../types/types';
+import type { DashaInfo } from '../../types/types';
 import { NEPALI_LABELS, NEPALI_PLANETS } from '../../constants/constants';
 import { NEPALI_BS_MONTHS } from '../../constants/constants';
-import { toBikramSambat } from '../../lib/lib';
+import { toBikramSambat } from '../../lib/utils/lib';
 import { ChevronDownIcon } from '../../data/icons';
-import { toDevanagari } from '../../lib/lib';
+import { toDevanagari } from '../../lib/utils/lib';
 
 const formatDate = (dateString: string): string => {
     if (!dateString || dateString === 'N/A') return 'N/A';
