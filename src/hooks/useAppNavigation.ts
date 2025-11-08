@@ -1,4 +1,3 @@
-// useAppNavigation.ts
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { ActiveView } from '../types/types'; // Assuming this path is correct
 
@@ -34,10 +33,35 @@ export const useAppNavigation = () => {
   const [isAndroidWebView, setIsAndroidWebView] = useState(false);
 
   useEffect(() => {
-    if (typeof window.Android !== 'undefined' && typeof window.Android.isAndroidApp === 'function') {
-      setIsAndroidWebView(window.Android.isAndroidApp());
+    let intervalId: number | null = null;
+    let attempts = 0;
+    const MAX_ATTEMPTS = 25; // Try for 25 * 200ms = 5 seconds
+
+    const checkIfAndroidApp = () => {
+      attempts++;
+      if (typeof window.Android !== 'undefined' && typeof window.Android.isAndroidApp === 'function') {
+        setIsAndroidWebView(true);
+        if (intervalId) clearInterval(intervalId); // Stop checking once found
+        // console.log("Detected Android WebView successfully!");
+      } else if (attempts >= MAX_ATTEMPTS) {
+        if (intervalId) clearInterval(intervalId); // Stop after max attempts
+        // console.warn("Could not detect Android WebView after multiple attempts.");
+      }
+    };
+
+    // Check immediately
+    checkIfAndroidApp();
+
+    // If not found immediately, start polling
+    if (!isAndroidWebView) { // Only start interval if not found immediately
+      intervalId = window.setInterval(checkIfAndroidApp, 200); // Check every 200ms
     }
+
+    return () => {
+      if (intervalId) clearInterval(intervalId); // Cleanup interval on unmount
+    };
   }, []);
+
 
   // Backspace closes menu when open (existing logic)
   useEffect(() => {
@@ -121,17 +145,15 @@ export const useAppNavigation = () => {
         }
         if (backPressedTimerRef.current) clearTimeout(backPressedTimerRef.current); // Clear any old timer
         backPressedTimerRef.current = window.setTimeout(() => {
-          resetBackPress(); // Reset after 2 seconds if no second press
+          resetBackPress();
         }, 2000);
-        return true; // Tell Android that JS handled the first back press (showing toast)
+        return true;
       } else {
-        // Second back press within the timeout: exit app
-        resetBackPress(); // Reset immediately before exiting
-        return false; // Tell Android to exit the app
+        resetBackPress();
+        return false;
       }
     };
 
-    // This handles standard browser popstate events (for non-Android WebView environments)
     const handlePopState = () => {
       const handledInternal = handleInternalBackNavigation();
       if (!handledInternal) {
@@ -146,10 +168,10 @@ export const useAppNavigation = () => {
           backPressedTimerRef.current = window.setTimeout(() => {
             resetBackPress();
           }, 2000);
-          window.history.pushState(null, '', window.location.href); // Keep browser on current page for first press
+          window.history.pushState(null, '', window.location.href);
         } else {
-          resetBackPress(); // Reset before allowing browser to navigate
-          window.history.go(-2); // Allow browser to actually go back/exit
+          resetBackPress();
+          window.history.go(-2);
         }
       } else {
         window.history.pushState(null, '', window.location.href);
@@ -157,7 +179,6 @@ export const useAppNavigation = () => {
     };
 
     if (!isAndroidWebView) {
-      // For browser, initially push state to ensure popstate works reliably
       window.history.pushState(null, '', window.location.href);
       window.addEventListener('popstate', handlePopState);
     }
@@ -166,11 +187,9 @@ export const useAppNavigation = () => {
       if (!isAndroidWebView) {
         window.removeEventListener('popstate', handlePopState);
       }
-      resetBackPress(); // Clear any pending state/timers on unmount
-      window.handleBackPress = undefined; // Clean up the global function
+      resetBackPress();
+      window.handleBackPress = undefined;
     };
-    // Dependencies: handleInternalBackNavigation is a useCallback, so it's stable unless its own deps change.
-    // isAndroidWebView is also a stable state. No other states need to be in deps because we use refs.
   }, [isAndroidWebView, handleInternalBackNavigation]);
 
   const handleDayClick = (date: Date) => {
@@ -195,9 +214,10 @@ export const useAppNavigation = () => {
     setIsAboutOpen,
     isKundaliResultsVisible,
     setIsKundaliResultsVisible,
-    showExitToast, // This state is now solely for triggering the toast UI
+    showExitToast,
     handleDayClick,
     isAndroidWebView,
     setKundaliBackAction,
   };
 };
+
