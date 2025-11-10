@@ -170,7 +170,7 @@ const App: React.FC = () => {
         ${desktopLayoutStyle === 'sidebar' ? 'md:sticky md:h-screen md:translate-x-0 md:shadow-md' : 'md:hidden'}
         ${desktopLayoutStyle === 'sidebar' ? 'md:w-56' : 'w-64'}
         `}
-        inert={!isMenuOpen}
+        inert={menuStyle === 'slide' && !isMenuOpen}
       >
         <div className="flex flex-col h-full p-4">
           <div className="flex justify-between items-center mb-4">
@@ -349,7 +349,7 @@ const App: React.FC = () => {
               <main className="min-h-[60vh] md:grid md:grid-cols-12 md:gap-x-6">
                 
                 {/* TODAY WIDGET (Sidebar) */}
-                <aside className="hidden md:block md:col-span-4">
+                <aside className="hidden md:block md:col-span-4 mt-24">
                   <TodayWidget 
                     todayAd={initialToday} 
                     todayBs={initialTodayBs}
