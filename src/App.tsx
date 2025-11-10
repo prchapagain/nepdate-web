@@ -150,10 +150,11 @@ const App: React.FC = () => {
           {menuStyle === 'tabs' && !isStandalone && canInstall && (
             <button
               onClick={handleInstallClick}
-              className="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700"
+              className="px-3 py-2 text-left text-xs rounded bg-blue-600 text-white hover:bg-blue-700 flex items-center gap-2"
               aria-label="Install app"
             >
               <Download className="w-5 h-5" />
+              <span>{NEPALI_LABELS.installApp}</span>
             </button>
           )}
         </div>

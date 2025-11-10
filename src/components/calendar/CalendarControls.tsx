@@ -1,5 +1,5 @@
 import React from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from 'lucide-react';
 import { toDevanagari, fromDevanagari, getMonthWarning } from '../../lib/utils/lib';
 import { NEPALI_BS_MONTHS, GREGORIAN_MONTHS } from '../../constants/constants';
 
@@ -51,24 +51,24 @@ const CalendarControls: React.FC<CalendarControlsProps> = ({
         <div className="flex flex-col items-center justify-between p-2 bg-slate-100 dark:bg-gray-700/50 flex-shrink-0 w-full">
             {/* Navigation row with equal distributed spacing */}
             <div
-                className="flex w-full items-center justify-between gap-[0.2rem] sm:gap-[1.5rem] flex-nowrap overflow-x-auto"
+                className="flex w-full items-center justify-between flex-nowrap"
             >
                 {/* Prev Year */}
                 <button
                     onClick={onPrevYear}
                     aria-label="Previous year"
-                    className="flex-1 min-w-[2rem] sm:flex-none h-9 sm:h-10 px-2 sm:px-3 rounded-lg bg-blue-500 dark:bg-gray-700 shadow-sm hover:shadow-md
+                    className="sm:flex-none h-9 sm:h-10 w-9 sm:w-8 rounded-lg bg-blue-500 dark:bg-gray-700 shadow-sm hover:shadow-md
                      transition-all duration-200 text-white dark:text-gray-300 hover:bg-blue-600
-                     dark:hover:text-blue-400 text-sm font-medium flex items-center justify-center"
+                     dark:hover:text-blue-400 flex items-center justify-center"
                 >
-                    {"<<"}
+                    <ChevronsLeft size={16} />
                 </button>
 
                 {/* Prev Month */}
                 <button
                     onClick={onPrevMonth}
                     aria-label="Previous month"
-                    className="flex-1 min-w-[2rem] sm:flex-none h-9 sm:h-10 w-9 sm:w-8 rounded-lg bg-blue-500 dark:bg-gray-700 shadow-sm hover:shadow-md
+                    className="sm:flex-none h-9 sm:h-10 w-9 sm:w-8 rounded-lg bg-blue-500 dark:bg-gray-700 shadow-sm hover:shadow-md
                      transition-all duration-200 text-white dark:text-gray-300 hover:bg-blue-600
                      dark:hover:text-blue-400 flex items-center justify-center"
                 >
@@ -79,7 +79,7 @@ const CalendarControls: React.FC<CalendarControlsProps> = ({
                 <select
                     value={currentMonth}
                     onChange={(e) => onMonthChange(parseInt(e.target.value))}
-                    className="flex-1 min-w-[76px] sm:flex-none h-9 sm:h-10 w-24 sm:w-32 px-2 bg-slate-200 dark:bg-gray-700 border border-blue-300 dark:border-gray-600
+                    className=" sm:flex-none h-9 sm:h-10 w-24 sm:w-32 px-2 bg-slate-200 dark:bg-gray-700 border border-blue-300 dark:border-gray-600
                      rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm sm:text-base
                      text-blue-900 dark:text-gray-100"
                 >
@@ -101,7 +101,7 @@ const CalendarControls: React.FC<CalendarControlsProps> = ({
                                 : String(currentYear)
                     }
                     onChange={handleYearInputChange}
-                    className="flex-1 min-w-[76px] sm:flex-none h-9 sm:h-10 w-16 sm:w-20 px-2 text-center bg-slate-200 dark:bg-gray-700 border border-blue-300 
+                    className="sm:flex-none h-9 sm:h-10 w-16 sm:w-20 px-2 text-center bg-slate-200 dark:bg-gray-700 border border-blue-300 
                      dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent 
                      text-sm sm:text-base text-blue-900 dark:text-gray-100"
                     style={
@@ -115,7 +115,7 @@ const CalendarControls: React.FC<CalendarControlsProps> = ({
                 <button
                     onClick={onNextMonth}
                     aria-label="Next month"
-                    className="flex-1 min-w-[2rem] sm:flex-none h-9 sm:h-10 w-9 sm:w-8 rounded-lg bg-blue-500 dark:bg-gray-700 shadow-sm hover:shadow-md
+                    className="sm:flex-none h-9 sm:h-10 w-9 sm:w-8 rounded-lg bg-blue-500 dark:bg-gray-700 shadow-sm hover:shadow-md
                      transition-all duration-200 text-white dark:text-gray-300 hover:bg-blue-600
                      dark:hover:text-blue-400 flex items-center justify-center"
                 >
@@ -126,11 +126,11 @@ const CalendarControls: React.FC<CalendarControlsProps> = ({
                 <button
                     onClick={onNextYear}
                     aria-label="Next year"
-                    className="flex-1 min-w-8 sm:flex-none h-9 sm:h-10 px-2 sm:px-3 rounded-lg bg-blue-500 dark:bg-gray-700 shadow-sm hover:shadow-md
+                    className="sm:flex-none h-9 sm:h-10 w-9 sm:w-8 rounded-lg bg-blue-500 dark:bg-gray-700 shadow-sm hover:shadow-md
                      transition-all duration-200 text-white dark:text-gray-300 hover:bg-blue-600
-                     dark:hover:text-blue-400 text-sm font-medium flex items-center justify-center"
+                     dark:hover:text-blue-400 flex items-center justify-center"
                 >
-                    {">>"}
+                    <ChevronsRight size={16} />
                 </button>
             </div>
 

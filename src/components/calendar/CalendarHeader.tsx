@@ -52,8 +52,9 @@ const adDisplay = adYear !== null
   const gregorianMobileLabel = activeSystem === 'bs' ? NEPALI_LABELS.ad : 'AD';
 
   return (
-    <header className="w-full bg-gradient-to-r from-[#0968e7] via-[#5068c8] to-[#0589c6] 
-  backdrop-blur-sm border-b border-[#a5b4fc] rounded-lg">
+    <header className="w-full bg-gradient-to-r from-[#0968e7] via-[#5068c8] to-[#0589c6]
+      dark:from-[#183051] dark:via-[#3a3d4a] dark:to-[#1f292e] 
+  backdrop-blur-sm border-b border-[#a5b4fc] dark:border-[#2f3036] rounded-lg">
  <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
         {/* Left Controls */}
         <div className="flex items-center gap-3">
@@ -61,7 +62,7 @@ const adDisplay = adYear !== null
             <button
               className={`px-4 py-2 rounded-md transition-all duration-200 text-sm sm:text-base font-medium ${
                 activeSystem === 'bs'
-                  ? 'bg-blue-600 text-white shadow-sm'
+                  ? 'bg-blue-600 dark:bg-slate-600 text-white shadow-sm'
                   : 'text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400'
               }`}
               onClick={() => onSystemChange('bs')}
@@ -72,7 +73,7 @@ const adDisplay = adYear !== null
             <button
               className={`px-4 py-2 rounded-md transition-all duration-200 text-sm sm:text-base font-medium ${
                 activeSystem === 'ad'
-                  ? 'bg-blue-600 text-white shadow-sm'
+                  ? 'bg-blue-600 dark:bg-slate-600 text-white shadow-sm'
                   : 'text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400'
               }`}
               onClick={() => onSystemChange('ad')}
@@ -84,7 +85,7 @@ const adDisplay = adYear !== null
 
           <button
             onClick={onTodayClick}
-            className="px-4 sm:px-5 py-2 bg-slate-200 text-blue-600 rounded-lg hover:bg-blue-200 hover:text-blue-700 dark:text-slate-200 dark:bg-blue-500 dark:hover:bg-blue-700 transition-colors duration-200 font-medium text-sm sm:text-base"
+            className="px-4 sm:px-5 py-2 bg-slate-200 text-blue-600 rounded-lg hover:bg-blue-200 hover:text-blue-700 dark:text-slate-200 dark:bg-slate-600 dark:hover:bg-blue-700 transition-colors duration-200 font-medium text-sm sm:text-base"
             style={{ fontFamily: "'Noto Sans Devanagari', sans-serif" }}
           >
             आज

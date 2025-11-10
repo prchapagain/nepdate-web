@@ -93,7 +93,7 @@ export const TodayWidget: React.FC<TodayWidgetProps> = ({
         <>
           <hr className="my-4 border-gray-200 dark:border-gray-600" />
           <h4 className="font-semibold text-gray-800 dark:text-gray-200 mb-2">
-            पञ्चाङ्ग (Panchanga)
+            पञ्चाङ्ग (सुर्योदयकालीन)
           </h4>
           <ul className="divide-y divide-gray-200 dark:divide-gray-600">
             {tithi && <PanchangaRow label="तिथि" value={tithi} />}
