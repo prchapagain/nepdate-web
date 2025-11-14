@@ -7,8 +7,7 @@ import {
   NEPALI_WEEKDAYS,
   NEPALI_BS_MONTHS,
 } from '../../constants/constants';
-import { toBikramSambat, toDevanagari, formatDegrees } from '../../lib/utils/lib';
-import { getNepaliPeriod } from '../../lib/core/bikram';
+import { toBikramSambat, toDevanagari, formatDegrees, getNepaliPeriod, resolveTithiName } from '../../lib/utils/lib';
 
 interface BirthDetailsCardProps {
   data: KundaliResponse;
@@ -33,6 +32,25 @@ export const BirthDetailsCard: React.FC<BirthDetailsCardProps> = ({ data, title,
       return '?';
     }
   };
+
+  function resolveExtendedTithiName(tithiDay: number): string {
+    // Normalize into paksha day (1–15)
+    let dayInPaksha: number;
+    let pakshaName: string;
+
+    if (tithiDay >= 1 && tithiDay <= 15) {
+      dayInPaksha = tithiDay;
+      pakshaName = "शुक्ल पक्ष";
+    } else if (tithiDay >= 16 && tithiDay <= 30) {
+      dayInPaksha = tithiDay - 15;
+      pakshaName = "कृष्ण पक्ष";
+    } else {
+      return `अवैध तिथि (${tithiDay})`;
+    }
+
+    // Delegate to the original lib function
+    return resolveTithiName(dayInPaksha, pakshaName);
+  }
 
   const formatPanchangaTiming = (startISO: string, endISO: string, birthDateISO: string): string => {
     if (!startISO || !endISO || !birthDateISO) return '?';
@@ -177,7 +195,10 @@ export const BirthDetailsCard: React.FC<BirthDetailsCardProps> = ({ data, title,
 
           <span className="text-stone-500 dark:text-stone-400 text-right">{NEPALI_LABELS.tithi}:</span>
           <div className="text-left">
-            <span className="font-semibold text-stone-800 dark:text-stone-100">{data.tithi.paksha} - {toDevanagari(data.tithi.tithiNumber)}</span>
+            <span className="font-semibold text-stone-800 dark:text-stone-100">
+              {data.tithi.paksha}  {resolveExtendedTithiName(data.tithi.tithiNumber)}
+              ({toDevanagari(data.tithi.tithiNumber)})
+            </span>
             <div className="text-xs text-gray-500 dark:text-gray-400">
               {formatPanchangaTiming(data.tithi.start, data.tithi.end, data.birthDetails.datetime)}
             </div>

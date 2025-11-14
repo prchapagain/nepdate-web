@@ -90,8 +90,8 @@ export const NEPALI_LABELS = {
   jaiminiProportionalNote: "अन्तरदशा अवधि समानुपातिक प्रणालीमा आधारित छ।",
   mahaDasha: "महादशा",
   antarDasha: "अन्तरदशा",
-  startsOn: "सुरु",
-  endsOn: "अन्त्य",
+  startsOn: "प्रारम्भ :",
+  endsOn: "अन्त्य :",
   calculationDetails: "गणना विवरण",
   backend: "गणना प्रणाली",
   ayanamsa: "अयनांश",
@@ -139,6 +139,7 @@ export const NEPALI_LABELS = {
   vasya: "वश्य",
   yoni: "योनि",
   grahaMaitri: "ग्रह मैत्री",
+  kootaType: "प्रकार / सम्बन्ध",
   gana: "गण",
   bhakoot: "भकूट",
   nadi: "नाडी",
@@ -159,6 +160,7 @@ export const NEPALI_LABELS = {
   tara: "तारा",
   totalPoints: "कुल योग",
   conclusion: "निष्कर्ष",
+  kundaliDisclaimer: "ⓘ प्रयोग गरिएको गणित, वास्तबिक जन्म समय र स्थान अनुसार कुण्डली फरक पर्न सक्छ।जन्मपत्रीका विश्लेषण गर्नु अगाडि सम्बन्धित विशेषज्ञ सङ्ग परामर्श गर्नुहोस।",
   mobilePrintHint: "मोबाइलमा प्रिन्ट गर्न समस्या भएमा, ब्राउजरको 'Share' मेनुमा गएर 'Print' विकल्प प्रयोग गर्नुहोस्।",
   searchOrSelectLocation: "स्थान खोज्नुहोस् वा छान्नुहोस्",
   cantFindLocation: "स्थान भेटिएन?",
@@ -421,9 +423,35 @@ export const NADI_MAP: Record<number, string> = {
   24: 'Adi', 25: 'Madhya', 26: 'Antya'
 };
 export const NEPALI_NADI: Record<string, string> = {
-  'Adi': 'आद्य',
+  'Adi': 'आदि',
   'Madhya': 'मध्य',
   'Antya': 'अन्त्य'
+};
+
+export const TARA_LABELS = [
+  'जन्म',
+  'संपत्',
+  'विपत्',
+  'क्षेम',
+  'प्रत्यारी',
+  'साधक',
+  'वधक',
+  'मित्र',
+  'अति-मित्र'
+] as const;
+
+export const TARA_POINTS: number[] = [0, 3, 1, 3, 1, 2.5, 0, 2, 3];
+
+export const GANA_LABELS: Record<string, string> = {
+  देव: 'शान्त स्वभाव',
+  मनुष्य: 'मिश्रित स्वभाव',
+  राक्षस: 'उग्र स्वभाव',
+};
+
+export const NADI_LABELS: Record<string, string> = {
+  आदि: 'वायु',
+  मध्य: 'अग्नि',
+  अन्त्य: 'जल',
 };
 
 // Tatva (Element) mapping based on Rashi number (1-12)

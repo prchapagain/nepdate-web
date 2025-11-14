@@ -239,14 +239,16 @@ async function getComparison(
         return { error: 'Could not calculate kundali for one or both individuals.' };
     }
 
-    const { score, conclusion } = calculateGunaMilan(groomData, brideData);
+    const { score, conclusion, labels } = calculateGunaMilan(groomData, brideData);
     return {
         groom: groomData,
         bride: brideData,
         score,
-        conclusion
+        conclusion,
+        labels
     };
 }
+
 
 export const kundaliService = {
     getKundali,

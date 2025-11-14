@@ -165,6 +165,16 @@ export interface ComparisonResult {
   groom: KundaliResponse;
   bride: KundaliResponse;
   score: GunaMilanScore;
+  labels: {
+    taraLabel: string;
+    bhakootLabel: string;
+    grahaMaitriLabel: string;
+    varnaLabel: string;
+    vasyaLabel: string;
+    yoniLabel: string;
+    ganaLabel: string;
+    nadiLabel: string;
+  };
   conclusion: string;
 }
 

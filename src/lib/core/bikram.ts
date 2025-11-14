@@ -438,16 +438,22 @@ export const formatDegrees = (decimal: number): string => {
 
 
 export function getNepaliPeriod(hh: number): string {
-    if (hh >= 4 && hh < 8) {
-        return "बिहान";
+    if (hh < 0 || hh >= 24) {
+        return "not available";
+    } else if (hh >= 4 && hh < 6) {
+    return "ब्रह्ममुहूर्त";
+  } else if (hh >= 6 && hh < 8) {
+    return "प्रातः";
     } else if (hh >= 8 && hh < 12) {
-        return "पूर्वान्ह";
+    return "पूर्वाह्न";
     } else if (hh >= 12 && hh < 16) {
         return "अपरान्ह";
     } else if (hh >= 16 && hh < 20) {
         return "साँझ";
+    } else if (hh >= 20 && hh < 24) {
+        return "रात्री(पूर्वार्द्ध)";
     } else {
-        return "राति";
+        return "रात्री(उत्तरार्ध)";
     }
 }
 

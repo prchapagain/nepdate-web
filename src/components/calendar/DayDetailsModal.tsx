@@ -1,6 +1,7 @@
 import React from 'react';
 import { X } from 'lucide-react';
-import { calculate, toDevanagari } from '../../lib/utils/lib';
+import { calculate, toDevanagari, getNepaliPeriod } from '../../lib/utils/lib';
+import { NEPALI_LABELS } from '../../constants/constants';
 
 interface DayDetailsModalProps {
     date: Date | null;
@@ -19,14 +20,6 @@ function getNepalDate(): Date {
     }).format(utcNow);
     const [year, month, day] = nepalISOString.split('-').map(Number);
     return new Date(Date.UTC(year, month - 1, day));
-}
-
-function getNepaliPeriod(hh: number): string {
-    if (hh >= 4 && hh < 8) { return "बिहान"; }
-    else if (hh >= 8 && hh < 12) { return "पूर्वान्ह"; }
-    else if (hh >= 12 && hh < 16) { return "अपरान्ह"; }
-    else if (hh >= 16 && hh < 20) { return "साँझ"; }
-    else { return "राति"; }
 }
 
 const formatPanchangaTime = (
@@ -131,8 +124,8 @@ const TimingDetailRow: React.FC<{
                             {element.name}
                         </strong>
                         <div className="flex justify-between items-center text-xs text-gray-500 dark:text-gray-500 mt-0.5" style={{ fontFamily: "'Noto Sans Devanagari', sans-serif" }}>
-                            <span>सुरु: {startTime || '-'}</span>
-                            <span>अन्त्य: {endTime || '-'}</span>
+                            <span><span className='font-bold'>{NEPALI_LABELS.startsOn}</span> {startTime}</span>
+                            <span><span className='font-bold'>{NEPALI_LABELS.endsOn}</span> {endTime}</span>
                         </div>
                     </div>
                 );
