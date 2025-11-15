@@ -477,14 +477,14 @@ export const NEPALI_PAYA: Record<string, string> = {
 };
 
 // Fix: Add GRAHA_MAITRI constant
-export const GRAHA_MAITRI: Record<string, Record<string, 'Friend' | 'Neutral' | 'Enemy'>> = {
-  SUN: { SUN: 'Friend', MOON: 'Friend', MARS: 'Friend', MERCURY: 'Neutral', JUPITER: 'Friend', VENUS: 'Enemy', SATURN: 'Enemy' },
-  MOON: { SUN: 'Friend', MOON: 'Friend', MARS: 'Neutral', MERCURY: 'Friend', JUPITER: 'Neutral', VENUS: 'Neutral', SATURN: 'Neutral' },
-  MARS: { SUN: 'Friend', MOON: 'Friend', MARS: 'Friend', MERCURY: 'Enemy', JUPITER: 'Friend', VENUS: 'Neutral', SATURN: 'Neutral' },
-  MERCURY: { SUN: 'Friend', MOON: 'Enemy', MARS: 'Neutral', MERCURY: 'Friend', JUPITER: 'Neutral', VENUS: 'Friend', SATURN: 'Friend' },
-  JUPITER: { SUN: 'Friend', MOON: 'Friend', MARS: 'Friend', MERCURY: 'Neutral', JUPITER: 'Friend', VENUS: 'Enemy', SATURN: 'Neutral' },
-  VENUS: { SUN: 'Neutral', MOON: 'Enemy', MARS: 'Neutral', MERCURY: 'Friend', JUPITER: 'Neutral', VENUS: 'Friend', SATURN: 'Friend' },
-  SATURN: { SUN: 'Enemy', MOON: 'Enemy', MARS: 'Enemy', MERCURY: 'Friend', JUPITER: 'Neutral', VENUS: 'Friend', SATURN: 'Friend' }
+export const GRAHA_MAITRI: Record<string, Record<string, 'मित्र' | 'तटस्थ' | 'शत्रु'>> = {
+  SUN:    { SUN: 'मित्र', MOON: 'मित्र', MARS: 'मित्र', MERCURY: 'तटस्थ', JUPITER: 'मित्र', VENUS: 'शत्रु', SATURN: 'शत्रु' },
+  MOON:   { SUN: 'मित्र', MOON: 'मित्र', MARS: 'तटस्थ', MERCURY: 'मित्र', JUPITER: 'तटस्थ', VENUS: 'तटस्थ', SATURN: 'तटस्थ' },
+  MARS:   { SUN: 'मित्र', MOON: 'मित्र', MARS: 'मित्र', MERCURY: 'शत्रु', JUPITER: 'मित्र', VENUS: 'तटस्थ', SATURN: 'तटस्थ' },
+  MERCURY:{ SUN: 'मित्र', MOON: 'शत्रु', MARS: 'तटस्थ', MERCURY: 'मित्र', JUPITER: 'तटस्थ', VENUS: 'मित्र', SATURN: 'मित्र' },
+  JUPITER:{ SUN: 'मित्र', MOON: 'मित्र', MARS: 'मित्र', MERCURY: 'तटस्थ', JUPITER: 'मित्र', VENUS: 'शत्रु', SATURN: 'तटस्थ' },
+  VENUS:  { SUN: 'तटस्थ', MOON: 'शत्रु', MARS: 'तटस्थ', MERCURY: 'मित्र', JUPITER: 'तटस्थ', VENUS: 'मित्र', SATURN: 'मित्र' },
+  SATURN: { SUN: 'शत्रु', MOON: 'शत्रु', MARS: 'शत्रु', MERCURY: 'मित्र', JUPITER: 'तटस्थ', VENUS: 'मित्र', SATURN: 'मित्र' }
 };
 
 // Fix: Add YONI_COMPATIBILITY constant

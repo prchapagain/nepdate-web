@@ -537,3 +537,33 @@ export function getSunriseSunset(
         sunsetFormatted: to12Hour(setLocal.hh, setLocal.mm),   // 12-hour Nepali for display
     };
 }
+
+/**
+ * Formats decimal degrees into a Devanagari DMS (Degrees, Minutes, Seconds) string.
+ */
+export function formatDMS(degrees: number): string {
+    const absDegrees = Math.abs(degrees);
+    let d = Math.trunc(absDegrees);
+    const minutesDecimal = (absDegrees - d) * 60;
+    let m = Math.trunc(minutesDecimal);
+    const secondsDecimal = (minutesDecimal - m) * 60;
+    let s = Math.round(secondsDecimal);
+
+    if (s === 60) {
+        m += 1;
+        s = 0;
+    }
+    if (m === 60) {
+        d += 1;
+        m = 0;
+    }
+
+    const mStr = String(m).padStart(2, '0');
+    const sStr = String(s).padStart(2, '0');
+
+    const devD = toDevanagari(d);
+    const devM = toDevanagari(mStr);
+    const devS = toDevanagari(sStr);
+
+    return `${devD}° ${devM}' ${devS}"`;
+}

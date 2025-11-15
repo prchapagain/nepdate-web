@@ -97,7 +97,7 @@ export interface KundaliResponse {
   calculationMeta: {
     backend: string;
     ayanamsa: string;
-    ayanamsaValue: number;
+    ayanamsaString: string;
     zodiac: string;
     houseSystem: string;
     calculationUtc: string;

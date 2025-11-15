@@ -26,7 +26,7 @@ import {
     findTransit,
 } from '../src/lib/core/panchangaCore';
 
-import { getSunriseSunset, toJulianDay } from '../src/lib/utils/lib'
+import { formatDMS, getSunriseSunset, toJulianDay } from '../src/lib/utils/lib'
 
 import { getPlanetPosition, calcayan } from './astroCalc';
 import {
@@ -69,6 +69,7 @@ async function getKundali(req: KundaliRequest): Promise<KundaliResponse | Servic
                 birthDateUTC.getUTCSeconds() / 3600) / 24;
 
         const ayanamsaValue = calcayan(jd_utc);
+        const ayanamsaString = formatDMS(ayanamsaValue);
         const birthAhar = getAharFor(birthLocalDate, req.longitude, birthTimeFraction);
 
         const moonAbs = absTrueLongitudeMoon(birthAhar);
@@ -143,9 +144,9 @@ async function getKundali(req: KundaliRequest): Promise<KundaliResponse | Servic
             };
         });
 
-        const ascendantLon = getAscendant(jd_utc, req.latitude, req.longitude);
+        const ayanamsa = calcayan(jd_utc);
+        const ascendantLon = getAscendant(jd_utc, req.latitude, req.longitude, ayanamsa);
         const houses: HouseInfo[] = getHouses(ascendantLon);
-
         const dashaSequence: DashaInfo[] = getVimshottariDasha(moon360, birthLocalDate);
         const tribhagiDasha: DashaInfo[] = getTribhagiDasha(moon360, birthLocalDate);
         const yoginiDasha: DashaInfo[] = getYoginiDasha(moon360, birthLocalDate);
@@ -167,7 +168,7 @@ async function getKundali(req: KundaliRequest): Promise<KundaliResponse | Servic
             calculationMeta: {
                 backend: 'Nepdate-astroCalc',
                 ayanamsa: 'Lahiri',
-                ayanamsaValue,
+                ayanamsaString,
                 zodiac: 'Sidereal',
                 houseSystem: 'Whole Sign',
                 calculationUtc: new Date().toISOString(),

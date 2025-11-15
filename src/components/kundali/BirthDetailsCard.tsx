@@ -259,7 +259,7 @@ export const BirthDetailsCard: React.FC<BirthDetailsCardProps> = ({ data, title,
           </div>
           <div className="flex gap-1 items-start">
             <span className="text-stone-500 dark:text-stone-400">{NEPALI_LABELS.ayanamsa}:</span>
-            <span className="font-semibold text-stone-800 dark:text-stone-100">{data.calculationMeta.ayanamsa} ({formatDegrees(data.calculationMeta.ayanamsaValue)})</span>
+            <span className="font-semibold text-stone-800 dark:text-stone-100">{data.calculationMeta.ayanamsa} ({(data.calculationMeta.ayanamsaString)})</span>
           </div>
           <div className="flex gap-1 items-start">
             <span className="text-stone-500 dark:text-stone-400">{NEPALI_LABELS.houseSystem}:</span>

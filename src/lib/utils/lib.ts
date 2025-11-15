@@ -37,7 +37,8 @@ export {
     mandaEquation,
     YugaCivilDays,
     UJJAIN_LONGITUDE,
-    getNepaliPeriod
+    getNepaliPeriod,
+    formatDMS
 } from '../core/bikram';
 export {
     calculate,
