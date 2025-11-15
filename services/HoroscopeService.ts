@@ -21,16 +21,17 @@ function addYearsExact(start: Date, years: number): Date {
 
 /* ---------------- HOUSE & ASCENDANT CALCULATIONS ---------------- */
 
-export function getAscendant(jd_utc: number, lat: number, lon: number): number {
+export function getAscendant(jd_utc: number, lat: number, lon: number, ayanamsa: number): number {
     const t = (jd_utc - 2451545.0) / 36525.0;
     const theta0 = 280.46061837 + 360.98564736629 * (jd_utc - 2451545.0) + 0.000387933 * t * t - t * t * t / 38710000;
     const lst = fix360(theta0 + lon);
     const epsilon = 23.439291 - 0.0130042 * t;
-    const ascendant = r2d * Math.atan2(
+    const tropicalAscendant = r2d * Math.atan2(
         Math.cos(lst * d2r),
         -(Math.sin(lst * d2r) * Math.cos(epsilon * d2r) + Math.tan(lat * d2r) * Math.sin(epsilon * d2r))
     );
-    return fix360(ascendant);
+    // Subtract the ayanamsa to get the Sidereal Lagna.
+    return fix360(tropicalAscendant - ayanamsa);
 }
 
 export function getHouses(ascendant: number): HouseInfo[] {

@@ -88,9 +88,17 @@ function nutation(jd: number): number {
     return nut / 3600.0;
 }
 
+/* Standard IAE (Lahiri) formula for Ayanamsa in arcseconds
+     P = C + (Rate * T) + (Acceleration * T^2)
+     C = 85885.53192" (Value at J2000.0)
+     Rate = 5029.0966" per century
+     Accel = 1.11161" per century^2
+     Formula = $$A(T) = 85885.53192 + 5029.0966 \cdot T + 1.11161 \cdot T^2$$ */
 export function calcayan(jd: number): number {
-    const T = (jd - 2451545.0) / 36525.0;
-    return 24.144206 - 0.013972 * T - 0.000009 * T * T;
+    const t = (jd - 2451545.0) / 36525.0;
+    const ayanamsa_in_arcseconds = 85885.53192 + (5029.0966 * t) + (1.11161 * t * t);
+    // Convert from arcseconds to degrees
+    return ayanamsa_in_arcseconds / 3600.0;
 }
 
 export function calData(jd: number) {
