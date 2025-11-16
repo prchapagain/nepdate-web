@@ -19,12 +19,12 @@ const KootaRow: React.FC<{
   obtainedPoints: number;
 }> = ({ label, groomValue, brideValue, typeLabel, maxPoints, obtainedPoints }) => (
   <tr className="border-b border-amber-100 dark:border-stone-700 last:border-b-0">
-    <td className="py-2 px-2 font-medium text-stone-800 dark:text-stone-100">{label}</td>
-    <td className="py-2 px-2 text-stone-700 dark:text-stone-200">{groomValue}</td>
-    <td className="py-2 px-2 text-stone-700 dark:text-stone-200">{brideValue}</td>
-    <td className="py-2 px-2 text-center text-blue-600 dark:text-blue-400 font-medium">{typeLabel ?? ''}</td>
-    <td className="py-2 px-2 text-center text-stone-700 dark:text-stone-200">{toDevanagari(maxPoints)}</td>
-    <td className="py-2 px-2 text-center font-semibold text-stone-800 dark:text-stone-100">{toDevanagari(obtainedPoints)}</td>
+    <td className="py-2 font-medium text-stone-800 dark:text-stone-100">{label}</td>
+    <td className="py-2 text-stone-700 dark:text-stone-200">{groomValue}</td>
+    <td className="py-2 text-stone-700 dark:text-stone-200">{brideValue}</td>
+    <td className="py-2 text-center text-blue-600 dark:text-blue-400 font-medium">{typeLabel ?? ''}</td>
+    <td className="py-2 text-center text-stone-700 dark:text-stone-200">{toDevanagari(maxPoints)}</td>
+    <td className="py-2 text-center font-semibold text-stone-800 dark:text-stone-100">{toDevanagari(obtainedPoints)}</td>
   </tr>
 );
 

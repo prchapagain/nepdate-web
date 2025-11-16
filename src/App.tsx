@@ -94,7 +94,7 @@ const App: React.FC = () => {
         activeSystem === 'bs'
           ? 'बन्द गर्नको लागि फेरि थिच्नुहोस्'
           : 'Press back again to exit',
-        1300
+        2000
       );
     }
   }, [showExitToast, activeSystem]);

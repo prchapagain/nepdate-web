@@ -108,6 +108,17 @@ export const BirthDetailsCard: React.FC<BirthDetailsCardProps> = ({ data, title,
   const suggestedSyllable = nameSyllableData
     ? nameSyllableData.syllables[data.nakshatra.pada - 1]
     : '?';
+    // For astrocalc based moon nakshatra name sylable
+  function getSuggestedSyllable(nakshatraName: string, pada: number): string {
+    const index = NAKSHATRA_SYLLABLES.findIndex(n => n.name === nakshatraName);
+    if (index === -1) return '?'; // not found
+    const syllables = NAKSHATRA_SYLLABLES[index].syllables;
+    return syllables[pada - 1] || '?';
+  }
+
+  const moonSuggestedSyllable = moon
+    ? getSuggestedSyllable(moon.nakshatra, moon.nakshatraPada)
+    : '?';
 
   const ascendantRashi = NEPALI_RASHI[data.ascendant.sign - 1];
   const ascendantDegrees = formatDegrees(data.ascendant.degreesInSign);
@@ -191,6 +202,15 @@ export const BirthDetailsCard: React.FC<BirthDetailsCardProps> = ({ data, title,
               <span className="font-semibold">पद {toDevanagari(data.nakshatra.pada)}: </span>
               {formatPanchangaTiming(data.nakshatra.padaStart, data.nakshatra.padaEnd, data.birthDetails.datetime)}
             </div>
+            {/* Nakshatra from Modern planets (Moon's Nakshatra) */}
+            {moon &&
+              (data.nakshatra.nameNepali !== moon.nakshatra ||
+                data.nakshatra.pada !== moon.nakshatraPada) && (
+                <span className="font-semibold text-green-700 dark:text-green-600">
+                  {NEPALI_LABELS.modernAstroInfo}: {NEPALI_LABELS.nakshatra}: {moon.nakshatra} {NEPALI_LABELS.pada}: {toDevanagari(moon.nakshatraPada)}
+                </span>
+              )}
+
           </div>
 
           <span className="text-stone-500 dark:text-stone-400 text-right">{NEPALI_LABELS.tithi}:</span>
@@ -223,6 +243,14 @@ export const BirthDetailsCard: React.FC<BirthDetailsCardProps> = ({ data, title,
           <span className="text-stone-500 dark:text-stone-400 text-right">{NEPALI_LABELS.suggestedSyllable}:</span>
           <span className="font-bold text-amber-600 dark:text-amber-600 text-lg text-left">{suggestedSyllable}</span>
         </div>
+        {moon &&
+          (data.nakshatra.nameNepali !== moon.nakshatra ||
+            data.nakshatra.pada !== moon.nakshatraPada) && (
+            <span className="font-semibold text-green-700 dark:text-green-600">
+              {NEPALI_LABELS.modernAstroInfo}: {moonSuggestedSyllable}
+            </span>
+          )}
+
       </div>
 
       {/* Guna Milan Details Section */}

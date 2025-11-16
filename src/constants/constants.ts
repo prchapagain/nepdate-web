@@ -31,6 +31,7 @@ export const NEPALI_LABELS = {
   tithiWarningEn: " ⚠️tithis are calculated at sunrise. If a tithi spans multiple days, it is always shown on the day it falls at sunrise.",
   birthDetails: "जन्म विवरण",
   astrologicalDetails: "ज्योतिषीय विवरण",
+  modernAstroInfo: '🛈 नेपडेट ज्योतिष',
   gunaMilanDetails: "गुण मिलान विवरण",
   name: "नाम",
   namePlaceholder: "नाम",
