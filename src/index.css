@@ -23,6 +23,19 @@
 
 @layer components {
 
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.rotate-slow {
+  animation: spin-slow 10s linear infinite;
+}
+
   /* Kundali Chart Styles */
   .birth-chart-wrapper {
     width: 100%;
@@ -417,7 +430,7 @@
   body {
     margin: 0 !important;
     padding: 0 !important;
-    
+
   }
 
   .screen-only-footer {

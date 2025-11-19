@@ -2,6 +2,7 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
 import { version } from './package.json';
+import path from 'path';
 
 export default defineConfig({
   define: {
@@ -65,25 +66,29 @@ export default defineConfig({
     outDir: 'docs',
     chunkSizeWarningLimit: 500,
     rollupOptions: {
-  output: {
-    manualChunks(id) {
-  if (id.includes('node_modules')) {
-    if (id.includes('react')) return 'vendor-react';
-    if (id.includes('leaflet') || id.includes('react-leaflet')) return 'vendor-leaflet';
-    if (id.includes('lucide-react')) return 'vendor-ui';
-    if (id.includes('tz-lookup')) return 'vendor-utils';
-    return 'vendor-other';
-  }
+      input: {
+        main: path.resolve(__dirname, 'index.html'),
+        privacy: path.resolve(__dirname, 'privacy-policy.html')
+      },
+      output: {
+        manualChunks(id) {
+          if (id.includes('node_modules')) {
+            if (id.includes('react')) return 'vendor-react';
+            if (id.includes('leaflet') || id.includes('react-leaflet')) return 'vendor-leaflet';
+            if (id.includes('lucide-react')) return 'vendor-ui';
+            if (id.includes('tz-lookup')) return 'vendor-utils';
+            return 'vendor-other';
+          }
 
-  if (id.includes('/pages/')) return 'pages';
-  if (id.includes('/data/')) return 'data';
-  if (id.includes('/components/calendar/')) return 'bikram'; 
-  if (id.includes('/components/kundali/')) return 'kundali';
-}
+          if (id.includes('/pages/')) return 'pages';
+          if (id.includes('/data/')) return 'data';
+          if (id.includes('/components/calendar/')) return 'bikram';
+          if (id.includes('/components/kundali/')) return 'kundali';
+        }
 
 
-  }
-}
+      }
+    }
 
   },
 });

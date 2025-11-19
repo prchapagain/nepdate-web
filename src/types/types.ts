@@ -225,6 +225,7 @@ export type SavedComparison = {
 
 export type MenuStyle = 'slide' | 'tabs';
 export type DesktopLayoutStyle = 'topbar' | 'sidebar';
-export type ActiveView = 'calendar' | 'converter' | 'kundali' | 'settings';
+import type { MENU_ITEMS } from '../constants/menu';
+export type ActiveView = (typeof MENU_ITEMS)[number]['key'];
 
 export type SavedKundaliEntry = SavedIndividual | SavedComparison;

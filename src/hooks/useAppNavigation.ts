@@ -1,15 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { ActiveView } from '../types/types'; // Adjust path if needed
-
-// Extend the Window interface for TypeScript
-declare global {
-  interface Window {
-    Android?: {
-      isAndroidApp: () => boolean;
-    };
-    handleBackPress?: () => boolean;
-  }
-}
+import { ActiveView } from '../types/types';
 
 export const useAppNavigation = () => {
   const [activeView, setActiveView] = useState<ActiveView>('calendar');
@@ -74,6 +64,7 @@ export const useAppNavigation = () => {
 
   // Internal navigation logic
   const handleInternalBackNavigation = useCallback((): boolean => {
+    // 1. Close Modals/Overlays first
     if (isModalOpen) {
       setIsModalOpen(false);
       return true;
@@ -86,6 +77,8 @@ export const useAppNavigation = () => {
       setIsMenuOpen(false);
       return true;
     }
+
+    // 2. Handle specific complex pages
     if (activeView === 'kundali') {
       if (isKundaliResultsVisible && kundaliBackActionRef.current) {
         kundaliBackActionRef.current();
@@ -95,10 +88,20 @@ export const useAppNavigation = () => {
         return true;
       }
     }
-    if (activeView === 'converter' || activeView === 'settings') {
+
+    // 3. Handle simple pages (Radio, Settings, Converter, Privacy)
+    // Added 'radio' and 'privacy' here
+    if (
+      activeView === 'converter' ||
+      activeView === 'settings' ||
+      activeView === 'privacy' ||
+      activeView === 'radio'
+    ) {
       setActiveView('calendar');
       return true;
     }
+
+    // Default: allow system back (which usually exits if on calendar)
     return false;
   }, [isModalOpen, isAboutOpen, isMenuOpen, activeView, isKundaliResultsVisible]);
 

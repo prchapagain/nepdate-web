@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowLeft, Moon, Sun, Sidebar, Smartphone, PanelLeft, PanelTop } from 'lucide-react';
+import { Moon, Sun, Sidebar, Smartphone, PanelLeft, PanelTop } from 'lucide-react';
 import { NEPALI_LABELS } from '../constants/constants';
 import { toast } from '../components/shared/toast';
 
@@ -29,11 +29,10 @@ const SettingOption: React.FC<{
   <button
     onClick={onClick}
     disabled={isActive}
-    className={`flex flex-col items-center justify-center p-4 border-2 rounded-lg w-32 h-28 transition-colors ${
-      isActive
-        ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/50 cursor-default'
-        : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 hover:border-blue-500 dark:hover:border-blue-400'
-    }`}
+    className={`flex flex-col items-center justify-center p-4 border-2 rounded-lg w-32 h-28 transition-colors ${isActive
+      ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/50 cursor-default'
+      : 'border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 hover:border-blue-500 dark:hover:border-blue-400'
+      }`}
   >
     {icon}
     <span className="mt-2 text-sm font-medium">{label}</span>
@@ -43,7 +42,6 @@ const SettingOption: React.FC<{
 
 
 const SettingsPage: React.FC<SettingsPageProps> = ({
-  onBack,
   currentTheme,
   onThemeChange,
   currentMenuStyle,
@@ -53,7 +51,7 @@ const SettingsPage: React.FC<SettingsPageProps> = ({
   onResetSettings,
   isAndroidApp,
   onReloadApp
-  
+
 }) => {
   const handleOpenWidgetSettings = () => {
     if ((window as any).Android && (window as any).Android.openWidgetSettings) {
@@ -65,13 +63,6 @@ const SettingsPage: React.FC<SettingsPageProps> = ({
   };
   return (
     <div className="p-3 max-w-2xl mx-auto">
-      <header className="flex items-center mb-6">
-        <button onClick={onBack} className="p-2 mr-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700">
-          <ArrowLeft className="w-5 h-5" />
-        </button>
-        <h1 className="text-xl font-semibold">{NEPALI_LABELS.settings || 'Settings'}</h1>
-      </header>
-
       <div className="space-y-5">
         <section className="p-4 bg-white dark:bg-gray-700 rounded-lg shadow">
           <h2 className="text-lg font-semibold mb-2">Reload App</h2>
@@ -99,7 +90,7 @@ const SettingsPage: React.FC<SettingsPageProps> = ({
             </button>
           </section>
         )}
-        
+
         <section className="p-3 bg-white dark:bg-gray-700 rounded-lg shadow">
           <h2 className="text-lg font-semibold mb-3">{NEPALI_LABELS.theme || 'Theme'}</h2>
           <div className="flex space-x-4">
@@ -107,7 +98,7 @@ const SettingsPage: React.FC<SettingsPageProps> = ({
               label={NEPALI_LABELS.lightMode || 'Light'}
               icon={<Sun className="w-8 h-8 text-yellow-500" />}
               isActive={currentTheme === 'light'}
-              onClick={currentTheme === 'light' ? undefined : onThemeChange} 
+              onClick={currentTheme === 'light' ? undefined : onThemeChange}
             />
             <SettingOption
               label={NEPALI_LABELS.darkMode || 'Dark'}
@@ -117,7 +108,7 @@ const SettingsPage: React.FC<SettingsPageProps> = ({
             />
           </div>
         </section>
-        
+
         {/* Mobile Menu Style Setting (hidden on desktop) */}
         <section className="p-4 bg-white dark:bg-gray-700 rounded-lg shadow md:hidden">
           <h2 className="text-lg font-semibold mb-1">{NEPALI_LABELS.mobileNavStyle || 'Mobile Navigation'}</h2>
@@ -139,7 +130,7 @@ const SettingsPage: React.FC<SettingsPageProps> = ({
             />
           </div>
         </section>
-        
+
         {/* Desktop Layout Setting (hidden on mobile) */}
         <section className="hidden md:block p-4 bg-white dark:bg-gray-700 rounded-lg shadow">
           <h2 className="text-lg font-semibold mb-1">{NEPALI_LABELS.desktopNavStyle || "Desktop Layout"}</h2>
@@ -171,10 +162,10 @@ const SettingsPage: React.FC<SettingsPageProps> = ({
             onClick={onResetSettings}
             className="px-4 py-2 rounded-lg text-sm font-medium text-white bg-red-600 hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-800 transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
           >
-           {NEPALI_LABELS.reset || "Reset to Default"}
+            {NEPALI_LABELS.reset || "Reset to Default"}
           </button>
         </section>
-        
+
       </div>
     </div>
   );
