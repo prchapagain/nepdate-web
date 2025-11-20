@@ -37,7 +37,7 @@ export const useAppNavigation = () => {
     checkIfAndroidApp();
 
     if (!isAndroidWebView) {
-      intervalId = window.setInterval(checkIfAndroidApp, 200);
+      intervalId = window.setInterval(checkIfAndroidApp, 2000);
     }
 
     return () => {
@@ -89,8 +89,7 @@ export const useAppNavigation = () => {
       }
     }
 
-    // 3. Handle simple pages (Radio, Settings, Converter, Privacy)
-    // Added 'radio' and 'privacy' here
+    // Handle simple pages (Radio, Settings, Converter, Privacy)
     if (
       activeView === 'converter' ||
       activeView === 'settings' ||
@@ -133,11 +132,19 @@ export const useAppNavigation = () => {
         return true;
       } else {
         resetBackPress();
+
+        const androidInterface = window.Android as any;
+
+        if (typeof androidInterface !== 'undefined' && typeof androidInterface.exitApp === 'function') {
+          androidInterface.exitApp();
+          return true;
+        }
+
         return false;
       }
     };
 
-    // PWA back button handling
+    // PWA back button handling (Browser History)
     if (!isAndroidWebView) {
       const pushDummyState = () => {
         const url = new URL(window.location.href);
