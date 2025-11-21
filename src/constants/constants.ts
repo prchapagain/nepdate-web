@@ -191,7 +191,10 @@ export const NEPALI_LABELS = {
   delete: "हटाउनुहोस्",
   deleteConfirm: "के तपाईं यो कुण्डली हटाउन निश्चित हुनुहुन्छ?",
   savedOn: "सुरक्षित गरिएको:",
-  view: "हेर्नुहोस्"
+  view: "हेर्नुहोस्",
+	radio: "रेडियो",
+	privacyPolicy: "गोपनीयता नीति",
+	calendar: "पात्रो"
 };
 
 export const NEPALI_PLANETS: { [key: string]: string } = {
@@ -320,7 +323,11 @@ export const NEPALI_RASHI: string[] = [
 export const NEPALI_NUMERALS = ['०', '१', '२', '३', '४', '५', '६', '७', '८', '९'];
 
 export const NEPALI_BS_MONTHS: string[] = [
-  "बैशाख", "जेठ", "असार", "श्रावण", "भदौ", "आश्विन", "कार्तिक", "मंसिर", "पौष", "माघ", "फाल्गुन", "चैत्र"
+  "बैशाख", "जेठ", "असार", "साउन", "भदौ", "असोज", "कार्तिक", "मंसिर", "पुस", "माघ", "फाल्गुन", "चैत"
+];
+
+export const lunar_MonthNames: string[] = [
+   "वैशाख", "ज्येष्ठ", "आषाढ", "श्रावण", "भाद्र", "आश्विन", "कार्तिक", "मार्गशीर्ष", "पौष", "माघ", "फाल्गुन", "चैत्र"
 ];
 
 export const NEPALI_BS_MONTHSShort = [

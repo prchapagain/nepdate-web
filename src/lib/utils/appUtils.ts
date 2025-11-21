@@ -76,3 +76,13 @@ export const handleReloadApp = async () => {
     console.log("ℹ️ Cache API not available — skipping cache clear for safety.");
   }
 };
+
+
+export const handlePrint = () => {
+	if (window.Android?.printPage) {
+			window.Android?.printPage();
+	} else {
+			const nativePrint = window.print;
+			nativePrint();
+	}
+};

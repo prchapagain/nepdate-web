@@ -1,6 +1,6 @@
+import { lunar_MonthNames } from '../../constants/constants';
 import { EventsData } from '../../data/static/eventsData';
 import {
-    solarMonths,
     weekdays,
     getSunriseSunset,
     toDevanagari,
@@ -52,7 +52,7 @@ export function getPanchangaDetailsAtAhar(ahar: number): { [key: string]: any } 
     }
     const sunAtPurnima = trueLongitudeSun(purnimaEnd);
     const nameSign = Math.floor(sunAtPurnima / 30);
-    const purnimantaMonthName = solarMonths[nameSign % 12];
+    const purnimantaMonthName = lunar_MonthNames[nameSign % 12];
 
     const adhikaStatus = calculateAdhikaMasa(ahar);
     const isAdhika = adhikaStatus.startsWith("अधिक");

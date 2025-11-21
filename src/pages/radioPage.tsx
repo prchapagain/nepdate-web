@@ -259,106 +259,196 @@ const RadioPage: React.FC = () => {
 		}
 	};
 
-	return (
-		<div className="min-h-screen bg-gray-100 flex items-center justify-center p-4 select-none">
-			<audio
-				ref={audioRef}
-				onError={onAudioError}
-				onPlaying={onAudioPlaying}
-				onPause={onAudioPause}
-				onWaiting={onAudioWaiting}
-				onStalled={onAudioStalled}
-				crossOrigin="anonymous"
-			/>
+return (
+  <div className="min-h-screen bg-gray-100 dark:bg-gray-900 flex items-center justify-center p-4 select-none">
+    <audio
+      ref={audioRef}
+      onError={onAudioError}
+      onPlaying={onAudioPlaying}
+      onPause={onAudioPause}
+      onWaiting={onAudioWaiting}
+      onStalled={onAudioStalled}
+      crossOrigin="anonymous"
+    />
 
-			<div className="bg-white rounded-3xl shadow-xl w-full max-w-md overflow-hidden relative flex flex-col max-h-[90vh]">
-				{/* HEADER / COVER AREA */}
-				<div className="p-4 pt-6 flex flex-col items-center shrink-0">
+    <div className="bg-white dark:bg-gray-800 rounded-3xl shadow-xl w-full max-w-md overflow-hidden relative flex flex-col max-h-[90vh]">
+      {/* HEADER / COVER AREA */}
+      <div className="p-4 pt-6 flex flex-col items-center shrink-0">
 
-					{/* ROTATING LOGO */}
-					<div className={`relative w-32 h-32 rounded-full border-4 border-gray-100 shadow-inner overflow-hidden mb-4 transition-transform duration-[10000ms] linear ${isPlaying ? 'rotate-slow' : ''}`}>
-						<img src={currentStation.cover} alt={currentStation.name} className="w-full h-full object-cover" />
-						<div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-white rounded-full border border-gray-200 z-10"></div>
-					</div>
+        {/* ROTATING LOGO */}
+        <div
+          className={`relative w-32 h-32 rounded-full border-4 border-gray-100 dark:border-gray-700 shadow-inner overflow-hidden mb-4 transition-transform duration-[10000ms] linear ${
+            isPlaying ? 'rotate-slow' : ''
+          }`}
+        >
+          <img
+            src={currentStation.cover}
+            alt={currentStation.name}
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-white dark:bg-gray-700 rounded-full border border-gray-200 dark:border-gray-600 z-10"></div>
+        </div>
 
-					{/* INFO */}
-					<div className="text-center mb-4 w-full">
-						<h2 className="text-xl font-bold text-gray-800 line-clamp-1 px-2">{currentStation.name}</h2>
-						<div className="flex items-center justify-center gap-2 mt-1 h-5">
-							{mainPlayerStatus === 'offline' ? (
-								<span className="text-red-500 text-xs font-medium flex items-center gap-1"><Signal size={12} /> Stream Offline</span>
-							) : mainPlayerStatus === 'reconnecting' ? (
-								<span className="text-orange-500 text-xs font-medium animate-pulse flex items-center gap-1"><RefreshCw size={12} className="animate-spin" /> Reconnecting...</span>
-							) : mainPlayerStatus === 'connecting' ? (
-								<span className="text-blue-500 text-xs font-medium animate-pulse">Buffering...</span>
-							) : mainPlayerStatus === 'checking' ? (
-								<span className="text-yellow-500 text-xs font-medium animate-pulse">Checking...</span>
-							) : (
-								<span className="text-gray-500 text-xs font-mono tracking-wide">{currentStation.author}</span>
-							)}
-						</div>
-					</div>
+        {/* INFO */}
+        <div className="text-center mb-4 w-full">
+          <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100 line-clamp-1 px-2">
+            {currentStation.name}
+          </h2>
+          <div className="flex items-center justify-center gap-2 mt-1 h-5">
+            {mainPlayerStatus === 'offline' ? (
+              <span className="text-red-500 text-xs font-medium flex items-center gap-1">
+                <Signal size={12} /> Stream Offline
+              </span>
+            ) : mainPlayerStatus === 'reconnecting' ? (
+              <span className="text-orange-500 text-xs font-medium animate-pulse flex items-center gap-1">
+                <RefreshCw size={12} className="animate-spin" /> Reconnecting...
+              </span>
+            ) : mainPlayerStatus === 'connecting' ? (
+              <span className="text-blue-500 text-xs font-medium animate-pulse">
+                Buffering...
+              </span>
+            ) : mainPlayerStatus === 'checking' ? (
+              <span className="text-yellow-500 text-xs font-medium animate-pulse">
+                Checking...
+              </span>
+            ) : (
+              <span className="text-gray-500 dark:text-gray-400 text-xs font-mono tracking-wide">
+                {currentStation.author}
+              </span>
+            )}
+          </div>
+        </div>
 
-					{/* CONTROLS */}
-					<div className="flex items-center justify-center gap-8 mb-6 w-full">
-						<button onClick={handlePrev} className="p-2 rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition"><SkipBack className="w-8 h-8" fill="currentColor" /></button>
+        {/* CONTROLS */}
+        <div className="flex items-center justify-center gap-8 mb-6 w-full">
+          <button
+            onClick={handlePrev}
+            className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition"
+          >
+            <SkipBack className="w-8 h-8" fill="currentColor" />
+          </button>
 
-						<button onClick={togglePlay} className={`w-16 h-16 rounded-full flex items-center justify-center text-white shadow-lg transition transform active:scale-95 hover:scale-105 ${mainPlayerStatus === 'offline' ? 'bg-gray-300' : 'bg-blue-600 hover:bg-blue-700'}`}>
-							{mainPlayerStatus === 'connecting' || mainPlayerStatus === 'checking' || mainPlayerStatus === 'reconnecting' ? (
-								<div className="w-7 h-7 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-							) : isPlaying ? (<Pause className="w-7 h-7" fill="currentColor" />) : (<Play className="w-7 h-7 ml-1" fill="currentColor" />)}
-						</button>
+          <button
+            onClick={togglePlay}
+            className={`w-16 h-16 rounded-full flex items-center justify-center text-white shadow-lg transition transform active:scale-95 hover:scale-105 ${
+              mainPlayerStatus === 'offline'
+                ? 'bg-gray-300 dark:bg-gray-600'
+                : 'bg-blue-600 hover:bg-blue-700'
+            }`}
+          >
+            {mainPlayerStatus === 'connecting' ||
+            mainPlayerStatus === 'checking' ||
+            mainPlayerStatus === 'reconnecting' ? (
+              <div className="w-7 h-7 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+            ) : isPlaying ? (
+              <Pause className="w-7 h-7" fill="currentColor" />
+            ) : (
+              <Play className="w-7 h-7 ml-1" fill="currentColor" />
+            )}
+          </button>
 
-						<button onClick={handleNext} className="p-2 rounded-full hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition"><SkipForward className="w-8 h-8" fill="currentColor" /></button>
-					</div>
+          <button
+            onClick={handleNext}
+            className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition"
+          >
+            <SkipForward className="w-8 h-8" fill="currentColor" />
+          </button>
+        </div>
 
-					{/* VOLUME */}
-					<div className="w-full flex items-center gap-3 px-6 mb-4">
-						<button onClick={() => setIsMuted(!isMuted)} className="text-gray-400 hover:text-gray-600">{isMuted || volume === 0 ? <VolumeX size={18} /> : <Volume2 size={18} />}</button>
-						<input type="range" min="0" max="1" step="0.01" value={isMuted ? 0 : volume} onChange={handleVolumeChange} className="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600" />
-					</div>
+        {/* VOLUME */}
+        <div className="w-full flex items-center gap-3 px-6 mb-4">
+          <button
+            onClick={() => setIsMuted(!isMuted)}
+            className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
+          >
+            {isMuted || volume === 0 ? <VolumeX size={18} /> : <Volume2 size={18} />}
+          </button>
+          <input
+            type="range"
+            min="0"
+            max="1"
+            step="0.01"
+            value={isMuted ? 0 : volume}
+            onChange={handleVolumeChange}
+            className="w-full h-1.5 bg-gray-200 dark:bg-gray-700 rounded-lg appearance-none cursor-pointer accent-blue-600"
+          />
+        </div>
 
-					{/* MODES */}
-					<div className="w-full px-4 flex justify-center">
-						<div className="bg-gray-100 p-1 rounded-lg flex gap-1">
-							<button onClick={() => setStabilityMode('standard')} className={`flex items-center gap-1 px-3 py-1.5 rounded-md text-[10px] font-medium transition-all ${stabilityMode === 'standard' ? 'bg-white text-blue-600 shadow-sm' : 'text-gray-400 hover:text-gray-600'}`}><Zap size={12} /> Standard</button>
-							<button onClick={() => setStabilityMode('high')} className={`flex items-center gap-1 px-3 py-1.5 rounded-md text-[10px] font-medium transition-all ${stabilityMode === 'high' ? 'bg-white text-orange-600 shadow-sm' : 'text-gray-400 hover:text-gray-600'}`}><ShieldCheck size={12} /> Auto-Retry</button>
-						</div>
-					</div>
-				</div>
+        {/* MODES */}
+        <div className="w-full px-4 flex justify-center">
+          <div className="bg-gray-100 dark:bg-gray-700 p-1 rounded-lg flex gap-1">
+            <button
+              onClick={() => setStabilityMode('standard')}
+              className={`flex items-center gap-1 px-3 py-1.5 rounded-md text-[10px] font-medium transition-all ${
+                stabilityMode === 'standard'
+                  ? 'bg-white dark:bg-gray-800 text-blue-600 shadow-sm'
+                  : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300'
+              }`}
+            >
+              <Zap size={12} /> Standard
+            </button>
+            <button
+              onClick={() => setStabilityMode('high')}
+              className={`flex items-center gap-1 px-3 py-1.5 rounded-md text-[10px] font-medium transition-all ${
+                stabilityMode === 'high'
+                  ? 'bg-white dark:bg-gray-800 text-orange-600 shadow-sm'
+                  : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300'
+              }`}
+            >
+              <ShieldCheck size={12} /> Auto-Retry
+            </button>
+          </div>
+        </div>
+      </div>
 
-				{/* PLAYLIST */}
-				<div className="bg-gray-50 border-t overflow-y-auto flex-1">
-					{radioStations.map((station, index) => {
-						const isCurrent = index === currentStationIndex;
-						const status = isCurrent && isPlaying ? 'online' : (stationStatuses[station.id] || 'pending');
-						const visualStatus: StreamStatus = isCurrent ? mainPlayerStatus : status;
-						return (
-							<div
-								key={station.id}
-								onClick={() => {
-									if (isCurrent && isPlaying) {
-										togglePlay();
-									} else {
-										// If the chosen station is known offline, skip forward to the next available
-										if (stationStatuses[station.id] === 'offline') {
-											setCurrentStationIndex(index);
-											skipToNextAndPlay();
-										} else {
-											setCurrentStationIndex(index);
-											setIsPlaying(true);
-											setMainPlayerStatus(stationStatuses[station.id] === 'online' ? 'connecting' : 'checking');
-										}
-									}
-								}}
-								className={`p-3 px-4 flex items-center border-b cursor-pointer hover:bg-gray-100 transition ${isCurrent ? 'bg-blue-50 border-l-4 border-blue-500' : ''}`}
-							>
-								<div className="mr-3 relative flex items-center justify-center w-3 h-3">
-									<span className={`w-2.5 h-2.5 rounded-full transition-colors duration-300 ${getStatusColor(visualStatus)}`}></span>
-									{['online', 'checking', 'connecting', 'reconnecting'].includes(visualStatus) && (
-										<span className={`absolute inline-flex h-full w-full rounded-full opacity-75 animate-ping ${visualStatus === 'reconnecting' ? 'bg-orange-400' : visualStatus === 'online' ? 'bg-green-400' : 'bg-blue-400'}`}></span>
-									)}
-								</div>
+      {/* PLAYLIST */}
+      <div className="bg-gray-50 dark:bg-gray-900 border-t dark:border-gray-700 overflow-y-auto flex-1">
+        {radioStations.map((station, index) => {
+          const isCurrent = index === currentStationIndex;
+          const status =
+            isCurrent && isPlaying ? 'online' : stationStatuses[station.id] || 'pending';
+          const visualStatus: StreamStatus = isCurrent ? mainPlayerStatus : status;
+          return (
+            <div
+              key={station.id}
+              onClick={() => {
+                if (isCurrent && isPlaying) {
+                  togglePlay();
+                } else {
+                  if (stationStatuses[station.id] === 'offline') {
+                    setCurrentStationIndex(index);
+                    skipToNextAndPlay();
+                  } else {
+                    setCurrentStationIndex(index);
+                    setIsPlaying(true);
+                    setMainPlayerStatus(
+                      stationStatuses[station.id] === 'online' ? 'connecting' : 'checking'
+                    );
+                  }
+                }
+              }}
+              className={`p-3 px-4 flex items-center border-b dark:border-gray-700 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition ${
+                isCurrent ? 'bg-blue-50 dark:bg-blue-900 border-l-4 border-blue-500' : ''
+              }`}
+            >
+              <div className="mr-3 relative flex items-center justify-center w-3 h-3">
+                <span
+                  className={`w-2.5 h-2.5 rounded-full transition-colors duration-300 ${getStatusColor(
+                    visualStatus
+                  )}`}
+                ></span>
+                {['online', 'checking', 'connecting', 'reconnecting'].includes(visualStatus) && (
+                  <span
+                    className={`absolute inline-flex h-full w-full rounded-full opacity-75 animate-ping ${
+                      visualStatus === 'reconnecting'
+                        ? 'bg-orange-400'
+                        : visualStatus === 'online'
+                        ? 'bg-green-400'
+                        : 'bg-blue-400'
+                    }`}
+                  ></span>
+                )}
+              </div>
 								<div className="flex-1 min-w-0">
 									<h4 className={`text-sm font-medium truncate ${isCurrent ? 'text-blue-700' : 'text-gray-700'}`}>{station.name}</h4>
 									<p className={`text-[10px] truncate ${visualStatus === 'offline' ? 'text-red-400' : 'text-gray-400'}`}>

@@ -78,7 +78,7 @@ export const useAppNavigation = () => {
       return true;
     }
 
-    // 2. Handle specific complex pages
+    // Handle specific complex pages
     if (activeView === 'kundali') {
       if (isKundaliResultsVisible && kundaliBackActionRef.current) {
         kundaliBackActionRef.current();

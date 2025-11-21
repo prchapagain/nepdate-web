@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  toBikramSambat, 
-  fromBikramSambat, 
-  getBikramMonthInfo, 
-  solarMonths, 
-  toDevanagari, 
-  fromDevanagari, 
+import {
+  toBikramSambat,
+  fromBikramSambat,
+  getBikramMonthInfo,
+  toDevanagari,
+  fromDevanagari,
   Bsdata
 } from '../../lib/utils/lib';
+import { NEPALI_BS_MONTHS } from '../../constants/constants';
 
 // Define the boundaries from the data
 const START_BS_YEAR = Bsdata.BS_START_YEAR;
@@ -163,7 +163,7 @@ const Converter: React.FC<ConverterProps> = () => {
   const adMonths = Array.from({ length: 12 }, (_, i) =>
     new Date(Date.UTC(2000, i, 1)).toLocaleString('default', { month: 'long', timeZone: 'UTC' })
   );
-  const bsMonths = solarMonths;
+  const bsMonths = NEPALI_BS_MONTHS;
   const currentMonths = isAdToBs ? adMonths : bsMonths;
 
   return (
@@ -176,7 +176,7 @@ const Converter: React.FC<ConverterProps> = () => {
     {/* Main content */}
     <main className="flex justify-center items-center p-4 sm:p-8">
       <div className="w-full max-w-2xl mx-auto backdrop-blur-md bg-gray-100/70 dark:bg-gray-800/50 rounded-3xl shadow-xl p-6 sm:p-10 lg:p-12 border border-gray-200 dark:border-gray-700 transition-all">
-        
+
         {/* आजको मिति */}
         <div className="text-center mb-6 p-3 bg-white/50 dark:bg-gray-700/50 rounded-xl shadow-sm border border-gray-200 dark:border-gray-600">
           <p className="text-sm sm:text-base font-medium text-gray-700 dark:text-gray-300">

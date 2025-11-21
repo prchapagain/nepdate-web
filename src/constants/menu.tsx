@@ -1,5 +1,6 @@
 import React, { lazy } from "react";
 import { Home, SwitchCamera, Info, Settings, FileText, RadioReceiverIcon } from "lucide-react";
+import { NEPALI_LABELS } from "./constants";
 
 // Lazy-loaded pages
 const CalendarPage = lazy(() => import("../pages/CalendarPage"));
@@ -22,21 +23,21 @@ export interface MenuItem {
 export const MENU_ITEMS: MenuItem[] = [
   {
     key: "calendar",
-    label: "गृहपृष्ठ",
+    label: NEPALI_LABELS.calendar,
     icon: <Home className="w-5 h-5" />,
     page: CalendarPage,
     fixed: true,
   },
   {
     key: "converter",
-    label: "मिति रूपान्तरण",
+    label: NEPALI_LABELS.converter,
     icon: <SwitchCamera className="w-5 h-5" />,
     page: ConverterPage,
     fixed: true,
   },
   {
     key: "kundali",
-    label: "कुण्डली",
+    label: NEPALI_LABELS.kundali,
     icon: (
       <svg
         className="w-5 h-5"
@@ -56,28 +57,28 @@ export const MENU_ITEMS: MenuItem[] = [
   },
   {
     key: "settings",
-    label: "सेटिङ",
+    label: NEPALI_LABELS.settings,
     icon: <Settings className="w-5 h-5" />,
     page: SettingsPage,
     fixed: true,
   },
   {
     key: "about",
-    label: "बारेमा",
+    label: NEPALI_LABELS.about,
     icon: <Info className="w-5 h-5" />,
     page: AboutPage,
     fixed: false,
   },
   {
     key: "privacy",
-    label: "गोपनीयता नीति",
+    label: NEPALI_LABELS.privacyPolicy,
     icon: <FileText className="w-5 h-5" />,
     page: PrivacyPage,
     fixed: false,
   },
 	{
     key: "radio",
-    label: "रेडियो",
+    label: NEPALI_LABELS.radio,
     icon: <RadioReceiverIcon className="w-5 h-5" />,
     page: radioPage,
     fixed: false,

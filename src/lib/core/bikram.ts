@@ -5,7 +5,7 @@
  * based on the Surya Siddhanta to ensure wide historical and future date compatibility.
  */
 import { Bsdata } from '../../data/static/monthData';
-import { NEPALI_NUMERALS } from '../../constants/constants';
+import { NEPALI_NUMERALS, NEPALI_BS_MONTHS } from '../../constants/constants';
 
 export { Bsdata };
 
@@ -24,7 +24,6 @@ const DESHANTARA = (KATHMANDU_LONGITUDE - UJJAIN_LONGITUDE) / 360; // Longitude 
 export const rad = 180 / Math.PI;
 
 // can be imported from constants. but keeping here for easier usage.
-export const solarMonths = ["वैशाख", "ज्येष्ठ", "आषाढ", "श्रावण", "भाद्रपद", "आश्विन", "कार्तिक", "मार्गशीर्ष", "पौष", "माघ", "फाल्गुन", "चैत्र"];
 export const weekdays = ["आइतबार", "सोमबार", "मङ्गलबार", "बुधबार", "बिहीबार", "शुक्रबार", "शनिबार"];
 export const TITHI_NAMES = [
     "प्रतिपदा", "द्वितीया", "तृतीया", "चतुर्थी", "पञ्चमी", "षष्ठी", "सप्तमी", "अष्टमी", "नवमी", "दशमी",
@@ -240,8 +239,8 @@ export function calculateAdhikaMasa(ahar: number): string {
     let startSign = Math.floor(trueLongitudeSun(lunarMonthStart) / 30);
     let endSign = Math.floor(trueLongitudeSun(lunarMonthEnd) / 30);
     if (endSign < startSign) endSign += 12;
-    if (endSign === startSign) return "अधिक " + solarMonths[startSign % 12];
-    if (endSign > startSign + 1) return "क्षय " + solarMonths[(startSign + 1) % 12];
+    if (endSign === startSign) return "अधिक " + NEPALI_BS_MONTHS[startSign % 12];
+    if (endSign > startSign + 1) return "क्षय " + NEPALI_BS_MONTHS[(startSign + 1) % 12];
     return "छैन";
 }
 
@@ -269,7 +268,7 @@ export function toBikramSambat(gregorianDate: Date): BikramDate {
             if (remainingDays < daysInYear) {
                 for (let m = 0; m < 12; m++) {
                     if (remainingDays < yearData[m]) {
-                        return { year: currentBsYear, monthIndex: m, day: remainingDays + 1, monthName: solarMonths[m], isComputed: false };
+                        return { year: currentBsYear, monthIndex: m, day: remainingDays + 1, monthName: NEPALI_BS_MONTHS[m], isComputed: false };
                     }
                     remainingDays -= yearData[m];
                 }
@@ -288,7 +287,7 @@ export function toBikramSambat(gregorianDate: Date): BikramDate {
     const yearKali = Math.floor(aharForYearCalc / SOLAR_YEAR_IN_DAYS);
     const yearSaka = yearKali - 3179;
     const finalBsYear = yearSaka + 135;
-    return { year: finalBsYear, monthIndex: sauraMasaResult.m, day: sauraMasaResult.d, monthName: solarMonths[sauraMasaResult.m], isComputed: true };
+    return { year: finalBsYear, monthIndex: sauraMasaResult.m, day: sauraMasaResult.d, monthName: NEPALI_BS_MONTHS[sauraMasaResult.m], isComputed: true };
 }
 
 // Public: from Bikram Sambat -> Gregorian
@@ -334,7 +333,7 @@ export function getBikramMonthInfo(bsYear: number, monthIndex: number) {
         return {
             totalDays: monthData[monthIndex],
             startDayOfWeek: firstDayAd.getUTCDay(),
-            monthName: solarMonths[monthIndex],
+            monthName: NEPALI_BS_MONTHS[monthIndex],
             year: bsYear,
             isComputed: false
         };
@@ -349,7 +348,7 @@ export function getBikramMonthInfo(bsYear: number, monthIndex: number) {
     return {
         totalDays,
         startDayOfWeek: firstDayAd.getUTCDay(),
-        monthName: solarMonths[monthIndex],
+        monthName: NEPALI_BS_MONTHS[monthIndex],
         year: bsYear,
         isComputed: true
     };
