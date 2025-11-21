@@ -23,7 +23,7 @@ export interface MenuItem {
 export const MENU_ITEMS: MenuItem[] = [
   {
     key: "calendar",
-    label: NEPALI_LABELS.calendar,
+    label: NEPALI_LABELS.home,
     icon: <Home className="w-5 h-5" />,
     page: CalendarPage,
     fixed: true,
