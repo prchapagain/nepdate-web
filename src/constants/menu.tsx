@@ -1,5 +1,5 @@
 import React, { lazy } from "react";
-import { Home, SwitchCamera, Info, Settings, FileText, RadioReceiverIcon } from "lucide-react";
+import { Home, SwitchCamera, Info, Settings, FileText, RadioIcon } from "lucide-react";
 import { NEPALI_LABELS } from "./constants";
 
 // Lazy-loaded pages
@@ -79,7 +79,7 @@ export const MENU_ITEMS: MenuItem[] = [
 	{
     key: "radio",
     label: NEPALI_LABELS.radio,
-    icon: <RadioReceiverIcon className="w-5 h-5" />,
+    icon: <RadioIcon className="w-5 h-5" />,
     page: radioPage,
     fixed: false,
   },

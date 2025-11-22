@@ -223,6 +223,13 @@ export type SavedComparison = {
   defaultValues: { groom: DefaultFormValues; bride: DefaultFormValues; };
 };
 
+export interface BhadraInfo {
+    isActive: boolean;
+    residence: string;
+    status: string;
+    isHarmful: boolean;
+}
+
 export type MenuStyle = 'slide' | 'tabs';
 export type DesktopLayoutStyle = 'topbar' | 'sidebar';
 import type { MENU_ITEMS } from '../constants/menu';

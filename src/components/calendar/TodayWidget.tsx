@@ -6,7 +6,8 @@ import {
   weekdays,
   calculate,
 } from '../../lib/utils/lib';
-import { Sunrise, Sunset, ArrowRight } from 'lucide-react';
+
+import { Sunrise, Sunset, ArrowRight, AlertTriangle, CheckCircle } from 'lucide-react';
 
 type BikramSambatDate = ReturnType<typeof toBikramSambat>;
 type CalculateResult = ReturnType<typeof calculate>;
@@ -64,6 +65,9 @@ export const TodayWidget: React.FC<TodayWidgetProps> = ({
   const sunset = todayDetails?.sunset;
   const todayEvents = todayDetails?.events;
 
+  // Get Bhadra info from the calculate result
+  const bhadra = todayDetails?.bhadra;
+
   return (
     <div className="p-4 bg-azure dark:bg-gray-700 rounded-lg shadow-md border dark:border-gray-600">
       <h3 className="text-lg text-center font-semibold text-blue-600 dark:text-blue-400 mb-3">
@@ -112,6 +116,26 @@ export const TodayWidget: React.FC<TodayWidgetProps> = ({
               <span>{sunset}</span>
             </div>
           </div>
+
+          {/* BHADRA DISPLAY LOGIC */}
+          {bhadra && bhadra.isActive && (
+            <div className={`mt-3 p-2 rounded-md text-sm border flex items-center justify-center gap-2 ${
+              bhadra.isHarmful
+                ? 'bg-red-50 dark:bg-red-900/20 border-red-200 text-red-700 dark:text-red-300'
+                : 'bg-green-50 dark:bg-green-900/20 border-green-200 text-green-700 dark:text-green-300'
+            }`}>
+              {bhadra.isHarmful ? (
+                <AlertTriangle size={16} className="shrink-0" />
+              ) : (
+                <CheckCircle size={16} className="shrink-0" />
+              )}
+              <span>
+                <p className="font-medium">भद्रा: {bhadra.residence}</p>
+								<p className="text-xs mt-1 opacity-90">{bhadra.status}</p>
+              </span>
+            </div>
+          )}
+          {/*  */}
         </>
       )}
 
