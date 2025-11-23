@@ -24,7 +24,7 @@ const kathmandu = nepaliLocations.find(
 );
 const defaultLocation = kathmandu ?? nepaliLocations[0];
 
-// --- FormSelect Component ---
+// FormSelect Component
 interface FormSelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
   label: string;
   children: React.ReactNode;
@@ -45,7 +45,7 @@ const FormSelect: React.FC<FormSelectProps> = ({ label, children, ...props }) =>
   </div>
 );
 
-// --- MapModal Component  ---
+// MapModal Component
 interface MapModalProps {
   onClose: () => void;
   onLocationSelect: (lat: number, lon: number) => void;
@@ -108,7 +108,7 @@ const MapModal: React.FC<MapModalProps> = ({ onClose, onLocationSelect, initialP
         }}
         className="bg-slate-50 dark:bg-gray-800 dark:text-gray-200 rounded-lg shadow-lg"
       >
-        {/* --- Header --- */}
+        {/* Header */}
         <div className="flex justify-between items-center border-b p-3 dark:border-gray-700">
           <h3 className="text-lg font-semibold">{NEPALI_LABELS.selectOnMap || "Select on Map"}</h3>
           <button
@@ -119,7 +119,7 @@ const MapModal: React.FC<MapModalProps> = ({ onClose, onLocationSelect, initialP
           </button>
         </div>
 
-        {/* --- Map --- */}
+        {/* Map */}
         <div style={{ flex: 1, minHeight: 420, display: 'flex', justifyContent: 'center', alignItems: 'center', position: 'relative' }}>
           <MapContainer
             key={`${initialPosition[0]}-${initialPosition[1]}`}
@@ -136,7 +136,7 @@ const MapModal: React.FC<MapModalProps> = ({ onClose, onLocationSelect, initialP
           </MapContainer>
         </div>
 
-        {/* --- Footer with coordinates and select button --- */}
+        {/* Footer with coordinates and select button */}
         <div className="border-t p-3 flex justify-between items-center dark:border-gray-700">
           <div className="text-sm text-gray-600 dark:text-gray-300">
             Lat: {markerPosition[0].toFixed(4)}, Lon: {markerPosition[1].toFixed(4)}
@@ -155,7 +155,7 @@ const MapModal: React.FC<MapModalProps> = ({ onClose, onLocationSelect, initialP
 };
 
 
-// --- InputGroup Components ---
+// InputGroup Components
 const InputGroup: React.FC<{ children: React.ReactNode }> = ({ children }) => (
   <div className="grid grid-cols-3 border border-gray-300 rounded-md overflow-hidden divide-x divide-gray-300 focus-within:border-blue-500 focus-within:ring-1 focus-within:ring-blue-500 dark:border-gray-600 dark:divide-gray-600 dark:focus-within:border-blue-400 dark:focus-within:ring-blue-400">
     {children}
@@ -202,11 +202,11 @@ const AD_YEAR_MAX = 2150;
 const BS_YEAR_MIN = 1960;
 const BS_YEAR_MAX = 2210;
 
-// --- KundaliForm Component ---
+// KundaliForm Component
 export const KundaliForm = forwardRef<KundaliFormHandle, KundaliFormProps>(({ onCalculate, isLoading, hideSubmitButton = false, defaultValues }, ref) => {
   const today = new Date();
   const bsToday = toBikramSambat(today);
-  
+
   const [name, setName] = useState(defaultValues?.name || 'प्रयोगकर्ता');
   const [dateSystem, setDateSystem] = useState<'BS' | 'AD'>(defaultValues?.dateSystem || 'BS');
 
@@ -220,16 +220,31 @@ export const KundaliForm = forwardRef<KundaliFormHandle, KundaliFormProps>(({ on
   const [bsYear, setBsYear] = useState<number | null>(defaultValues?.bsYear || bsToday.year);
   const [bsMonth, setBsMonth] = useState<number>(defaultValues?.bsMonth || bsToday.monthIndex + 1); // bikram.ts uses 0-based monthIndex
   const [bsDay, setBsDay] = useState<number>(defaultValues?.bsDay || bsToday.day);
-  
+
   const yearBeforeFocusRef = useRef<number | null>(null);
-  
+
   const [showInvalidDatePopup, setShowInvalidDatePopup] = useState(false);
   const [resolvePopup, setResolvePopup] = useState<((value: KundaliRequest | null) => void) | null>(null);
 
-  const [period, setPeriod] = useState<'AM' | 'PM'>(defaultValues?.period ||'PM');
-  const [hour, setHour] = useState<number>(defaultValues?.hour || 4);
-  const [minute, setMinute] = useState<number>(defaultValues?.minute || 15);
-  const [second, setSecond] = useState<number>(defaultValues?.second || 0);
+  // Default time logic: use current time if not provided in defaultValues
+  let defaultHour = today.getHours();
+  let periodDefault: 'AM' | 'PM' = 'AM';
+  if (defaultHour === 0) {
+    defaultHour = 12;
+    periodDefault = 'AM';
+  } else if (defaultHour === 12) {
+    periodDefault = 'PM';
+  } else if (defaultHour > 12) {
+    defaultHour = defaultHour - 12;
+    periodDefault = 'PM';
+  } else {
+    periodDefault = 'AM';
+  }
+
+  const [period, setPeriod] = useState<'AM' | 'PM'>(defaultValues?.period || periodDefault);
+  const [hour, setHour] = useState<number>(defaultValues?.hour || defaultHour);
+  const [minute, setMinute] = useState<number>(defaultValues?.minute || today.getMinutes());
+  const [second, setSecond] = useState<number>(defaultValues?.second || today.getSeconds());
   const initialLocation = defaultValues?.location || defaultLocation;
   const [selectedLocation, setSelectedLocation] = useState(initialLocation);
   const [manualLat, setManualLat] = useState<number>(initialLocation.latitude);
@@ -273,7 +288,7 @@ export const KundaliForm = forwardRef<KundaliFormHandle, KundaliFormProps>(({ on
     if (dateSystem === 'BS' && bsDay > daysInMonth) setBsDay(daysInMonth);
     if (dateSystem === 'AD' && adDay > daysInMonth) setAdDay(daysInMonth);
   }, [daysInMonth, dateSystem, bsDay, adDay]);
-  
+
   const handleYearChange = (e: React.ChangeEvent<HTMLInputElement>) => {
       const valueStr = e.target.value;
       const englishValueStr = fromDevanagari(valueStr);
@@ -291,7 +306,7 @@ export const KundaliForm = forwardRef<KundaliFormHandle, KundaliFormProps>(({ on
           else setAdYear(num);
       }
   };
-  
+
   const handleYearFocus = () => {
     const currentYear = dateSystem === 'BS' ? bsYear : adYear;
     yearBeforeFocusRef.current = currentYear;
@@ -359,7 +374,7 @@ export const KundaliForm = forwardRef<KundaliFormHandle, KundaliFormProps>(({ on
 
       const year = dateSystem === 'BS' ? currentBsYear : adYear;
       if (year === null) return null;
-      
+
       const pad = (n: number) => n.toString().padStart(2, '0');
       let finalAdYear = currentAdYear ?? today.getFullYear();
       let finalAdMonth = adMonth;
@@ -397,13 +412,13 @@ export const KundaliForm = forwardRef<KundaliFormHandle, KundaliFormProps>(({ on
   const validateForm = (): boolean => {
     const year = dateSystem === 'BS' ? bsYear : adYear;
     if (year === null || String(year).length < 4) return false;
-    
+
     const [min, max] = dateSystem === 'BS' ? [BS_YEAR_MIN, BS_YEAR_MAX] : [AD_YEAR_MIN, AD_YEAR_MAX];
     if (year < min || year > max) return false;
 
     return true;
   };
-  
+
   const validateAndGetData = (): Promise<KundaliRequest | null> => {
       return new Promise((resolve) => {
           if (validateForm()) {
@@ -415,20 +430,20 @@ export const KundaliForm = forwardRef<KundaliFormHandle, KundaliFormProps>(({ on
           }
       });
   };
-  
+
   useImperativeHandle(ref, () => ({
     validateAndGetData,
   }));
 
   const handleProceedWithToday = () => {
     setShowInvalidDatePopup(false);
-    const todayRequestData = getKundaliRequestData(); 
+    const todayRequestData = getKundaliRequestData();
     if (resolvePopup) {
         resolvePopup(todayRequestData);
         setResolvePopup(null);
     }
   };
-  
+
   const handleEdit = () => {
     setShowInvalidDatePopup(false);
     if(resolvePopup) {
@@ -605,7 +620,7 @@ export const KundaliForm = forwardRef<KundaliFormHandle, KundaliFormProps>(({ on
           </div>
         )}
       </form>
-      
+
       {/* Location Modal */}
       {isLocationModalOpen && (
          <div className="fixed inset-0 flex items-start justify-center bg-black/60 z-50 p-4 pt-8 sm:pt-8 transition-opacity" onClick={() => setIsLocationModalOpen(false)}>
@@ -669,7 +684,7 @@ export const KundaliForm = forwardRef<KundaliFormHandle, KundaliFormProps>(({ on
             </div>
          </div>
       )}
-      
+
       {/* Map Modal */}
       {showMap && (
         <MapModal
@@ -678,7 +693,7 @@ export const KundaliForm = forwardRef<KundaliFormHandle, KundaliFormProps>(({ on
           initialPosition={[manualLat, manualLon]}
         />
       )}
-      
+
       {/* Invalid Date Popup */}
       {showInvalidDatePopup && (
         <div className="fixed inset-0 flex items-center justify-center bg-black/60 z-50 p-4 transition-opacity">

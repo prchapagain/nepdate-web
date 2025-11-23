@@ -1,35 +1,13 @@
 import React from 'react';
 import { NEPALI_WEEKDAYS_SHORT, GREGORIAN_WEEKDAYS_SHORT } from '../../constants/constants'
 import { fromBikramSambat, toBikramSambat, getBikramMonthInfo, toDevanagari, calculate } from '../../lib/utils/lib';
+import { getNepalDate } from '../../lib/utils/appUtils';
 
 interface CalendarGridProps {
     activeSystem: 'bs' | 'ad';
     currentYear: number | null;
     currentMonth: number;
     onDayClick: (date: Date) => void;
-}
-
-// Timezone Helper to get current date in Nepal
-function getNepalDate(): Date {
-    const utcNow = new Date();
-
-    const nepalISOString = new Intl.DateTimeFormat('en-CA', {
-        timeZone: 'Asia/Kathmandu',
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit',
-        hour12: false
-    }).format(utcNow).replace(', ', 'T');
-
-    // Treat Nepal-local time as local, not UTC
-    const [datePart, timePart] = nepalISOString.split('T');
-    const [year, month, day] = datePart.split('-').map(Number);
-    const [hour, minute, second] = timePart.split(':').map(Number);
-
-    return new Date(year, month - 1, day, hour, minute, second);
 }
 
 

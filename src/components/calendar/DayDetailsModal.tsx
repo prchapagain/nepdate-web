@@ -1,5 +1,6 @@
 import React from 'react';
 import { X, AlertTriangle, CheckCircle } from 'lucide-react';
+import { getNepalDate } from '../../lib/utils/appUtils';
 import { calculate, toDevanagari, getNepaliPeriod } from '../../lib/utils/lib';
 import { NEPALI_LABELS } from '../../constants/constants';
 
@@ -9,18 +10,6 @@ interface DayDetailsModalProps {
     onClose: () => void;
 }
 
-// HELPER FUNCTIONS
-function getNepalDate(): Date {
-    const utcNow = new Date();
-    const nepalISOString = new Intl.DateTimeFormat('en-CA', {
-        timeZone: 'Asia/Kathmandu',
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit',
-    }).format(utcNow);
-    const [year, month, day] = nepalISOString.split('-').map(Number);
-    return new Date(Date.UTC(year, month - 1, day));
-}
 
 const formatPanchangaTime = (
     isoString: string | null | undefined,

@@ -1,4 +1,6 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
+import { getNepalDate } from '../lib/utils/appUtils';
+
 import {
   toBikramSambat,
   fromBikramSambat,
@@ -12,7 +14,7 @@ type CalculateResult = ReturnType<typeof calculate>;
 type TodayDetails = Exclude<CalculateResult, { error: string }>;
 
 export const useCalendarLogic = () => {
-  const [initialToday] = useState(new Date());
+  const [initialToday] = useState(getNepalDate());
   const [initialTodayBs] = useState(() => toBikramSambat(initialToday));
   const [todayDetails, setTodayDetails] = useState<TodayDetails | null>(null);
 
