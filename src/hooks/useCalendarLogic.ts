@@ -25,7 +25,7 @@ export const useCalendarLogic = () => {
 
     try {
       const details = calculate(initialToday, lat, lon, tz);
-      
+
       if ('error' in details) {
         toast(`Error from calculate:'${details.error}`, "error", 2000 );
       } else {
@@ -34,7 +34,7 @@ export const useCalendarLogic = () => {
     } catch (e) {
       toast(`Error calculating today details:${e}`, "error", 2000);
     }
-  }, []); 
+  }, []);
 
   const [activeSystem, setActiveSystem] = useState<'bs' | 'ad'>('bs');
   const [currentBsYear, setCurrentBsYear] = useState<number | null>(

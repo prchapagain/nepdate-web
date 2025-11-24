@@ -19,8 +19,7 @@ export function getNepalDate(): Date {
     const [datePart, timePart] = nepalISOString.split('T');
     const [year, month, day] = datePart.split('-').map(Number);
     const [hour, minute, second] = timePart.split(':').map(Number);
-
-    return new Date(year, month - 1, day, hour, minute, second);
+    return new Date(Date.UTC(year, month - 1, day, hour, minute, second));
 }
 
 const INFO_DELAY = 2000;

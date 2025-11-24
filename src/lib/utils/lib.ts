@@ -5,7 +5,6 @@ export {
     Bsdata,
     getBikramMonthInfo,
     fromDevanagari,
-    solarMonths,
     weekdays,
     getSunriseSunset,
     toDevanagari,
