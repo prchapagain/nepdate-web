@@ -27,6 +27,7 @@ declare global {
 		Android?: {
 			isAndroidApp: () => boolean;
 			onWebViewGoBack?: () => void;
+			exitApp?: () => void;
 
 			//  Radio / Media Service
 			//onHtml5AudioEvent(url, isPlaying, title, artist, art)

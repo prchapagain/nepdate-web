@@ -230,6 +230,20 @@ export interface BhadraInfo {
     isHarmful: boolean;
 }
 
+export type ContentBlock =
+  | { type: 'heading'; text: string }
+  | { type: 'paragraph'; text: string; className?: string }
+  | { type: 'verse'; text: string; translation?: string }
+  | { type: 'image'; src: string; alt?: string; caption?: string }
+  | { type: 'list'; items: string[] };
+
+export interface SectionItem {
+  id: string;
+  title: string;
+  subtitle?: string;
+  content: ContentBlock[];
+}
+
 export type MenuStyle = 'slide' | 'tabs';
 export type DesktopLayoutStyle = 'topbar' | 'sidebar';
 import type { MENU_ITEMS } from '../constants/menu';
