@@ -1,6 +1,7 @@
 import React, { JSX } from 'react';
 import { NEPALI_BS_MONTHS } from '../../constants/constants';
 import { toBikramSambat, fromBikramSambat, getBikramMonthInfo, getEventsForDate, toDevanagari } from '../../lib/utils/lib';
+import MonthlyMuhurta from './Muhurtas';
 
 interface MonthlyEventsProps {
 	activeSystem: 'bs' | 'ad';
@@ -207,6 +208,8 @@ const MonthlyEvents: React.FC<MonthlyEventsProps> = ({
 	return (
 		<div className="flex flex-col gap-3 w-full">
 			{renderMonthlyList()}
+			{/* Muhurats */}
+			<MonthlyMuhurta activeSystem={activeSystem} currentYear={currentYear} currentMonth={currentMonth} />
 			{renderUpcomingList()}
 		</div>
 	);
