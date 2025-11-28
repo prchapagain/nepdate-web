@@ -3,7 +3,7 @@ import { Home, SwitchCamera, RadioIcon, Info, Settings, FileText, BookOpen } fro
 import { NEPALI_LABELS } from "./constants";
 
 // Lazy-loaded pages
-const CalendarPage = lazy(() => import("../pages/CalendarPage"));
+
 const ConverterPage = lazy(() => import("../pages/ConverterPage"));
 const KundaliPage = lazy(() => import("../pages/KundaliPage"));
 const SettingsPage = lazy(() => import("../pages/SettingsPage"));
@@ -25,7 +25,7 @@ export const MENU_ITEMS: MenuItem[] = [
     key: "calendar",
     label: NEPALI_LABELS.home,
     icon: <Home className="w-5 h-5" />,
-    page: CalendarPage,
+    page: undefined,
     fixed: true,
   },
   {
