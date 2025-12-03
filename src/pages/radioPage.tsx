@@ -28,6 +28,9 @@ const CONFIG = {
 };
 
 const RadioPage: React.FC = () => {
+  // ENVIRONMENT CHECK
+  const isAndroid = typeof window !== 'undefined' && !!window.Android;
+
   // STATE & REFS
   const [currentStationIndex, setCurrentStationIndex] = useState<number>(0);
   const [isPlaying, setIsPlaying] = useState<boolean>(true);
@@ -156,7 +159,6 @@ const RadioPage: React.FC = () => {
     }
     if (!id) return "offline";
 
-    // If this station is currently active in the main player, don't let the crawler kill it.
     if (!force && station.id === currentStation.id) {
         if (isPlaying || mainPlayerStatus === 'connecting' || mainPlayerStatus === 'online') {
             return 'online';
@@ -379,19 +381,32 @@ const RadioPage: React.FC = () => {
   // Volume Sync
   useEffect(() => {
     if (audioRef.current) {
-        audioRef.current.volume = isMuted ? 0 : volume;
+        if (isAndroid) {
+            // Force silence on Android
+            audioRef.current.volume = 0;
+            audioRef.current.muted = true;
+        } else {
+            // Standard web behavior
+            audioRef.current.volume = isMuted ? 0 : volume;
+            audioRef.current.muted = false;
+        }
     }
-  }, [volume, isMuted]);
+  }, [volume, isMuted, isAndroid]); // Added isAndroid dep
 
   // AUDIO INITIALIZATION (PROGRAMMATIC)
   useEffect(() => {
     if (!audioRef.current) {
         const audio = new Audio();
         audio.preload = "auto";
-        audio.volume = isMuted ? 0 : volume;
+        if (isAndroid) {
+            audio.volume = 0;
+            audio.muted = true;
+        } else {
+            audio.volume = isMuted ? 0 : volume;
+        }
         audioRef.current = audio;
     }
-  }, []);
+  }, []); // Logic handled inside on creation, subsequent updates handled by Volume Sync effect
 
   // AUDIO EVENT BINDING
   useEffect(() => {
@@ -444,7 +459,6 @@ const RadioPage: React.FC = () => {
       if (playPromise !== undefined) {
         playPromise.catch((e) => {
              if (e.name === 'NotAllowedError') {
-                 // Autoplay blocked
                  setIsPlaying(false);
              } else if (e.name !== 'AbortError') {
                  handlePlayError(true);
@@ -594,16 +608,22 @@ const RadioPage: React.FC = () => {
 
             {/* Bottom Row */}
             <div className="flex items-center justify-between mt-1 px-1">
-               <div className="flex flex-col items-center gap-1 group">
-                  <div className="relative w-16 h-6">
-                    <input type="range" min="0" max="1" step="0.01" value={isMuted ? 0 : volume} onChange={handleVolumeChange} className="absolute w-full h-full opacity-0 cursor-pointer z-20" />
-                    <div className="w-full h-1.5 bg-zinc-400/50 dark:bg-gray-800 rounded-full mt-2.5 overflow-hidden shadow-[inset_0_1px_2px_rgba(0,0,0,0.5)] dark:shadow-[inset_0_1px_2px_rgba(0,0,0,1)]">
-                       <div className="h-full bg-orange-600" style={{width: `${(isMuted ? 0 : volume) * 100}%`}}></div>
+
+               {/* VOLUME CONTROL HIDDEN ON ANDROID */}
+               {!isAndroid ? (
+                 <div className="flex flex-col items-center gap-1 group">
+                    <div className="relative w-16 h-6">
+                      <input type="range" min="0" max="1" step="0.01" value={isMuted ? 0 : volume} onChange={handleVolumeChange} className="absolute w-full h-full opacity-0 cursor-pointer z-20" />
+                      <div className="w-full h-1.5 bg-zinc-400/50 dark:bg-gray-800 rounded-full mt-2.5 overflow-hidden shadow-[inset_0_1px_2px_rgba(0,0,0,0.5)] dark:shadow-[inset_0_1px_2px_rgba(0,0,0,1)]">
+                         <div className="h-full bg-orange-600" style={{width: `${(isMuted ? 0 : volume) * 100}%`}}></div>
+                      </div>
+                      <div className="absolute top-1/2 left-0 w-2 h-2 bg-zinc-500 dark:bg-gray-400 rounded-full -translate-y-1/2 pointer-events-none shadow-md" style={{left: `calc(${(isMuted ? 0 : volume) * 100}% - 4px)`}}></div>
                     </div>
-                    <div className="absolute top-1/2 left-0 w-2 h-2 bg-zinc-500 dark:bg-gray-400 rounded-full -translate-y-1/2 pointer-events-none shadow-md" style={{left: `calc(${(isMuted ? 0 : volume) * 100}% - 4px)`}}></div>
-                  </div>
-                  <span className="text-[8px] text-zinc-500 dark:text-gray-500 font-bold uppercase tracking-wider">Vol</span>
-               </div>
+                    <span className="text-[8px] text-zinc-500 dark:text-gray-500 font-bold uppercase tracking-wider">Vol</span>
+                 </div>
+               ) : (
+                 <div className="w-16"></div>
+               )}
 
                <div className="flex items-center gap-3 bg-zinc-400/20 dark:bg-[#181818] p-1.5 px-3 rounded-full border-t border-zinc-400/30 dark:border-gray-700 shadow-[0_4px_6px_rgba(0,0,0,0.1),inset_0_1px_1px_rgba(255,255,255,0.4)] dark:shadow-[0_4px_6px_rgba(0,0,0,0.4),inset_0_1px_1px_rgba(255,255,255,0.1)]">
                    <button onClick={handlePrev} className="w-8 h-8 rounded-full bg-gradient-to-b from-zinc-100 to-zinc-300 dark:from-[#444] dark:to-[#222] shadow-[0_2px_2px_rgba(0,0,0,0.2)] dark:shadow-[0_2px_2px_rgba(0,0,0,0.5)] flex items-center justify-center text-zinc-600 dark:text-gray-400 active:scale-95 active:shadow-inner border border-zinc-400 dark:border-[#444]">
