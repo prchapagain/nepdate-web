@@ -498,15 +498,20 @@ export function calculate(date: Date, lat?: number, lon?: number, tz?: number) {
 	const tzString = getTzString(timezone);
 
 	// Sunrise/Sunset Calculation (Today & Tomorrow)
-	const todaySunriseSunset = getSunriseSunset(date, latitude, longitude, timezone);
+	// We need to ensure we are calculating sunrise for the CIVIL DAY at the given location.
+	// If 'date' is close to midnight in local time, it might be the previous day in UTC.
+	// We construct a "safe" date that represents Noon on the local civil day.
+	const localDateStr = new Date(date.getTime() + timezone * 60 * 60 * 1000).toISOString().split('T')[0];
+	const safeDate = new Date(`${localDateStr}T12:00:00Z`);
+
+	const todaySunriseSunset = getSunriseSunset(safeDate, latitude, longitude, timezone);
 	if (!todaySunriseSunset || todaySunriseSunset.sunrise === "N/A") return { error: "Could not calculate sunrise/sunset." };
 
-	const localDateStr = new Date(date.getTime() + timezone * 60 * 60 * 1000).toISOString().split('T')[0];
 	const sunriseDate = new Date(`${localDateStr}T${todaySunriseSunset.sunrise}${tzString}`);
 	const [hr, min, sec] = todaySunriseSunset.sunrise.split(':').map(Number);
 	const sunriseFraction = (hr * 3600 + min * 60 + sec) / 86400.0;
 
-	const sunriseAhar = getAharFor(date, longitude, sunriseFraction);
+	const sunriseAhar = getAharFor(safeDate, longitude, sunriseFraction);
 
 	// Calculate Next Sunrise to determine the "Day End" Ahar
 	const tomorrowDate = new Date(date.getTime() + 86400000);
@@ -520,7 +525,9 @@ export function calculate(date: Date, lat?: number, lon?: number, tz?: number) {
 		if (nextSunriseDate && !isNaN(nextSunriseDate.getTime())) {
 			const [thr, tmin, tsec] = tomorrowSunriseSunset.sunrise.split(':').map(Number);
 			const nextSunriseFraction = (thr * 3600 + tmin * 60 + tsec) / 86400.0;
-			nextSunriseAhar = getAharFor(nextSunriseDate, longitude, nextSunriseFraction);
+
+			const safeTomorrowDate = new Date(`${tomorrowLocalStr}T12:00:00Z`);
+			nextSunriseAhar = getAharFor(safeTomorrowDate, longitude, nextSunriseFraction);
 		}
 	}
 
@@ -552,14 +559,31 @@ export function calculate(date: Date, lat?: number, lon?: number, tz?: number) {
 	});
 
 	// Calculate Nakshatra, Yoga, Karana
-	const nakshatraElements = findElementsForDay(sunriseAhar, dayEndAhar, absTrueLongitudeMoon, (360 / 27), NAKSHATRA_NAMES);
-	const yogaElements = findElementsForDay(sunriseAhar, dayEndAhar, (ah) => absTrueLongitudeSun(ah) + absTrueLongitudeMoon(ah), (360 / 27), YOGA_NAMES);
-	const karanaElements = findElementsForDay(sunriseAhar, dayEndAhar, absElongation, 6, KARANA_NAMES, (index) => {
+	let nakshatraElements = findElementsForDay(sunriseAhar, dayEndAhar, absTrueLongitudeMoon, (360 / 27), NAKSHATRA_NAMES);
+	let yogaElements = findElementsForDay(sunriseAhar, dayEndAhar, (ah) => absTrueLongitudeSun(ah) + absTrueLongitudeMoon(ah), (360 / 27), YOGA_NAMES);
+	let karanaElements = findElementsForDay(sunriseAhar, dayEndAhar, absElongation, 6, KARANA_NAMES, (index) => {
 		const karanaIdx = index % 60;
 		if (karanaIdx === 0) return KARANA_NAMES[0];
 		if (karanaIdx < 57) return KARANA_NAMES[(karanaIdx - 1) % 7 + 1];
 		return KARANA_NAMES[karanaIdx - 57 + 8];
 	});
+
+	// If previous element do not touches sunrise ... we no need to show in that day
+	const filterEarlyElements = (list: any[]) => {
+		return list.filter(item => {
+			if (item.endTime === null || item.endTime === undefined) return true;
+			return item.endTime > sunriseAhar;
+		});
+	};
+
+	// Remove any Tithi that ends before sunrise
+	if (rawTithiElements.length > 0 && rawTithiElements[0].endTime && rawTithiElements[0].endTime <= sunriseAhar) {
+		rawTithiElements.shift();
+	}
+
+	nakshatraElements = filterEarlyElements(nakshatraElements);
+	yogaElements = filterEarlyElements(yogaElements);
+	karanaElements = filterEarlyElements(karanaElements);
 
 	// Calculate Bhadra
 	const vishtiEpisodes = karanaElements.filter(k => k.name.includes("विष्टि") || k.name.includes("Vishti"));
