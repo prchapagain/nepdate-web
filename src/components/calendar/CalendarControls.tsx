@@ -101,8 +101,8 @@ const CalendarControls: React.FC<CalendarControlsProps> = ({
                                 : String(currentYear)
                     }
                     onChange={handleYearInputChange}
-                    className="sm:flex-none h-9 sm:h-10 w-16 sm:w-20 px-2 text-center bg-slate-200 dark:bg-gray-700 border border-blue-300 
-                     dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent 
+                    className="sm:flex-none h-9 sm:h-10 w-16 sm:w-20 px-2 text-center bg-slate-200 dark:bg-gray-700 border border-blue-300
+                     dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent
                      text-sm sm:text-base text-blue-900 dark:text-gray-100"
                     style={
                         activeSystem === 'bs'

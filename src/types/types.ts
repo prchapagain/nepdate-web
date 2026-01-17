@@ -224,10 +224,10 @@ export type SavedComparison = {
 };
 
 export interface BhadraInfo {
-    isActive: boolean;
-    residence: string;
-    status: string;
-    isHarmful: boolean;
+  isActive: boolean;
+  residence: string;
+  status: string;
+  isHarmful: boolean;
 }
 
 export type ContentBlock =
@@ -242,11 +242,35 @@ export interface SectionItem {
   title: string;
   subtitle?: string;
   content: ContentBlock[];
+  eventDate?: EventDate;
+  tags?: string[];
+}
+
+export interface Blog {
+  id: string;
+  title: string;
+  excerpt: string;
+  content: string;
+  image: string;
+  tags: string[];
+  author: string;
+  date: string;
+  readTime: string;
+  eventDate?: EventDate;
+}
+
+export interface EventDate {
+  type: 'BS' | 'LUNAR';
+  month: number; // 1-12 (Baisakh-Chaitra)
+  day?: number; // For BS (e.g., 1 for New Year)
+  tithi?: number; // For Lunar (1-15)
+  paksha?: 'shukla' | 'krishna';
+  approxBsDay?: number; // Helper for easy sorting
 }
 
 export type MenuStyle = 'slide' | 'tabs';
 export type DesktopLayoutStyle = 'topbar' | 'sidebar';
 import type { MENU_ITEMS } from '../constants/menu';
-export type ActiveView = (typeof MENU_ITEMS)[number]['key'];
+export type ActiveView = (typeof MENU_ITEMS)[number]['key'] | 'blog-detail' | 'day-detail';
 
 export type SavedKundaliEntry = SavedIndividual | SavedComparison;
