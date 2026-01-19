@@ -3,6 +3,7 @@ import { PageHeader } from '../components/layout/PageHeader';
 import { Sunrise, Sunset, BookOpen, Calendar, Flame, Music, Wind, Sparkles } from 'lucide-react';
 import { BlogWidget } from '../components/blog/BlogWidget';
 import { getSunriseSunset } from '../lib/utils/lib';
+import { getNepalDate } from '../lib/utils/appUtils';
 import { PujaSection } from '../components/dharma/PujaSection';
 import { MantraSection } from '../components/dharma/MantraSection';
 import { ChadparbaSection } from '../components/dharma/ChadparbaSection';
@@ -37,10 +38,7 @@ export const DharmaPage: React.FC<DharmaPageProps> = ({
 
   // Initial Data Load
   useEffect(() => {
-    const now = new Date();
-    const utc = now.getTime() + now.getTimezoneOffset() * 60000;
-    const ktmTime = new Date(utc + KATHMANDU.tz * 3600000);
-    const ktmDate = new Date(ktmTime.getFullYear(), ktmTime.getMonth(), ktmTime.getDate());
+    const ktmDate = getNepalDate();
     const sun = getSunriseSunset(ktmDate, KATHMANDU.lat, KATHMANDU.lon, KATHMANDU.tz);
     setSunrise(sun.sunriseFormatted || sun.sunrise || null);
     setSunset(sun.sunsetFormatted || sun.sunset || null);

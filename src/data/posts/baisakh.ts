@@ -26,7 +26,7 @@ export const baisakhPosts: Blog[] = [
         `,
     image: BlogImages.baisakhNewYear,
     tags: ['चाडपर्व', 'संस्कृति'],
-    author: 'संस्कृतिविद',
+    author: 'NepDate Team',
     date: '१ वैशाख',
     readTime: '६ मिनेट'
   },

@@ -22,10 +22,13 @@ import { usePWA } from './hooks/usePWA';
 import { useCalendarLogic } from './hooks/useCalendarLogic';
 import { useAppNavigation } from './hooks/useAppNavigation';
 import { usePlatform } from './hooks/usePlatform';
-import { handleReloadApp } from './lib/utils/appUtils';
-import { toDevanagari } from './lib/utils/lib';
+import { handleReloadApp, getAppBaseUrl } from './lib/utils/appUtils';
+import { createSlug, toDevanagari } from './lib/utils/lib';
 import { RashifalWidget } from './components/calendar/RashifalWidget';
 import { SocialMedia } from './components/calendar/SocialMedia';
+import { AdsBanner } from './components/calendar/AdsBanner';
+import MonthlyMuhurta from './components/calendar/Muhurtas';
+import UpcomingEvents from './components/calendar/UpcomingEvents';
 
 
 // Lazy load pages for menu items are handled in MENU_ITEMS
@@ -34,6 +37,7 @@ import DayDetailPage from './pages/DayDetailPage';
 import { BlogWidget } from './components/blog/BlogWidget';
 import { BlogDetailPage } from './pages/BlogDetailPage';
 import { Blog } from './data/blogs';
+import { getAllBlogs } from './lib/blogContent';
 
 const App: React.FC = () => {
   const { theme, toggleTheme, resetTheme } = useTheme();
@@ -56,6 +60,8 @@ const App: React.FC = () => {
     setIsDharmaResultsVisible,
     setDharmaBackAction,
     showExitToast,
+    postParams,
+    setPostParams
   } = useAppNavigation();
 
   const {
@@ -93,7 +99,7 @@ const App: React.FC = () => {
 
     if (viewParam) {
       setActiveView(viewParam as any);
-      window.history.replaceState({}, '', '/');
+      window.history.replaceState({}, '', getAppBaseUrl());
     } else if (
       (window.location.hash && (window.location.hash.startsWith('#bs?') || window.location.hash.startsWith('#ad?'))) ||
       window.location.pathname.endsWith('/bs') || window.location.pathname.endsWith('/bs.html') ||
@@ -110,6 +116,28 @@ const App: React.FC = () => {
   }, [showExitToast]);
 
   const handleShowDetailsClick = () => handleDayClick(initialToday);
+
+  // Sync postParams to activeBlog
+  useEffect(() => {
+    if (activeView === 'blog-detail' && postParams) {
+       const allBlogs = getAllBlogs();
+       const blog = allBlogs.find(b => createSlug(b.title) === postParams.slug);
+       if (blog) {
+         setActiveBlog(blog);
+         // Note: we rely on postParams.source for back navigation now
+       }
+    }
+  }, [activeView, postParams]);
+
+  // Handle Back from Blog Detail
+  const handleBlogBack = () => {
+    if (postParams?.source) {
+      setActiveView(postParams.source as any);
+      setPostParams(null);
+    } else {
+      setActiveView('calendar');
+    }
+  };
 
   return (
     <div
@@ -130,12 +158,15 @@ const App: React.FC = () => {
             }}
             showInstall={!isStandalone && canInstall}
             onInstallClick={handleInstallClick}
+            theme={theme}
+            onThemeToggle={toggleTheme}
           />
         </div>
       )}
 
-      {/* Mobile Header */}
-      <header className="sticky top-0 px-4 py-2 dark:border-gray-700 bg-slate-200 dark:bg-gray-800 z-30 md:hidden">
+      {/* Mobile Header - Only visible on Home/Calendar View */}
+      {activeView === 'calendar' && (
+      <header className="sticky top-0 px-4 pt-2 bg-transparent z-30 md:hidden">
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2">
             {menuStyle === 'slide' && (
@@ -152,6 +183,7 @@ const App: React.FC = () => {
           )}
         </div>
       </header>
+      )}
 
       {/* Mobile Overlay */}
       {isMenuOpen && <div className="fixed inset-0 bg-black/40 z-40 md:hidden" onClick={() => setIsMenuOpen(false)} />}
@@ -198,61 +230,106 @@ const App: React.FC = () => {
 
       {/* Main Content */}
       <div className="flex-1 overflow-hidden">
-        <div className={`h-full mx-auto w-full max-w-7xl xl:max-w-6xl ${activeView === 'calendar' ? 'overflow-auto px-4 md:px-6 pb-20 md:pb-6' : 'overflow-hidden p-0'}`}>
+        <div id="app-scroll-container" className={`h-full mx-auto w-full max-w-7xl xl:max-w-6xl ${activeView === 'calendar' ? 'overflow-auto px-4 md:px-6 pb-20 md:pb-6' : 'overflow-hidden p-0'}`}>
           {activeView === 'calendar' ? (
             <>
               <CalendarHeader activeSystem={activeSystem} onSystemChange={switchSystem} onTodayClick={goToToday} theme={theme} onThemeToggle={toggleTheme} todayDetails={todayDetails} />
-              <main className="min-h-[60vh] pb-20 md:grid md:grid-cols-12 md:gap-x-6">
-                <aside className="hidden md:block md:col-span-4">
-                  <TodayWidget todayAd={initialToday} todayBs={initialTodayBs} todayDetails={todayDetails} onShowDetailsClick={handleShowDetailsClick} theme={theme} />
-                  <RashifalWidget
-                    date={`${toDevanagari(initialTodayBs.year)} ${initialTodayBs.monthName} ${toDevanagari(initialTodayBs.day)}`}
-                    dateKey={`${initialTodayBs.year}-${initialTodayBs.monthIndex + 1}-${initialTodayBs.day}`}
-                    tithi={todayDetails?.tithis?.[0]?.name}
-                    nakshatra={todayDetails?.nakshatras?.[0]?.name}
-                  />
-                </aside>
-                <div className="md:col-span-8 flex flex-col">
-                  <CalendarControls activeSystem={activeSystem} currentYear={currentYear} currentMonth={currentMonth} onYearChange={(y) => activeSystem === 'bs' ? setCurrentBsYear(y) : setCurrentAdYear(y)} onMonthChange={(m) => activeSystem === 'bs' ? setCurrentBsMonth(m) : setCurrentAdMonth(m)} onPrevMonth={() => changeMonth('prev')} onNextMonth={() => changeMonth('next')} onPrevYear={() => changeYear('prev')} onNextYear={() => changeYear('next')} />
-                  <CalendarGrid activeSystem={activeSystem} currentYear={currentYear} currentMonth={currentMonth} onDayClick={handleDayClick} />
-                  <MonthlyEvents activeSystem={activeSystem} currentYear={currentYear} currentMonth={currentMonth} />
+              <main className="min-h-[80vh] pb-20 flex flex-col">
+                {/* --- TOP SECTION: Calendar Area + Sidebar (Today Details) --- */}
+                {/* Split top section to avoid stretched calendar */}
+                <div className="w-full md:grid md:grid-cols-12 md:gap-x-8">
 
-                  {/* Mobile Only: Facebook (Side content made visible on mobile) */}
-                  <div className="md:hidden flex flex-col gap-4 mt-2 mb-6">
+                  {/* Top Left Sidebar: Today Widget (Desktop Only) */}
+                  <aside className="hidden md:flex md:col-span-5 xl:col-span-4 flex-col gap-4 h-full">
+                    <TodayWidget
+                      todayAd={initialToday}
+                      todayBs={initialTodayBs}
+                      todayDetails={todayDetails}
+                      onShowDetailsClick={handleShowDetailsClick}
+                    />
                     <SocialMedia theme={theme} />
+
+                    <AdsBanner className="mt-2 min-h-[150px]" />
+                  </aside>
+
+                  {/* Main Calendar Area */}
+                  <div id="main-calendar-grid" className="md:col-span-7 xl:col-span-8 flex flex-col gap-2 h-full scroll-mt-4">
+                      <CalendarControls activeSystem={activeSystem} currentYear={currentYear} currentMonth={currentMonth} onYearChange={(y) => activeSystem === 'bs' ? setCurrentBsYear(y) : setCurrentAdYear(y)} onMonthChange={(m) => activeSystem === 'bs' ? setCurrentBsMonth(m) : setCurrentAdMonth(m)} onPrevMonth={() => changeMonth('prev')} onNextMonth={() => changeMonth('next')} onPrevYear={() => changeYear('prev')} onNextYear={() => changeYear('next')} />
+                      <CalendarGrid activeSystem={activeSystem} currentYear={currentYear} currentMonth={currentMonth} onDayClick={handleDayClick} />
+                      <MonthlyEvents activeSystem={activeSystem} currentYear={currentYear} currentMonth={currentMonth} />
+                      <MonthlyMuhurta
+                         activeSystem={activeSystem}
+                         currentYear={currentYear}
+                         currentMonth={currentMonth}
+                       />
+                       <AdsBanner className="mt-4 md:hidden" />
                   </div>
 
-                  {/* Blog Section - Desktop & Mobile */}
-                  <BlogWidget
-                    activeSystem={activeSystem}
-                    currentYear={currentYear || 2081}
-                    currentMonth={currentMonth}
-                    onBlogClick={(blog) => {
-                      setActiveBlog(blog);
-                      setActiveView('blog-detail');
-                    }}
-                    onViewAll={() => setActiveView('dharma')}
-                    onTagClick={(tag) => {
-                      setViewParams({ tag });
-                      setActiveView('dharma');
-                    }}
-                  />
+                </div>
 
+                 {/* --- Bottom Section: Upcoming Events (Full Width) --- */}
+                 <div className="mt-8">
+                   <UpcomingEvents activeSystem={activeSystem} />
+                 </div>
+
+                 {/* Mobile Facebook Widget */}
+                 <div className="mt-8 md:hidden px-4">
+                    <SocialMedia theme={theme} showTimeline={true} height={500} width="100%" />
+                </div>
+
+
+
+                {/* --- BOTTOM SECTION: Content Widgets --- */}
+                <div className="md:grid md:grid-cols-12 md:gap-x-8 relative mt-8">
+                    {/* Left Column: Rashifal Only (Height Reference) */}
+                    <aside className="hidden md:flex md:col-span-5 xl:col-span-4 flex-col h-full">
+                      {/* TodayWidget moved to top, so only Rashifal remains here to set height */}
+                      <RashifalWidget
+                          date={`${toDevanagari(initialTodayBs.year)} ${initialTodayBs.monthName} ${toDevanagari(initialTodayBs.day)}`}
+                          dateKey={`${initialTodayBs.year}-${initialTodayBs.monthIndex + 1}-${initialTodayBs.day}`}
+                          tithi={todayDetails?.tithis?.[0]?.name}
+                          nakshatra={todayDetails?.nakshatras?.[0]?.name}
+                          className="flex-1" // Allow it to fill the flex container
+                          onViewAll={() => setActiveView('rashifal')}
+                      />
+                    </aside>
+
+                    {/* Right Column: Blog Grid */}
+                    <div className="md:col-span-7 xl:col-span-8 relative">
+                       {/* Absolute positioning trick to match Height of Sidebar */}
+                       <div className="-mt-6 md:mt-0 md:absolute md:inset-0 md:overflow-hidden">
+                          <BlogWidget
+                            activeSystem={activeSystem}
+                            currentYear={currentYear || 2081}
+                            currentMonth={currentMonth}
+                            compactMode={true}
+                            onBlogClick={(blog) => {
+                              setPostParams({ source: 'calendar', slug: createSlug(blog.title) });
+                              setActiveView('blog-detail');
+                            }}
+                            onViewAll={() => setActiveView('dharma')}
+                            onTagClick={(tag) => {
+                              setViewParams({ tag });
+                              setActiveView('dharma');
+                            }}
+                          />
+                        </div>
+                    </div>
                 </div>
               </main>
             </>
           ) : activeView === 'day-detail' ? (
             <DayDetailPage onBack={() => {
-              window.history.pushState({}, '', '/');
+              window.history.pushState({}, '', getAppBaseUrl());
               setActiveView('calendar');
             }} />
           ) : activeView === 'blog-detail' && activeBlog ? (
             <BlogDetailPage
               blog={activeBlog}
-              onBack={() => setActiveView('calendar')}
+              onBack={handleBlogBack}
               onNavigate={(blog) => {
-                setActiveBlog(blog);
-                window.scrollTo(0, 0);
+                 setPostParams({ source: postParams?.source || 'calendar', slug: createSlug(blog.title) });
+                 window.scrollTo(0, 0);
               }}
             />
           ) : (
@@ -260,7 +337,7 @@ const App: React.FC = () => {
               const activeItem = MENU_ITEMS.find(item => item.key === activeView);
               if (activeItem && activeItem.page) {
                 const PageComponent = activeItem.page;
-                const commonProps = { onBack: () => setActiveView('calendar'), theme };
+                const commonProps = { onBack: () => setActiveView('calendar'), theme, activeSystem };
                 let pageProps: any = { ...commonProps, ...viewParams };
 
                 if (activeView === 'settings') {
@@ -291,11 +368,11 @@ const App: React.FC = () => {
                     tag: viewParams?.tag,
                     onNavigate: (view: string, params?: any) => {
                       if (view === 'blog-detail') {
-                        setActiveBlog(params);
-                        setActiveView('blog-detail');
+                         setPostParams({ source: 'dharma', slug: createSlug(params.title) });
+                         setActiveView('blog-detail');
                       } else if (view === 'dharma') {
-                        setViewParams(params);
-                        setActiveView('dharma');
+                         setViewParams(params);
+                         setActiveView('dharma');
                       }
                     },
                     setIsDharmaResultsVisible,
@@ -326,7 +403,8 @@ const App: React.FC = () => {
               setActiveView(view as any);
               setViewParams(params || null);
               if (view === 'calendar' && params && typeof params.month === 'number') {
-                setCurrentBsMonth(params.month);
+                if (activeSystem === 'bs') setCurrentBsMonth(params.month);
+                else setCurrentAdMonth(params.month);
               }
             }} />
           )}
@@ -336,8 +414,9 @@ const App: React.FC = () => {
       {/* Bottom menus */}
       {menuStyle === 'slide' && <div className="fixed bottom-0 left-0 right-0 w-full bg-slate-200 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 z-50 print:hidden md:hidden"><Footer /></div>}
 
+      {/* Floating Bottom Tab Bar for Mobile */}
       {menuStyle === 'tabs' && (
-        <div className="md:hidden print:hidden">
+        <div className="md:hidden print:hidden fixed bottom-0 left-0 right-0 z-[1000]">
           <BottomTabBar
             activeView={activeView}
             onNavigate={(view) => { if (view === 'about') setIsAboutOpen(true); else setActiveView(view); }}

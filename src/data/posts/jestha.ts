@@ -22,7 +22,7 @@ export const jesthaPosts: Blog[] = [
         `,
     image: BlogImages.ubhauliDance,
     tags: ['चाडपर्व', 'किरात'],
-    author: 'किरात समाज',
+    author: 'NepDate Team',
     date: 'जेठ पूर्णिमा',
     readTime: '५ मिनेट'
   },
@@ -45,7 +45,7 @@ export const jesthaPosts: Blog[] = [
         `,
     image: BlogImages.buddhaJayanti,
     tags: ['चाडपर्व', 'धर्म', 'बुद्ध'],
-    author: 'बौद्ध दर्शन',
+    author: 'NepDate Team',
     date: 'बुद्ध पूर्णिमा',
     readTime: '४ मिनेट'
   }

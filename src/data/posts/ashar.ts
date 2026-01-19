@@ -22,7 +22,7 @@ export const asharPosts: Blog[] = [
         `,
     image: BlogImages.dahiChiura,
     tags: ['चाडपर्व', 'कृषि'],
-    author: 'कृषि विभाग',
+    author: 'NepDate Team',
     date: '१५ असार',
     readTime: '४ मिनेट'
   }

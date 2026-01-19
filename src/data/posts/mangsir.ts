@@ -20,7 +20,7 @@ export const mangsirPosts: Blog[] = [
         `,
     image: BlogImages.yomariPunhi,
     tags: ['चाडपर्व', 'नेवार', 'किरात'],
-    author: 'नेवा: समाज',
+    author: 'NepDate Team',
     date: 'मंसिर पूर्णिमा',
     readTime: '4 मिनेट'
   }

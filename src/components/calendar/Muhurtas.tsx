@@ -124,7 +124,7 @@ const MonthlyMuhurta: React.FC<MonthlyMuhurtaProps> = ({
   }
 
   return (
-    <div className="bg-indigo-50/30 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden shadow-card-custom shadow-blue-50/50">
+    <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden shadow-card-custom shadow-blue-50/50">
       <div className="bg-sky-500 dark:bg-gray-700/50 px-5 py-4 border-b border-sky-600 dark:border-gray-700 flex items-center">
         <div className="w-2.5 h-2.5 rounded-full bg-blue-300 mr-3 shadow-sm shadow-blue-300/50 animate-pulse"></div>
         <h2
@@ -137,7 +137,7 @@ const MonthlyMuhurta: React.FC<MonthlyMuhurtaProps> = ({
 
       <div className="flex flex-col gap-2 p-4">
         {muhurtaData.map((category) => (
-          <div key={category.id} className="p-2 bg-indigo-50/30 dark:bg-gray-700/30 rounded-lg border border-blue-200 dark:border-gray-700 shadow-sm shadow-blue-100 dark:shadow-none hover:shadow-md transition-all">
+          <div key={category.id} className="p-3.5 bg-indigo-50/30 dark:bg-gray-700/30 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm hover:shadow-md transition-all">
             <div className="flex flex-col">
               <div className="flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-green-500 dark:bg-green-400"></span>

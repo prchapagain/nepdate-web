@@ -26,6 +26,8 @@ interface RashifalWidgetProps {
   tithi?: string;
   nakshatra?: string;
   selectedRashi?: string;
+  className?: string;
+  onViewAll?: () => void;
 }
 
 const RASHI_KEY_MAP: Record<string, number> = {
@@ -77,7 +79,7 @@ const RashiCard: React.FC<{ data: ReturnType<typeof generateDailyRashifal>[0], i
   );
 };
 
-export const RashifalWidget: React.FC<RashifalWidgetProps> = ({ date, dateKey, tithi, nakshatra, selectedRashi }) => {
+export const RashifalWidget: React.FC<RashifalWidgetProps> = ({ date, dateKey, tithi, nakshatra, selectedRashi, className, onViewAll }) => {
 
   // Generate data based on props
   const rashiData = useMemo(() => {
@@ -103,9 +105,9 @@ export const RashifalWidget: React.FC<RashifalWidgetProps> = ({ date, dateKey, t
   }, [selectedRashi]);
 
   return (
-    <div className="w-full mt-6">
+    <div className={`w-full mt-6 flex flex-col ${className || ''}`}>
       {/* Header Section */}
-      <div className="bg-white dark:bg-gray-800 rounded-t-xl border border-gray-200 dark:border-gray-700 p-4 pb-6 relative overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 rounded-t-xl border border-gray-200 dark:border-gray-700 p-4 pb-6 relative overflow-hidden shrink-0">
         <div className="flex items-center justify-between relative z-10">
           <div>
             <span className="text-sm font-bold text-gray-500 dark:text-gray-400 block mb-0.5">
@@ -124,16 +126,31 @@ export const RashifalWidget: React.FC<RashifalWidgetProps> = ({ date, dateKey, t
         <div className="absolute inset-0 opacity-[0.03] pointer-events-none bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-orange-400 to-transparent"></div>
       </div>
 
-      {/* List of Cards */}
-      <div className="bg-[#fef8f6] dark:bg-gray-800 border-x border-b border-gray-200 dark:border-gray-700 rounded-b-xl p-4 space-y-3">
-        {rashiData.map((rashi, index) => (
-          <RashiCard
-            key={rashi.id}
-            data={rashi}
-            index={index}
-            isSelected={selectedRashi ? RASHI_KEY_MAP[selectedRashi] === index : false}
-          />
-        ))}
+      {/* List of Cards - Fixed Height on Dashboard, Auto on Page */}
+      <div className={`bg-[#fef8f6] dark:bg-gray-800 border-x border-b border-gray-200 dark:border-gray-700 rounded-b-xl p-4 relative overflow-hidden ${onViewAll ? 'h-[600px]' : ''}`}>
+
+        <div className="space-y-3">
+          {rashiData.map((rashi, index) => (
+            <RashiCard
+              key={rashi.id}
+              data={rashi}
+              index={index}
+              isSelected={selectedRashi ? RASHI_KEY_MAP[selectedRashi] === index : false}
+            />
+          ))}
+        </div>
+
+        {/* Fade Overlay & Button */}
+        {onViewAll && (
+          <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-[#fef8f6] via-[#fef8f6]/90 to-transparent dark:from-gray-800 dark:via-gray-800/90 dark:to-transparent flex items-end justify-center pb-8 z-10">
+            <button
+              onClick={onViewAll}
+              className="px-6 py-2.5 bg-red-600 hover:bg-red-700 text-white font-bold rounded-full shadow-lg transform hover:scale-105 transition-all text-sm flex items-center gap-2"
+            >
+              पूरा राशिफल हेर्नुहोस्
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Sun, Moon, X, AlertTriangle, CheckCircle, Clock, Sunrise, Sunset } from 'lucide-react';
-import { toDevanagari, getNepaliPeriod, toBikramSambat } from '../../lib/utils/lib';
+import { toDevanagari, getNepaliPeriod, toBikramSambat, weekdays } from '../../lib/utils/lib';
+import { getNepalDate } from '../../lib/utils/appUtils';
 import {
   NEPALI_LABELS,
   NEPALI_BS_MONTHS,
@@ -48,7 +49,20 @@ const CalendarHeader: React.FC<CalendarHeaderProps> = ({
 
     const period = getNepaliPeriod(hh);
     const hour12 = hh % 12 === 0 ? 12 : hh % 12;
-    return `${toDevanagari(hour12)}:${toDevanagari(String(mm).padStart(2, '0'))} ${period}`;
+    const timePart = `${toDevanagari(hour12)}:${toDevanagari(String(mm).padStart(2, '0'))} ${period}`;
+
+    // Date Comparison logic (Check if event is on "Today")
+    const TZ_OFFSET = 5.75 * 60 * 60 * 1000;
+    const dNPT = new Date(d.getTime() + TZ_OFFSET);
+    const nowNPT = new Date(Date.now() + TZ_OFFSET);
+
+    const dBS = toBikramSambat(dNPT);
+    const nowBS = toBikramSambat(nowNPT);
+
+    const isSameDay = dBS.year === nowBS.year && dBS.monthIndex === nowBS.monthIndex && dBS.day === nowBS.day;
+
+    if (isSameDay) return timePart;
+    return `${toDevanagari(dBS.day)} गते ${timePart}`;
   };
 
   const getBhadraTimeDisplay = () => {
@@ -75,7 +89,6 @@ const CalendarHeader: React.FC<CalendarHeaderProps> = ({
 
 
 
-
   const bikramDesktopLabel = activeSystem === 'bs' ? NEPALI_LABELS.bikramsambat : 'Bikram Sambat';
   const bikramMobileLabel = activeSystem === 'bs' ? NEPALI_LABELS.bs : 'BS';
   const gregorianDesktopLabel = activeSystem === 'bs' ? NEPALI_LABELS.gregorian : 'Gregorian';
@@ -86,7 +99,7 @@ const CalendarHeader: React.FC<CalendarHeaderProps> = ({
     if (!todayDetails) return "—";
 
     // Data Source: Today's AD Date
-    const todayAd = new Date();
+    const todayAd = getNepalDate();
 
     // VARIABLES FOR DISPLAY
     let mainDay = '';
@@ -96,14 +109,15 @@ const CalendarHeader: React.FC<CalendarHeaderProps> = ({
 
     if (activeSystem === 'bs') {
       // BS MODE
-      mainDay = todayDetails.bsDay ? toDevanagari(todayDetails.bsDay) : '';
-      mainMonth = typeof todayDetails.bsMonthIndex === 'number' ? NEPALI_BS_MONTHS[todayDetails.bsMonthIndex] : '';
-
-      // Recalculate today's BS date to be safe
+      // Use Calculated Date (Real Today) instead of todayDetails which might be stale
       const calculatedBS = toBikramSambat(todayAd);
+
+      mainDay = toDevanagari(calculatedBS.day);
+      mainMonth = NEPALI_BS_MONTHS[calculatedBS.monthIndex];
       mainYear = toDevanagari(calculatedBS.year);
-      // Ensure day/month matches calculation
-      mainWeekday = todayDetails.weekday || '';
+
+      // Calculate Nepali Weekday from todayAd
+      mainWeekday = weekdays[todayAd.getDay()];
 
     } else {
       // AD MODE
@@ -121,7 +135,7 @@ const CalendarHeader: React.FC<CalendarHeaderProps> = ({
 
         {/* LEFT: Date Box (Day + Month + Year) */}
         <div
-          className="flex-shrink-0 w-[75px] bg-gradient-to-br from-indigo-500 to-[#0cf568f5] dark:from-indigo-900 dark:to-green-900 rounded-xl flex flex-col items-center justify-center text-slate-900 dark:text-gray-100 shadow-sm relative overflow-hidden"
+          className="flex-shrink-0 w-[75px] bg-gradient-to-br from-indigo-500 to-[#0cf568f5] dark:from-indigo-900 dark:to-green-900 rounded-xl flex flex-col items-center justify-center text-white dark:text-gray-100 shadow-sm relative overflow-hidden"
           style={{ fontFamily: activeSystem === 'bs' ? "'Noto Sans Devanagari', sans-serif" : 'inherit' }}
         >
           <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-b from-white/10 to-transparent pointer-events-none"></div>

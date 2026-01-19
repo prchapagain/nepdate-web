@@ -18,7 +18,7 @@ export const generalPosts: Blog[] = [
         `,
     image: BlogImages.vastuShastra,
     tags: ['वास्तु'],
-    author: 'वास्तुविद्',
+    author: 'NepDate Team',
     date: 'उपयोगी जानकारी',
     readTime: '४ मिनेट'
   },
@@ -39,7 +39,7 @@ export const generalPosts: Blog[] = [
         `,
     image: BlogImages.dreamInterp,
     tags: ['ज्योतिष'],
-    author: 'ज्योतिष विभाग',
+    author: 'NepDate Team',
     date: 'रोचक जानकारी',
     readTime: '३ मिनेट'
   },
@@ -60,7 +60,7 @@ export const generalPosts: Blog[] = [
         `,
     image: BlogImages.meditationYoga,
     tags: ['स्वास्थ्य', 'योग'],
-    author: 'योगाचार्य',
+    author: 'NepDate Team',
     date: 'स्वास्थ्य',
     readTime: '४ मिनेट'
   },
@@ -81,7 +81,7 @@ export const generalPosts: Blog[] = [
         `,
     image: BlogImages.panchamrit,
     tags: ['पूजा', 'स्वास्थ्य'],
-    author: 'आयुर्वेद',
+    author: 'NepDate Team',
     date: 'धार्मिक ज्ञान',
     readTime: '३ मिनेट'
   },
@@ -100,7 +100,7 @@ export const generalPosts: Blog[] = [
         `,
     image: BlogImages.dashainTika,
     tags: ['विज्ञान'],
-    author: 'विज्ञान र धर्म',
+    author: 'NepDate Team',
     date: 'रोचक तथ्य',
     readTime: '२ मिनेट'
   },
@@ -116,7 +116,7 @@ export const generalPosts: Blog[] = [
         `,
     image: BlogImages.meditationYoga,
     tags: ['स्वास्थ्य'],
-    author: 'स्वास्थ्य',
+    author: 'NepDate Team',
     date: 'स्वास्थ्य टिप्स',
     readTime: '४ मिनेट'
   },
@@ -144,7 +144,7 @@ export const generalPosts: Blog[] = [
         `,
     image: BlogImages.chhathPuja,
     tags: ['योग', 'विज्ञान'],
-    author: 'योग',
+    author: 'NepDate Team',
     date: 'दैनिक विधि',
     readTime: '३ मिनेट'
   },
@@ -162,7 +162,7 @@ export const generalPosts: Blog[] = [
         `,
     image: BlogImages.shankhaShell,
     tags: ['स्वास्थ्य', 'संगीत'],
-    author: 'स्वास्थ्य',
+    author: 'NepDate Team',
     date: 'लाभ',
     readTime: '३ मिनेट'
   },
@@ -176,7 +176,7 @@ export const generalPosts: Blog[] = [
         `,
     image: BlogImages.buddhaJayanti, // Bodhi tree is Peepal
     tags: ['प्रकृति', 'विज्ञान'],
-    author: 'वनस्पति विज्ञान',
+    author: 'NepDate Team',
     date: 'जानकारी',
     readTime: '३ मिनेट'
   },
@@ -190,7 +190,7 @@ export const generalPosts: Blog[] = [
         `,
     image: BlogImages.templeBell,
     tags: ['विज्ञान', 'मन्दिर'],
-    author: 'विज्ञान',
+    author: 'NepDate Team',
     date: 'रोचक',
     readTime: '२ मिनेट'
   },
@@ -203,8 +203,8 @@ export const generalPosts: Blog[] = [
             <p>जब हामी रुद्राक्षलाई मुटुको नजिक (मालाको रूपमा) लगाउँछौं, यसले मुटुको धड्कनलाई नियमित गर्न र रक्तचाप (Blood Pressure) नियन्त्रण गर्न मद्दत गर्छ। यसले तनाव र डिप्रेसन कम गर्न पनि सघाउँछ। साधु सन्तहरूले यसलाई ऊर्जा सञ्चय गर्न प्रयोग गर्छन्।</p>
         `,
     image: BlogImages.shrawanShiva,
-    tags: ['स्वास्थ्य', 'शिव'],
-    author: 'आयुर्वेद',
+    tags: ['स्वास्थ्य'],
+    author: 'NepDate Team',
     date: 'लाभ',
     readTime: '३ मिनेट'
   }

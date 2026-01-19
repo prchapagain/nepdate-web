@@ -25,7 +25,35 @@ export function getNepalDate(): Date {
 const INFO_DELAY = 2000;
 const ERROR_DELAY = 3000;
 const EXPECTED_MARKER = 'id="root"';
-const APP_URL = location.origin + '/';
+
+export const getAppBaseUrl = (): string => {
+  if (typeof window === 'undefined') return '';
+  const { origin, pathname } = window.location;
+
+  // We want the path up to the app root from current location.
+  // Common markers might be /bs, /ad, or index.html causing deep link simulation
+  let basePath = pathname;
+  const knownSuffixes = ['/bs', '/ad', '/bs.html', '/ad.html', '/index.html'];
+
+  // Sort by length to match specific first
+  knownSuffixes.sort((a, b) => b.length - a.length);
+
+  for (const suffix of knownSuffixes) {
+     if (basePath.endsWith(suffix)) {
+        basePath = basePath.substring(0, basePath.length - suffix.length);
+        break;
+     }
+  }
+
+  // Ensure trailing slash
+  if (!basePath.endsWith('/')) {
+      basePath += '/';
+  }
+
+  return origin + basePath;
+};
+
+const APP_URL = getAppBaseUrl();
 
 const fetchFreshHtml = async (): Promise<"fresh" | "invalid" | "unreachable"> => {
   try {

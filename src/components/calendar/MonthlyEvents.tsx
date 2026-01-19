@@ -1,9 +1,5 @@
-import React, { JSX, useState, useEffect, useRef, useCallback } from 'react';
-import { ChevronDown } from 'lucide-react';
-import { NEPALI_BS_MONTHS } from '../../constants/constants';
-import { toBikramSambat, fromBikramSambat, getBikramMonthInfo, calculate, toDevanagari } from '../../lib/utils/lib';
-import MonthlyMuhurta from './Muhurtas';
-import { AdsBanner } from './AdsBanner';
+import React, { JSX } from 'react';
+import { fromBikramSambat, getBikramMonthInfo, calculate, toDevanagari } from '../../lib/utils/lib';
 
 interface MonthlyEventsProps {
   activeSystem: 'bs' | 'ad';
@@ -11,88 +7,11 @@ interface MonthlyEventsProps {
   currentMonth: number;
 }
 
-interface UpcomingEvent {
-  name: string;
-  daysRemaining: number;
-  holiday: boolean;
-  adDate: Date;
-  bsDate: any;
-}
-
 const MonthlyEvents: React.FC<MonthlyEventsProps> = ({
   activeSystem,
   currentYear,
   currentMonth
 }) => {
-  // STATE FOR UPCOMING EVENTS
-  const [upcomingEvents, setUpcomingEvents] = useState<UpcomingEvent[]>([]);
-  const [hasMore, setHasMore] = useState(true);
-  const [isLoading, setIsLoading] = useState(false);
-
-  // Use a Ref to track the date cursor so we can resume scanning without re-renders
-  const scanCursor = useRef<Date | null>(null);
-  // Keep track of total days scanned to prevent infinite loops
-  const totalDaysScanned = useRef(0);
-
-  // Initialize cursor on first load
-  useEffect(() => {
-    const today = new Date();
-    // UTC 00:00:00 to avoid timezone issues
-    scanCursor.current = new Date(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()));
-
-    // Initial load: Find first 10 events
-    loadMoreEvents(10);
-  }, []);
-
-  // SCANNING LOGIC
-  const loadMoreEvents = useCallback((limit: number) => {
-    if (!scanCursor.current || !hasMore) return;
-
-    setIsLoading(true);
-    const newEvents: UpcomingEvent[] = [];
-
-    // Safety: Don't look further than 1 year (365 days) total
-    const MAX_LOOKAHEAD = 365;
-
-    let itemsFound = 0;
-
-    // Scan day by day until we find 'limit' events or hit the safety wall
-    while (itemsFound < limit && totalDaysScanned.current < MAX_LOOKAHEAD) {
-      // Current date to check
-      const dateToCheck = new Date(scanCursor.current);
-
-      // Check events for this date
-      const bsDate = toBikramSambat(dateToCheck);
-      // Use calculate() to get scanned tithis for Kshaya detection
-      const calcData = calculate(dateToCheck);
-      const dayEvents = calcData.events || [];
-
-      if (dayEvents.length > 0) {
-        dayEvents.forEach(e => {
-          newEvents.push({
-            name: e.name,
-            daysRemaining: totalDaysScanned.current, // Use the tracked index
-            holiday: e.holiday || false,
-            adDate: new Date(dateToCheck),
-            bsDate: bsDate
-          });
-        });
-        itemsFound++;
-      }
-
-      // Advance cursor to next day
-      scanCursor.current.setUTCDate(scanCursor.current.getUTCDate() + 1);
-      totalDaysScanned.current++;
-    }
-
-    if (totalDaysScanned.current >= MAX_LOOKAHEAD) {
-      setHasMore(false);
-    }
-
-    setUpcomingEvents(prev => [...prev, ...newEvents]);
-    setIsLoading(false);
-  }, [hasMore]);
-
 
   // MONTHLY EVENTS LOGIC
   const getMonthlyEvents = () => {
@@ -131,7 +50,7 @@ const MonthlyEvents: React.FC<MonthlyEventsProps> = ({
 
   const monthlyEventsMap = getMonthlyEvents();
 
-  if (monthlyEventsMap.size === 0 && upcomingEvents.length === 0 && !isLoading) {
+  if (monthlyEventsMap.size === 0) {
     return null;
   }
 
@@ -165,9 +84,9 @@ const MonthlyEvents: React.FC<MonthlyEventsProps> = ({
       if (currentYear !== null) {
         if (activeSystem === 'bs') {
           // currentMonth is 0-indexed index passed from parent
-          href = `/bs?${currentYear}-${pad(currentMonth + 1)}-${pad(day)}`;
+          href = `bs?${currentYear}-${pad(currentMonth + 1)}-${pad(day)}`;
         } else {
-          href = `/ad?${currentYear}-${pad(currentMonth + 1)}-${pad(day)}`;
+          href = `ad?${currentYear}-${pad(currentMonth + 1)}-${pad(day)}`;
         }
       }
 
@@ -213,148 +132,10 @@ const MonthlyEvents: React.FC<MonthlyEventsProps> = ({
     );
   };
 
-  const renderUpcomingList = () => {
-    if (upcomingEvents.length === 0 && !isLoading) return null;
-
-    const isBs = activeSystem === 'bs';
-    const title = isBs ? 'आगामी कार्यक्रमहरू' : 'Upcoming Events';
-
-    // Calculate current years for comparison
-    const today = new Date();
-    const currentAdYear = today.getFullYear();
-    const currentBsYear = toBikramSambat(today).year;
-
-    return (
-      <div className="w-full bg-indigo-50/30 dark:bg-slate-900 rounded-xl shadow-card-custom shadow-blue-50/50 dark:shadow-slate-900/50 border border-gray-300 dark:border-slate-600 overflow-hidden">
-        {/* Header */}
-        <div className="bg-sky-500 dark:bg-slate-800 px-5 py-4 border-b border-sky-600 dark:border-slate-700 flex items-center">
-          <div className="w-2.5 h-2.5 rounded-full bg-blue-300 mr-3 shadow-sm shadow-blue-300/50 animate-pulse"></div>
-          <h2
-            className="text-lg sm:text-xl font-bold text-white dark:text-blue-100"
-            style={{ fontFamily: isBs ? "'Noto Sans Devanagari', sans-serif" : 'inherit' }}
-          >
-            {title}
-          </h2>
-        </div>
-
-        {/* Events List Body */}
-        <div className="flex flex-col gap-3 p-4">
-          {upcomingEvents.map((event, idx) => {
-            // Determine time remaining text
-            let timeText = '';
-            if (event.daysRemaining === 0) timeText = isBs ? 'आज' : 'Today';
-            else if (event.daysRemaining === 1) timeText = isBs ? 'भोलि' : 'Tomorrow';
-            else if (event.daysRemaining === 2) timeText = isBs ? 'पर्सि' : 'Day After Tomorrow';
-            else timeText = isBs ? `${toDevanagari(event.daysRemaining)} दिन बाँकी` : `${event.daysRemaining} days left`;
-
-            // Determine date text
-            const isDifferentYear = isBs
-              ? event.bsDate.year !== currentBsYear
-              : event.adDate.getFullYear() !== currentAdYear;
-
-            let dateText = '';
-            let href = '#';
-
-            if (isBs) {
-              dateText = `${NEPALI_BS_MONTHS[event.bsDate.monthIndex]} ${toDevanagari(event.bsDate.day)}`;
-              if (isDifferentYear) dateText += `, ${toDevanagari(event.bsDate.year)}`;
-
-              // BS Link: host/bs?YYYY-MM-DD
-              href = `/bs?${event.bsDate.year}-${pad(event.bsDate.monthIndex + 1)}-${pad(event.bsDate.day)}`;
-            } else {
-              dateText = event.adDate.toLocaleDateString('en-US', {
-                month: 'short',
-                day: 'numeric',
-                year: isDifferentYear ? 'numeric' : undefined
-              });
-
-              // AD Link: host/ad?YYYY-MM-DD
-              href = `/ad?${event.adDate.getFullYear()}-${pad(event.adDate.getMonth() + 1)}-${pad(event.adDate.getDate())}`;
-            }
-
-            return (
-              <a
-                key={idx}
-                href={href}
-                className={`relative flex justify-between items-center p-3.5 bg-indigo-50 dark:bg-slate-800 rounded-lg shadow-sm hover:shadow-md transition-all border border-gray-200 dark:border-slate-700 group`}
-              >
-                {/* Left Side: Event Name with Blinking Dot */}
-                <div className={`flex items-center gap-3 flex-1`}>
-                  <span className={`w-1.5 h-1.5 rounded-full animate-pulse flex-shrink-0 ${event.holiday ? 'bg-red-500 shadow-sm shadow-red-300' : 'bg-green-500 shadow-sm shadow-green-300'}`}></span>
-                  <span
-                    className={`text-[15px] leading-snug font-semibold ${event.holiday
-                      ? 'text-red-700 dark:text-red-400'
-                      : 'text-slate-700 dark:text-slate-200'
-                      }`}
-                    style={{ fontFamily: "'Noto Sans Devanagari', sans-serif" }}
-                  >
-                    {event.name}
-                  </span>
-                </div>
-
-                {/* Right Side: Date Info */}
-                <div className="flex flex-col items-end pl-2 min-w-[90px] text-right">
-                  <span
-                    className={`${event.holiday ? 'text-red-700 dark:text-red-400' : 'text-gray-800 dark:text-gray-200'} font-bold text-sm leading-tight`}
-                    style={{ fontFamily: isBs ? "'Noto Sans Devanagari', sans-serif" : 'inherit' }}
-                  >
-                    {dateText}
-                  </span>
-                  <span
-                    className={`${event.holiday ? 'text-red-600/80 dark:text-red-400/80' : 'text-slate-500 dark:text-slate-400'} text-[11px] mt-0.5 font-medium`}
-                    style={{ fontFamily: isBs ? "'Noto Sans Devanagari', sans-serif" : 'inherit' }}
-                  >
-                    {timeText}
-                  </span>
-                </div>
-              </a>
-            );
-          })}
-        </div>
-
-        {/* Load More Button */}
-        {hasMore && (
-          <div className="px-5 pb-5 pt-0">
-            <button
-              onClick={() => loadMoreEvents(5)}
-              disabled={isLoading}
-              className="w-full flex items-center justify-center text-sm font-medium text-white dark:text-slate-300 hover:bg-sky-600 transition-colors py-2.5 bg-sky-500 dark:bg-slate-800/50 rounded-lg group"
-              style={{ fontFamily: isBs ? "'Noto Sans Devanagari', sans-serif" : 'inherit' }}
-            >
-              {isLoading
-                ? (isBs ? 'लोड हुँदैछ...' : 'Loading...')
-                : (
-                  <div className="flex items-center gap-1.5 text-white dark:text-blue-400">
-                    <span>{isBs ? 'थप हेर्नुहोस्' : 'Load More'}</span>
-                    <ChevronDown className="w-4 h-4" />
-                  </div>
-                )
-              }
-            </button>
-          </div>
-        )}
-      </div>
-    );
-  };
-
   return (
     <div className="flex flex-col gap-5 w-full">
       {/* Monthly List Section */}
       {renderMonthlyList()}
-
-      {/* Muhurta Section */}
-      <div className={cardStyle}>
-        <MonthlyMuhurta activeSystem={activeSystem} currentYear={currentYear} currentMonth={currentMonth} />
-      </div>
-
-      {/* Ad Banner 1 (Below Muhurta) */}
-      <AdsBanner />
-
-      {/* Upcoming Events Section */}
-      {renderUpcomingList()}
-
-      {/* Ad Banner 2 (Below Upcoming Events) */}
-      <AdsBanner />
     </div>
   );
 };

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useMemo } from 'react';
-import { ArrowLeft, Calendar, User, Share2, Clock } from 'lucide-react';
+import { Calendar, User, Share2, Clock } from 'lucide-react';
 import { Blog } from '../data/blogs';
 import { toast } from '../components/shared/toast';
 import { getAllBlogs } from '../lib/blogContent';
@@ -10,6 +10,8 @@ interface BlogDetailPageProps {
   onBack: () => void;
   onNavigate: (blog: Blog) => void;
 }
+
+import { PageHeader } from '../components/layout/PageHeader';
 
 export const BlogDetailPage: React.FC<BlogDetailPageProps> = ({ blog, onBack, onNavigate }) => {
   const contentRef = useRef<HTMLDivElement>(null);
@@ -48,10 +50,14 @@ export const BlogDetailPage: React.FC<BlogDetailPageProps> = ({ blog, onBack, on
   }, [blog]);
 
   const handleShare = async () => {
+    // Get full URL and decode it for readability (e.g. displaying Nepali chars instead of %)
+    const currentUrl = window.location.href;
+    const readableUrl = decodeURI(currentUrl);
+
     const shareData = {
       title: blog.title,
-      text: `${blog.title}\n\n${blog.excerpt}\n\nRead more on NepDate app!`,
-      url: window.location.origin,
+      text: '',
+      url: readableUrl,
     };
 
     // 1. Try Native Share (Mobile)
@@ -68,11 +74,11 @@ export const BlogDetailPage: React.FC<BlogDetailPageProps> = ({ blog, onBack, on
     }
 
     // 2. Fallback: Clipboard API
-    const textToCopy = `${shareData.title}\n\n${shareData.text}\n${shareData.url}`;
+    const textToCopy = shareData.url;
     try {
       if (navigator.clipboard && navigator.clipboard.writeText) {
         await navigator.clipboard.writeText(textToCopy);
-        toast.success('Blog details copied to clipboard!');
+        toast.success('Url copied to clipboard!');
         return;
       }
     } catch (err) {
@@ -97,7 +103,7 @@ export const BlogDetailPage: React.FC<BlogDetailPageProps> = ({ blog, onBack, on
       document.body.removeChild(textArea);
 
       if (successful) {
-        toast.success('Blog details copied to clipboard!');
+        toast.success('Url copied to clipboard!');
       } else {
         throw new Error('execCommand failed');
       }
@@ -109,24 +115,21 @@ export const BlogDetailPage: React.FC<BlogDetailPageProps> = ({ blog, onBack, on
 
   return (
     <div className="h-full bg-white dark:bg-gray-900 animate-in fade-in slide-in-from-bottom-4 duration-300 relative overflow-hidden flex flex-col">
-
-      {/* Navbar Area (Absolute & Fixed relative to this container) */}
-      <div className="absolute top-0 left-0 right-0 p-4 flex justify-between items-center z-20 print:hidden pointer-events-none">
-        <button
-          onClick={onBack}
-          className="p-2 bg-white/20 hover:bg-white/30 backdrop-blur-md rounded-full text-white transition-all hover:scale-105 pointer-events-auto"
-        >
-          <ArrowLeft size={24} />
-        </button>
-        <div className="flex gap-2">
+      {/* Transparent Overlay Header */}
+      <PageHeader
+        title={blog.title.split(':')[0]}
+        onBack={onBack}
+        transparent={true}
+        className="absolute top-0 left-0 right-0 z-20"
+        rightContent={
           <button
             onClick={handleShare}
-            className="p-2 bg-white/20 hover:bg-white/30 backdrop-blur-md rounded-full text-white transition-all hover:scale-105 pointer-events-auto"
+            className="p-2 rounded-full hover:bg-black/10 dark:hover:bg-white/20 text-gray-900 dark:text-white transition-colors"
           >
             <Share2 size={20} />
           </button>
-        </div>
-      </div>
+        }
+      />
 
       {/* Scrollable Content */}
       <div className="flex-1 overflow-y-auto pb-20">
@@ -148,6 +151,7 @@ export const BlogDetailPage: React.FC<BlogDetailPageProps> = ({ blog, onBack, on
                 </span>
               ))}
             </div>
+            {/* Main title duplicated here for Hero effect, can be potentially hidden or kept for impact */}
             <h1 className="text-2xl md:text-4xl lg:text-5xl font-black text-white leading-tight mb-4 shadow-black drop-shadow-lg font-serif">
               {blog.title}
             </h1>

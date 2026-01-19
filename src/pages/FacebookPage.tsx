@@ -25,11 +25,11 @@ const FacebookPage: React.FC<FacebookPageProps> = ({ onBack, theme }) => {
   }, []);
 
   return (
-    <div className="h-full bg-slate-100 dark:bg-gray-900 flex flex-col overflow-hidden">
+    <div className="h-full bg-slate-100 dark:bg-gray-900 flex flex-col overflow-hidden pb-[72px] md:pb-0">
       <PageHeader title="हाम्रो फेसबुक पेज" onBack={onBack} />
 
       {/* Content - Fixed, no scroll on parent */}
-      <div ref={contentRef} className="flex-1 p-4 w-full max-w-2xl mx-auto overflow-hidden mb-20">
+      <div ref={contentRef} className="flex-1 p-4 w-full max-w-2xl mx-auto overflow-hidden">
         <div className="bg-white dark:bg-gray-800 h-full rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 flex flex-col overflow-hidden">
           <div className="shrink-0 p-4 pb-2 text-center">
             <p className="text-gray-600 dark:text-gray-300 text-sm">
@@ -45,7 +45,7 @@ const FacebookPage: React.FC<FacebookPageProps> = ({ onBack, theme }) => {
               showTimeline={true}
               height={contentHeight - 60} // Adjust for text header
               theme={theme}
-              width="100%"
+              width={500}
             />
           </div>
         </div>

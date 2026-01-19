@@ -20,7 +20,12 @@ const NavButton: React.FC<{
   className?: string;
 }> = ({ icon, label, isActive, onClick, className }) => (
   <button
-    onClick={onClick}
+    onClick={(e) => {
+      e.stopPropagation();
+      onClick();
+    }}
+    onTouchStart={(e) => e.stopPropagation()}
+    onMouseDown={(e) => e.stopPropagation()}
     className={`flex flex-col items-center justify-center pt-2 pb-1 transition-colors ${isActive
       ? 'text-blue-600 dark:text-blue-400'
       : 'text-gray-700 dark:text-gray-300'

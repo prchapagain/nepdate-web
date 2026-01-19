@@ -18,7 +18,7 @@ export const bhadraPosts: Blog[] = [
         `,
     image: BlogImages.teejWomen,
     tags: ['चाडपर्व', 'नारी'],
-    author: 'नारी मञ्च',
+    author: 'NepDate Team',
     date: 'भाद्र शुक्ल तृतीया',
     readTime: '६ मिनेट'
   },
@@ -39,6 +39,7 @@ export const bhadraPosts: Blog[] = [
     tags: ['धर्म', 'कृष्ण'],
     author: 'NepDate Team',
     date: 'भाद्र कृष्ण अष्टमी',
-    readTime: '५ मिनेट'
+    readTime: '५ मिनेट',
+    eventDate: { type: 'LUNAR', month: 5, paksha: 'krishna', tithi: 8, approxBsDay: 12 }
   }
 ];

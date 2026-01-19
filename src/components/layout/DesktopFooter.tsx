@@ -1,5 +1,5 @@
 import React from 'react';
-import { Facebook, Mail, MapPin, Smartphone } from 'lucide-react';
+import { Facebook, Mail, MapPin } from 'lucide-react';
 import { NEPALI_LABELS } from '../../constants/constants';
 import { HeaderLogo } from '../calendar/HeaderLogo';
 
@@ -54,7 +54,19 @@ export const DesktopFooter: React.FC<DesktopFooterProps> = ({ onNavigate }) => {
   const handleLinkClick = (e: React.MouseEvent, view: string, param?: any) => {
     e.preventDefault();
     onNavigate(view, param);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+    if (view === 'calendar') {
+      setTimeout(() => {
+        const element = document.getElementById('main-calendar-grid');
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        } else {
+           window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      }, 100);
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   };
 
   return (
@@ -157,38 +169,40 @@ export const DesktopFooter: React.FC<DesktopFooterProps> = ({ onNavigate }) => {
               Your trusted partner for Nepali dates, festivals, astrology, and muhurtas.
             </p>
 
-            <h4 className="text-xs font-bold text-gray-800 dark:text-gray-200 uppercase tracking-wide mb-3">
-              एप डाउनलोड गर्नुहोस्
-            </h4>
             <a
               href="https://play.google.com/store/apps/details?id=com.khumnath.nepdate"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-3 bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-all shadow-md w-full xs:w-auto mb-6"
+              className="inline-block mb-6"
             >
-              <Smartphone className="w-6 h-6" />
-              <div className="text-left">
-                <div className="text-[10px] uppercase font-medium">Get it on</div>
-                <div className="text-sm font-bold">Google Play</div>
-              </div>
+              <img
+                src="https://play.google.com/intl/en_us/badges/static/images/badges/en_badge_web_generic.png"
+                alt="Get it on Google Play"
+                className="h-16 -ml-3"
+              />
             </a>
 
-            <h4 className="text-xs font-bold text-gray-800 dark:text-gray-200 uppercase tracking-wide mb-3">
-              सम्पर्क (Contact)
-            </h4>
             <ul className="space-y-2 text-sm text-gray-600 dark:text-gray-400">
               <li className="flex items-center gap-2">
-                <Mail className="w-4 h-4" />
-                <span>info@nepdate.com</span>
+                <Mail className="w-4 h-4 shrink-0" />
+                <span>aksharlabstudio1@gmail.com</span>
               </li>
               <li className="flex items-center gap-2">
-                <MapPin className="w-4 h-4" />
-                <span>Kathmandu, Nepal</span>
+                <MapPin className="w-4 h-4 shrink-0" />
+                <span>Butwal, Nepal</span>
+              </li>
+              <li className="flex items-center gap-2">
+                <Facebook className="w-4 h-4 shrink-0" />
+                <a
+                   href="https://www.facebook.com/people/NepDate-Patro/61584433679641/"
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   className="hover:text-blue-600 transition-colors"
+                >
+                  NepDate Patro
+                </a>
               </li>
             </ul>
-            <div className="flex gap-4 mt-4">
-              <a href="#" className="text-gray-500 hover:text-blue-600 transition-colors"><Facebook className="w-5 h-5" /></a>
-            </div>
           </div>
         </div>
 

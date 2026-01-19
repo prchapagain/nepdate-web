@@ -4,7 +4,19 @@ import { Blog } from '../../types/types';
 export const kartikPosts: Blog[] = [
   {
     id: 'tihar-detail',
-    eventDate: { type: 'LUNAR', month: 7, paksha: 'krishna', tithi: 30, approxBsDay: 14 },
+    eventDate: {
+      type: 'LUNAR',
+      month: 7,
+      paksha: 'krishna',
+      tithi: 13, // Kaag Tihar
+      approxBsDay: 14,
+      endDate: {
+        type: 'LUNAR',
+        month: 7,
+        paksha: 'shukla',
+        tithi: 2 // Bhai Tika
+      }
+    },
     title: 'तिहार (यमपञ्चक): फूल, बत्ती र रंगहरूको पर्व',
     excerpt: 'तिहारमा पाँच दिनसम्म के-के को पूजा गरिन्छ? काग, कुकुर, गाई, गोरु र भाईटीका।',
     content: `
@@ -39,8 +51,15 @@ export const kartikPosts: Blog[] = [
         `,
     image: BlogImages.chhathPuja,
     tags: ['चाडपर्व', 'तराई'],
-    author: 'जनकपुरधाम',
+    author: 'NepDate Team',
     date: 'कार्तिक शुक्ल षष्ठी',
-    readTime: '५ मिनेट'
+    readTime: '५ मिनेट',
+    eventDate: {
+      type: 'LUNAR',
+      month: 7,
+      paksha: 'shukla',
+      tithi: 6,
+      approxBsDay: 20
+    }
   }
 ];

@@ -4,7 +4,19 @@ import { Blog } from '../../types/types';
 export const ashwinPosts: Blog[] = [
   {
     id: 'dashain-detail',
-    eventDate: { type: 'LUNAR', month: 6, paksha: 'shukla', tithi: 10, approxBsDay: 25 },
+    eventDate: {
+      type: 'LUNAR',
+      month: 6,
+      paksha: 'shukla',
+      tithi: 1, // Ghatasthapana
+      approxBsDay: 1,
+      endDate: {
+        type: 'LUNAR',
+        month: 6,
+        paksha: 'shukla',
+        tithi: 15 // Kojagrat Purnima
+      }
+    },
     title: 'बडा दशैं: शक्ति र विजयको महापर्व',
     excerpt: 'दशैंको १५ दिन कुन दिन के गरिन्छ? घटस्थापना देखि कोजाग्रत पूर्णिमा सम्मको नालिबेली।',
     content: `
@@ -16,11 +28,11 @@ export const ashwinPosts: Blog[] = [
                 <li><strong>महाअष्टमी र महानवमी:</strong> मन्दिरहरूमा बलि दिइन्छ र हतियार तथा औजारहरूको पूजा गरिन्छ (विश्वकर्मा पूजा जस्तै)।</li>
                 <li><strong>विजयादशमी:</strong> मान्यजनको हातबाट रातो टीका र जमरा लगाई आशीर्वाद लिने दिन। रातो रंग रगत (शक्ति) र पारिवारिक सम्बन्धको प्रतीक हो।</li>
             </ul>
-            <p>असत्य (राक्षस) माथि सत्य (देवी) को विजयको रूपमा मनाइने यो पर्वले हामीलाई भित्री विकारहरू (कामकक्रोध, लोभ) लाई जित्न प्रेरणा दिन्छ।</p>
+            <p>असत्य (राक्षस) माथि सत्य (देवी) को विजयको रूपमा मनाइने यो पर्वले हामीलाई भित्री विकारहरू (काम, क्रोध, लोभ) लाई जित्न प्रेरणा दिन्छ।</p>
         `,
     image: BlogImages.dashainTika,
     tags: ['चाडपर्व', 'विशेष'],
-    author: 'संस्कृतिविद',
+    author: 'NepDate Team',
     date: 'दशैं विशेष',
     readTime: '8 मिनेट'
   }

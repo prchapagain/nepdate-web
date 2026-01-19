@@ -15,7 +15,7 @@ const ConverterPage: React.FC<ConverterPageProps> = ({ onBack }) => {
       {/* Content */}
       <div className="flex-1 overflow-y-auto w-full">
         <div className="max-w-3xl mx-auto px-2 sm:px-4 py-4 pb-20">
-          <Converter onBack={onBack} />
+          <Converter/>
         </div>
       </div>
     </div>

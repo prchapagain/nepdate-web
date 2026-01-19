@@ -260,12 +260,13 @@ export interface Blog {
 }
 
 export interface EventDate {
-  type: 'BS' | 'LUNAR';
-  month: number; // 1-12 (Baisakh-Chaitra)
-  day?: number; // For BS (e.g., 1 for New Year)
-  tithi?: number; // For Lunar (1-15)
+  type: 'BS' | 'LUNAR' | 'AD';
+  month: number; // 1-12
+  day?: number;
+  tithi?: number;
   paksha?: 'shukla' | 'krishna';
-  approxBsDay?: number; // Helper for easy sorting
+  endDate?: EventDate; // Recursive for simple range definition
+  approxBsDay?: number;
 }
 
 export type MenuStyle = 'slide' | 'tabs';

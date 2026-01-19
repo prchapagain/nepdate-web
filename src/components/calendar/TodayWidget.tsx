@@ -1,6 +1,4 @@
 import React from 'react';
-import { SocialMedia } from './SocialMedia';
-import { AdsBanner } from './AdsBanner';
 import { NEPALI_LABELS, GREGORIAN_MONTHS, GREGORIAN_WEEKDAYS } from '../../constants/constants';
 import {
   toDevanagari,
@@ -22,7 +20,6 @@ interface TodayWidgetProps {
   todayBs: BikramSambatDate;
   todayDetails: TodayDetails | null;
   onShowDetailsClick: () => void;
-  theme?: 'light' | 'dark';
 }
 
 const PanchangaRow: React.FC<{ label: string; value: string }> = ({
@@ -52,7 +49,6 @@ export const TodayWidget: React.FC<TodayWidgetProps> = ({
   todayBs,
   todayDetails,
   onShowDetailsClick,
-  theme,
 }) => {
   const adDay = todayAd.getDate();
   const adWeekday = GREGORIAN_WEEKDAYS[todayAd.getDay()];
@@ -212,8 +208,6 @@ export const TodayWidget: React.FC<TodayWidgetProps> = ({
         <ArrowRight size={18} />
       </button>
 
-      <SocialMedia theme={theme} />
-      <AdsBanner square className="mt-4" />
     </div>
   );
 };

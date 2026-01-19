@@ -37,8 +37,9 @@ export const shrawanPosts: Blog[] = [
         `,
     image: BlogImages.naagPanchami,
     tags: ['धर्म', 'प्रकृति'],
-    author: 'धर्म गुरु',
+    author: 'NepDate Team',
     date: 'साउन शुक्ल पञ्चमी',
-    readTime: '3 मिनेट'
+    readTime: '3 मिनेट',
+    eventDate: { type: 'LUNAR', month: 4, paksha: 'shukla', tithi: 5, approxBsDay: 15 }
   }
 ];

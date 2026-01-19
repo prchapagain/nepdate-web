@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { getNepalDate } from '../../lib/utils/appUtils';
 import {
 	toBikramSambat,
 	fromBikramSambat,
@@ -8,6 +9,7 @@ import {
 	Bsdata
 } from '../../lib/utils/lib';
 import { NEPALI_BS_MONTHS } from '../../constants/constants';
+import { TimezoneWarning } from '../common/TimezoneWarning';
 
 const START_BS_YEAR = Bsdata.BS_START_YEAR;
 const END_BS_YEAR = Bsdata.BS_START_YEAR + Bsdata.NP_MONTHS_DATA.length - 1;
@@ -23,21 +25,15 @@ const END_AD_DATE = fromBikramSambat(
 );
 
 interface ConverterProps {
-	onBack: () => void;
+    activeSystem?: 'bs' | 'ad';
 }
 
-const Converter: React.FC<ConverterProps> = () => {
+const Converter: React.FC<ConverterProps> = ({ activeSystem = 'bs' }) => {
 	const [isAdToBs, setIsAdToBs] = useState(true);
 
 	// Nepal timezone date
 	const [todayAd] = useState(() => {
-		const now = new Date();
-		const nepalFormatter = new Intl.DateTimeFormat('en-CA', {
-			timeZone: 'Asia/Kathmandu',
-			year: 'numeric', month: '2-digit', day: '2-digit'
-		});
-		const [year, month, day] = nepalFormatter.format(now).split('-').map(Number);
-		return new Date(Date.UTC(year, month - 1, day));
+		return getNepalDate();
 	});
 
 	const [todayBs] = useState(() => toBikramSambat(todayAd));
@@ -161,7 +157,7 @@ const Converter: React.FC<ConverterProps> = () => {
 
 	return (
 		<div className="w-full flex flex-col items-center">
-
+			<TimezoneWarning className="w-full max-w-xl mb-4" activeSystem={activeSystem} closable={false} />
 
 
 			<div className="w-full max-w-xl bg-gray-100/70 dark:bg-gray-800/50 rounded-2xl shadow-lg p-5 sm:p-8 border border-gray-300 dark:border-gray-700">

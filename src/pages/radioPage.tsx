@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { radioStations } from "../data/static/radioPlaylist";
 import darkLeather from "../../public/img/dark-leather.png";
+import { getAppBaseUrl } from "../lib/utils/appUtils";
 
 // TYPES
 type StreamStatus = "pending" | "checking" | "connecting" | "online" | "offline" | "reconnecting";
@@ -87,7 +88,7 @@ const RadioPage: React.FC = () => {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), CONFIG.PING_TIMEOUT_MS);
 
-      await fetch(`${window.location.origin}/favicon.svg?t=${Date.now()}`, {
+      await fetch(`${getAppBaseUrl()}favicon.svg?t=${Date.now()}`, {
         method: "HEAD",
         cache: "no-store",
         signal: controller.signal,
@@ -475,7 +476,7 @@ const RadioPage: React.FC = () => {
     if (window.Android && window.Android.onHtml5AudioEvent) {
       const cover = currentStation.cover.startsWith('http')
         ? currentStation.cover
-        : `${window.location.origin}/${currentStation.cover}`;
+        : `${getAppBaseUrl()}${currentStation.cover}`;
 
       window.Android.onHtml5AudioEvent(
         currentStation.src,
